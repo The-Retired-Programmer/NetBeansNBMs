@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.extexp;
+package uk.theretiredprogrammer.jbake;
 
 import java.io.IOException;
 import org.netbeans.api.project.Project;
@@ -22,14 +22,9 @@ import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
 
-/**
- * A Factory creating the JBake Project Type. The key feature of such a project
- * is that a file named jbake.properties exists in the project's root folder.
- *
- * @author richard linsdale
- */
+
 @ServiceProvider(service = ProjectFactory.class)
-public class PProjectFactory implements ProjectFactory {
+public class JBakeProjectFactory implements ProjectFactory {
 
     @Override
     public boolean isProject(FileObject projectDirectory) {
@@ -39,7 +34,7 @@ public class PProjectFactory implements ProjectFactory {
 
     @Override
     public Project loadProject(FileObject dir, ProjectState state) throws IOException {
-        return isProject(dir) ? new PProject(dir, state) : null;
+        return isProject(dir) ? new JBakeProject(dir, state) : null;
     }
 
     @Override

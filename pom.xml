@@ -19,7 +19,7 @@
     </licenses>
        
     <properties>
-        <netbeans.version>RELEASE120</netbeans.version>
+        <netbeans.version>RELEASE130</netbeans.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

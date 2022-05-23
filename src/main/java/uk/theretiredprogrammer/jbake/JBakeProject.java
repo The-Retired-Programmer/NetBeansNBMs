@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.extexp;
+package uk.theretiredprogrammer.jbake;
 
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
@@ -39,15 +39,10 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 
-/**
- * The JBake Project Class
- * 
- * @author richard linsdale
- */
-public class PProject implements Project {
+public class JBakeProject implements Project {
 
     private final FileObject projectDir;
-    //private final ProjectState state;
+    private final ProjectState state;
     private Lookup lkp;
 
     /**
@@ -56,9 +51,9 @@ public class PProject implements Project {
      * @param dir project root folder
      * @param state the project state
      */
-    PProject(FileObject dir, ProjectState state) {
+    JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
-        //this.state = state;
+        this.state = state;
     }
 
     @Override
@@ -70,9 +65,8 @@ public class PProject implements Project {
     public Lookup getLookup() {
         if (lkp == null) {
             lkp = Lookups.fixed(new Object[]{
-                this,
                 new Info(),
-                new PProjectLogicalView(this)
+                new LogicalView(this)
             });
         }
         return lkp;
@@ -110,18 +104,18 @@ public class PProject implements Project {
 
         @Override
         public Project getProject() {
-            return PProject.this;
+            return JBakeProject.this;
         }
     }
 
-    class PProjectLogicalView implements LogicalViewProvider {
+    class LogicalView implements LogicalViewProvider {
 
         @StaticResource()
         public static final String JBAKE_ICON = "uk/theretiredprogrammer/jbake/jbake_logo.png";
 
-        private final PProject project;
+        private final JBakeProject project;
 
-        public PProjectLogicalView(PProject project) {
+        public LogicalView(JBakeProject project) {
             this.project = project;
         }
 
@@ -143,15 +137,15 @@ public class PProject implements Project {
 
         private final class ProjectNode extends FilterNode {
 
-            final PProject project;
+            final JBakeProject project;
 
-            public ProjectNode(Node node, PProject project)
+            public ProjectNode(Node node, JBakeProject project)
                     throws DataObjectNotFoundException {
                 super(node,
-                        NodeFactorySupport.createCompositeChildren(
-                                project,
-                                "Projects/uk-theretiredprogrammer-jbake/Nodes"),
-                        // new FilterNode.Children(node),
+                        //NodeFactorySupport.createCompositeChildren(
+                        //        project,
+                        //        "Projects/uk-theretiredprogrammer-jbake/Nodes"),
+                        new FilterNode.Children(node),
                         new ProxyLookup(
                                 new Lookup[]{
                                     Lookups.singleton(project),
