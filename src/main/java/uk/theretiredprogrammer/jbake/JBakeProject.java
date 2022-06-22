@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.jbake;
 
+import uk.theretiredprogrammer.projectactions.FileChangeManager;
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
 import javax.swing.Action;
@@ -26,7 +27,6 @@ import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
 import org.netbeans.spi.project.ui.support.CommonProjectActions;
-import org.netbeans.spi.project.ui.support.NodeFactorySupport;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
@@ -38,22 +38,28 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import uk.theretiredprogrammer.projectactions.ProjectActionsProperties;
 
 public class JBakeProject implements Project {
 
     private final FileObject projectDir;
-    private final ProjectState state;
+    //private final ProjectState state;
     private Lookup lkp;
+    private final ProjectActionsProperties projectactionsproperties;
+    private final FileChangeManager projectfilechangemanager;
 
     /**
      * Constructor
-     * 
+     *
      * @param dir project root folder
      * @param state the project state
      */
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
-        this.state = state;
+        //this.state = state;
+        projectfilechangemanager = new FileChangeManager(dir);
+        projectactionsproperties = new ProjectActionsProperties(dir, 5);
+        projectactionsproperties.registerFiles(projectfilechangemanager);
     }
 
     @Override
@@ -156,11 +162,13 @@ public class JBakeProject implements Project {
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return new Action[]{
-                    CommonProjectActions.renameProjectAction(),
-                    CommonProjectActions.copyProjectAction(),
-                    CommonProjectActions.closeProjectAction()
-                };
+                return projectactionsproperties.getActions(
+                        new Action[]{
+                            CommonProjectActions.newFileAction(),
+                            CommonProjectActions.renameProjectAction(),
+                            CommonProjectActions.copyProjectAction(),
+                            CommonProjectActions.closeProjectAction()
+                        });
             }
 
             @Override
