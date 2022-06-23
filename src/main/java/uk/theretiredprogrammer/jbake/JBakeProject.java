@@ -38,6 +38,7 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import uk.theretiredprogrammer.projectactions.ProjectAction;
 import uk.theretiredprogrammer.projectactions.ProjectActionsProperties;
 
 public class JBakeProject implements Project {
@@ -166,8 +167,12 @@ public class JBakeProject implements Project {
                         new Action[]{
                             CommonProjectActions.newFileAction(),
                             CommonProjectActions.renameProjectAction(),
+                            CommonProjectActions.closeProjectAction(),
+                            null,
                             CommonProjectActions.copyProjectAction(),
-                            CommonProjectActions.closeProjectAction()
+                            CommonProjectActions.moveProjectAction(),
+                            null,
+                            new ProjectAction(projectDir, "Bake", "bash -c \"cd ${PROJECTPATH} && jbake -b\"")
                         });
             }
 
