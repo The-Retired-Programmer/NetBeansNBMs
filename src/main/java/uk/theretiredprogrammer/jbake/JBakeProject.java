@@ -15,7 +15,6 @@
  */
 package uk.theretiredprogrammer.jbake;
 
-import uk.theretiredprogrammer.projectactions.FileChangeManager;
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
 import javax.swing.Action;
@@ -38,16 +37,15 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.projectactions.ProjectAction;
-import uk.theretiredprogrammer.projectactions.ProjectActionsProperties;
+import uk.theretiredprogrammer.actionssupport.DynamicAction;
+import uk.theretiredprogrammer.actionssupport.DynamicActions;
 
 public class JBakeProject implements Project {
 
     private final FileObject projectDir;
     //private final ProjectState state;
     private Lookup lkp;
-    private final ProjectActionsProperties projectactionsproperties;
-    private final FileChangeManager projectfilechangemanager;
+    private final DynamicActions dynamicactions;
 
     /**
      * Constructor
@@ -58,9 +56,7 @@ public class JBakeProject implements Project {
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
-        projectfilechangemanager = new FileChangeManager(dir);
-        projectactionsproperties = new ProjectActionsProperties(dir, 5);
-        projectactionsproperties.registerFiles(projectfilechangemanager);
+        dynamicactions = new DynamicActions(dir, "projectactions", 5); 
     }
 
     @Override
@@ -163,7 +159,7 @@ public class JBakeProject implements Project {
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return projectactionsproperties.getActions(
+                return dynamicactions.getActions(
                         new Action[]{
                             CommonProjectActions.newFileAction(),
                             CommonProjectActions.renameProjectAction(),
@@ -172,7 +168,7 @@ public class JBakeProject implements Project {
                             CommonProjectActions.copyProjectAction(),
                             CommonProjectActions.moveProjectAction(),
                             null,
-                            new ProjectAction(projectDir, "Bake", "bash -c \"cd ${PROJECTPATH} && jbake -b\"")
+                            new DynamicAction(projectDir, "Bake", "bash -c \"cd ${PATH} && jbake -b\"")
                         });
             }
 
