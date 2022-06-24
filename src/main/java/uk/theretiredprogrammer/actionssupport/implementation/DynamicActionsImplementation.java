@@ -87,7 +87,7 @@ public class DynamicActionsImplementation {
         // set up the commands
         int j = 0;
         while (j < propertycount) {
-            insertActionParameters(dynamicactions[j], Integer.toString(j));
+            insertActionParameters(dynamicactions[j], Integer.toString(j+1));
             j++;
         }
     }
