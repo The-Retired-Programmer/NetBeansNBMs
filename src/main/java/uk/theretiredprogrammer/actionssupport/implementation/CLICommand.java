@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.netbeans.api.io.InputOutput;
 import org.netbeans.api.io.OutputWriter;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import org.openide.util.RequestProcessor;
 
 public class CLICommand implements Runnable {
@@ -28,8 +30,10 @@ public class CLICommand implements Runnable {
     private final String name;
     private final String label;
     private final String command;
+    private final FileObject folder;
 
-    public CLICommand(String name, String label, String command) {
+    public CLICommand(FileObject folder, String name, String label, String command) {
+        this.folder = folder;
         this.name = name;
         this.label = label;
         this.command = command;
@@ -49,6 +53,7 @@ public class CLICommand implements Runnable {
         try ( OutputWriter msg = io.getOut();  OutputWriter err = io.getErr()) {
             ProcessExecutor pexec = new ProcessExecutor(parse2words(command));
             pexec.setDisplayName(label);
+            pexec.setWorkingDirectory(FileUtil.toFile(folder));
             pexec.setErrorLineFunction(s -> err.println(s));
             pexec.setOutputLineFunction(s -> msg.println(s));
             pexec.execute();

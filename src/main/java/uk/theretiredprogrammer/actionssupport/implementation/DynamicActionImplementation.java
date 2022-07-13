@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.actionssupport.implementation;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import javax.swing.AbstractAction;
 import org.openide.awt.DynamicMenuContent;
 import org.openide.filesystems.FileObject;
@@ -26,10 +27,10 @@ public class DynamicActionImplementation extends AbstractAction {
     private String command;
     private String label;
     private final String name;
-    private final String path;
+    private final FileObject dir;
 
     public DynamicActionImplementation(FileObject dir, String label, String command) {
-        this.path = FileUtil.toFile(dir).getPath();
+        this.dir = dir;
         this.name = dir.getName();
         this.label = label;
         this.command = command;
@@ -37,7 +38,7 @@ public class DynamicActionImplementation extends AbstractAction {
     }
 
     public DynamicActionImplementation(FileObject dir) {
-        this.path = FileUtil.toFile(dir).getPath();
+        this.dir = dir;
         this.name = dir.getName();
         this.label = null;
         this.command = null;
@@ -64,6 +65,6 @@ public class DynamicActionImplementation extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        new CLICommand(name, label, command.replace("${PATH}", path)).execute();
+        new CLICommand(dir, name, label, command.replace("${NODEPATH}", FileUtil.toFile(dir).getPath())).execute();
     }
 }
