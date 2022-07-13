@@ -168,7 +168,7 @@ public class JBakeProject implements Project {
                             CommonProjectActions.copyProjectAction(),
                             CommonProjectActions.moveProjectAction(),
                             null,
-                            new DynamicAction(projectDir, "Bake", "bash -c \"cd ${PATH} && jbake -b\"")
+                            new DynamicAction(projectDir, "Bake", "jbake -b")
                         });
             }
 
