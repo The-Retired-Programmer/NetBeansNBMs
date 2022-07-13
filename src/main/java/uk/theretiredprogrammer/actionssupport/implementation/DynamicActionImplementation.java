@@ -16,7 +16,6 @@
 package uk.theretiredprogrammer.actionssupport.implementation;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 import javax.swing.AbstractAction;
 import org.openide.awt.DynamicMenuContent;
 import org.openide.filesystems.FileObject;

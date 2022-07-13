@@ -160,10 +160,6 @@ public class CLICommand implements Runnable {
             this.nextpos = 0;
         }
 
-        char peek() {
-            return rdr(nextpos);
-        }
-
         char nextchar() {
             return rdr(nextpos++);
         }
