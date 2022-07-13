@@ -161,8 +161,8 @@ public class AsciiDoctorProject implements Project {
                     CommonProjectActions.copyProjectAction(),
                     CommonProjectActions.closeProjectAction(),
                     null,
-                    new DynamicAction(projectDir, testexists(projectDir, "assemblebook", "adoc", "Build book"), "bash -c \"cd ${PATH} && asciidoctor-pdf -d book -a toc -o target/book.pdf assemblebook.adoc\""),
-                    new DynamicAction(projectDir, testexists(projectDir, "assemble", "webresources", testexists(projectDir, "assemblewebpage", "adoc", "Build webpage")), "bash -c \"cd ${PATH} && asciidoctor -d article -a toc2 -o target/webpage.html assemblewebpage.adoc && ./assemble.webresources\"")
+                    new DynamicAction(projectDir, testexists(projectDir, "assemblebook", "adoc", "Build book"), "bash -c \"asciidoctor-pdf -d book -a toc -o target/book.pdf assemblebook.adoc\""),
+                    new DynamicAction(projectDir, testexists(projectDir, "assemble", "webresources", testexists(projectDir, "assemblewebpage", "adoc", "Build webpage")), "bash -c \"asciidoctor -d article -a toc2 -o target/webpage.html assemblewebpage.adoc && ./assemble.webresources\"")
                 };
             }
             
