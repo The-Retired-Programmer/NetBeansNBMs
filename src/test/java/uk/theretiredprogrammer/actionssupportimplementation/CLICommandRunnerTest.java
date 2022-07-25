@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.actionssupport.implementation;
+package uk.theretiredprogrammer.actionssupportimplementation;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -26,9 +26,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author richard
  */
-public class CLICommandTest {
+public class CLICommandRunnerTest {
     
-    public CLICommandTest() {
+    public CLICommandRunnerTest() {
     }
     
     @BeforeAll
@@ -51,7 +51,7 @@ public class CLICommandTest {
     public void testParse2wordsA() {
         System.out.println("parse2words - help");
         String command = "help";
-        CLICommand instance = new CLICommand(null, "testing","test","dummy");
+        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help"};
         String[] result = instance.parse2words(command);
         assertArrayEquals(expResult, result);
@@ -61,7 +61,7 @@ public class CLICommandTest {
     public void testParse2wordsB() {
         System.out.println("parse2words - muliple words");
         String command = "help help2 help3";
-        CLICommand instance = new CLICommand(null, "testing","test","dummy");
+        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help", "help2", "help3"};
         String[] result = instance.parse2words(command);
         assertArrayEquals(expResult, result);
@@ -71,7 +71,7 @@ public class CLICommandTest {
     public void testParse2wordsC() {
         System.out.println("parse2words - multiple words with leading spaces and multiple spaces as separators");
         String command = "    help   help2                    help3 Help4";
-        CLICommand instance = new CLICommand(null, "testing","test","dummy");
+        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help", "help2", "help3", "Help4"};
         String[] result = instance.parse2words(command);
         assertArrayEquals(expResult, result);
@@ -81,7 +81,7 @@ public class CLICommandTest {
     public void testParse2wordsD() {
         System.out.println("parse2words - quoted help");
         String command = "\"help\"";
-        CLICommand instance = new CLICommand(null, "testing","test","dummy");
+        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help"};
         String[] result = instance.parse2words(command);
         assertArrayEquals(expResult, result);
@@ -91,7 +91,7 @@ public class CLICommandTest {
     public void testParse2wordsE() {
         System.out.println("parse2words - quoted and unquoted");
         String command = "  \"help\" -b filename -c \"file name\"     ";
-        CLICommand instance = new CLICommand(null, "testing","test","dummy");
+        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help", "-b", "filename", "-c", "file name"};
         String[] result = instance.parse2words(command);
         assertArrayEquals(expResult, result);
@@ -101,7 +101,7 @@ public class CLICommandTest {
     public void testParse2wordsF() {
         System.out.println("parse2words - quoted unterminated");
         String command = "  \"help  ";
-        CLICommand instance = new CLICommand(null, "testing","test","dummy");
+        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help"};
         String[] result = instance.parse2words(command);
         assertArrayEquals(expResult, result);

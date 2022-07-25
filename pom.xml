@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.theretiredprogrammer</groupId>
     <artifactId>actionssupport</artifactId>
-    <version>1.2.0</version>
+    <version>1.4.0</version>
     <packaging>nbm</packaging>
     
     <name>ActionsSupport</name>
@@ -19,7 +19,7 @@
     </licenses>
        
     <properties>
-        <netbeans.version>RELEASE130</netbeans.version>
+        <netbeans.version>RELEASE140</netbeans.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -78,6 +78,23 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.6.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-windows</artifactId>
+            <version>${netbeans.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-io</artifactId>
+            <version>${netbeans.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.modules</groupId>
+            <artifactId>org-netbeans-core-output2</artifactId>
+            <version>${netbeans.version}</version>
         </dependency>
     </dependencies>
     

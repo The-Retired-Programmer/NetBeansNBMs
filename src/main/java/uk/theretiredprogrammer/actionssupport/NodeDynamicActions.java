@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 richard linsdale.
+ * Copyright 2022 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.actionssupport.implementation;
+package uk.theretiredprogrammer.actionssupport;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,52 +21,42 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import javax.swing.Action;
 import org.openide.filesystems.FileObject;
-import uk.theretiredprogrammer.actionssupport.DynamicActions.FileChangeType;
+import uk.theretiredprogrammer.actionssupportimplementation.FileChangeManager;
 
-public class DynamicActionsImplementation {
+public class NodeDynamicActions {
+
+    public static enum FileChangeType {
+        CREATED, CHANGED, RENAMEDTO, RENAMEDFROM, DELETED
+    }
 
     private Properties properties;
     private boolean disabled;
     private int propertycount;
     private final int maxactions;
-    private final DynamicActionImplementation[] dynamicactions;
+    private DynamicCLIAction[] dynamicactions;
     private final FileObject filefolder;
     private final String actionpropertiesfilename;
     private final FileChangeManager filechangemanager;
-    
-    public DynamicActionsImplementation(FileObject filefolder, String actionpropertiesfilename, int maxactions) {
+
+    public NodeDynamicActions(FileObject filefolder, String actionpropertiesfilename, int maxactions) {
         this.maxactions = maxactions;
         this.filefolder = filefolder;
         this.actionpropertiesfilename = actionpropertiesfilename;
         this.filechangemanager = new FileChangeManager(filefolder);
-        dynamicactions = new DynamicActionImplementation[maxactions];
-        int j = 0;
-        while (j < maxactions) {
-            dynamicactions[j++] = new DynamicActionImplementation(filefolder);
-        }
-        loadPropertiesAndConfigureActions();
-        filechangemanager.registerForCallback(actionpropertiesfilename,"properties", fct-> propertiesfilechangecallback());
+        processCommandsFile();
+        registerFile(actionpropertiesfilename, "properties", fct -> processCommandsFile());
     }
-    
-    public final void registerFiles(String filename, String fileext, Consumer<FileChangeType> callback) {
-        filechangemanager.registerForCallback(filename, fileext, callback);
+
+    public final void registerFile(String filename, String fileext, Consumer<FileChangeType> callback) {
+        filechangemanager.register(filename, fileext, callback);
     }
-    
-    private void propertiesfilechangecallback() {
-        // clear all the commands
-        int j = 0;
-        while (j < propertycount) {
-            dynamicactions[j].clearCommand();
-            j++;
-        }
-        loadPropertiesAndConfigureActions();
-    }
-    
-    private void loadPropertiesAndConfigureActions() {
+
+    private void processCommandsFile() {
         disabled = true;
         propertycount = 0;
         properties = null;
-        FileObject propertiesFO = filefolder.getFileObject(actionpropertiesfilename,"properties");
+        dynamicactions = new DynamicCLIAction[maxactions];
+        FileObject propertiesFO = filefolder.getFileObject(actionpropertiesfilename, "properties");
         if (propertiesFO == null) {
             return;
         }
@@ -87,19 +77,8 @@ public class DynamicActionsImplementation {
         // set up the commands
         int j = 0;
         while (j < propertycount) {
-            insertActionParameters(dynamicactions[j], Integer.toString(j+1));
+            dynamicactions[j] = new DynamicCLIAction(new CLICommand(filefolder, properties, j + 1));
             j++;
-        }
-    }
-
-    private void insertActionParameters(DynamicActionImplementation action, String prefix) {
-        //<prefix>.label and <prefix>.command 
-        String label = properties.getProperty(prefix + ".label");
-        if (label != null) {
-            String command = properties.getProperty(prefix + ".command");
-            if (command != null) {
-                action.setCommand(label, command);
-            }
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 richard.
+ * Copyright 2022 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.actionssupport.implementation;
+package uk.theretiredprogrammer.actionssupportimplementation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import org.openide.filesystems.FileChangeListener;
 import org.openide.filesystems.FileEvent;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
-import uk.theretiredprogrammer.actionssupport.DynamicActions.FileChangeType;
+import uk.theretiredprogrammer.actionssupport.NodeDynamicActions.FileChangeType;
 
 public class FileChangeManager {
 
@@ -37,14 +37,14 @@ public class FileChangeManager {
         directory.addFileChangeListener(directorylistener);
     }
 
-    public void registerForCallback(String name, String ext, Consumer<FileChangeType> callback) {
+    public void register(String name, String ext, Consumer<FileChangeType> callback) {
         registrations.add(new Registration(name, ext, callback));
     }
-    
+
     private void handleFileChange(FileObject file, FileChangeType changetype) {
         handleFileChange(file.getParent(), file.getName(), file.getExt(), changetype);
     }
-    
+
     private void handleFileChange(FileObject directory, String name, String ext, FileChangeType changetype) {
         registrations.stream()
                 .filter(r -> r.name.equals(name) && r.ext.equals(ext) && directory.equals(this.directory))
@@ -68,7 +68,7 @@ public class FileChangeManager {
 
         @Override
         public void fileChanged(FileEvent fe) {
-            handleFileChange(fe.getFile(),FileChangeType.CHANGED);
+            handleFileChange(fe.getFile(), FileChangeType.CHANGED);
         }
 
         @Override
@@ -77,18 +77,18 @@ public class FileChangeManager {
 
         @Override
         public void fileDataCreated(FileEvent fe) {
-            handleFileChange(fe.getFile(),FileChangeType.CREATED);
+            handleFileChange(fe.getFile(), FileChangeType.CREATED);
         }
 
         @Override
         public void fileDeleted(FileEvent fe) {
-            handleFileChange(fe.getFile(),FileChangeType.DELETED);
+            handleFileChange(fe.getFile(), FileChangeType.DELETED);
         }
 
         @Override
         public void fileRenamed(FileRenameEvent fe) {
-            handleFileChange(fe.getFile().getParent(), fe.getName(), fe.getExt(),FileChangeType.RENAMEDFROM);
-            handleFileChange(fe.getFile(),FileChangeType.RENAMEDTO);
+            handleFileChange(fe.getFile().getParent(), fe.getName(), fe.getExt(), FileChangeType.RENAMEDFROM);
+            handleFileChange(fe.getFile(), FileChangeType.RENAMEDTO);
         }
 
         @Override
