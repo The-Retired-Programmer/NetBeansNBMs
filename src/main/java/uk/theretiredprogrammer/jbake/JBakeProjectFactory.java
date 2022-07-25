@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022 richard linsdale.
+ * Copyright 2022 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import org.netbeans.spi.project.ProjectFactory;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
-
 
 @ServiceProvider(service = ProjectFactory.class)
 public class JBakeProjectFactory implements ProjectFactory {

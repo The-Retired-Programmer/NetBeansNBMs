@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022 richard linsdale.
+ * Copyright 2022 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,15 +37,16 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.DynamicAction;
-import uk.theretiredprogrammer.actionssupport.DynamicActions;
+import uk.theretiredprogrammer.actionssupport.DynamicCLIAction;
+import uk.theretiredprogrammer.actionssupport.NodeDynamicActions;
+import uk.theretiredprogrammer.actionssupport.CLICommand;
 
 public class JBakeProject implements Project {
 
     private final FileObject projectDir;
     //private final ProjectState state;
     private Lookup lkp;
-    private final DynamicActions dynamicactions;
+    private final NodeDynamicActions dynamicactions;
 
     /**
      * Constructor
@@ -56,7 +57,7 @@ public class JBakeProject implements Project {
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
-        dynamicactions = new DynamicActions(dir, "projectactions", 5); 
+        dynamicactions = new NodeDynamicActions(dir, "projectactions", 9);
     }
 
     @Override
@@ -168,7 +169,10 @@ public class JBakeProject implements Project {
                             CommonProjectActions.copyProjectAction(),
                             CommonProjectActions.moveProjectAction(),
                             null,
-                            new DynamicAction(projectDir, "Bake", "jbake -b")
+                            new DynamicCLIAction(
+                                    new CLICommand(projectDir, "Bake")
+                                            .cliCommandLine("jbake -b")
+                            )
                         });
             }
 
