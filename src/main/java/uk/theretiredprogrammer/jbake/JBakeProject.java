@@ -57,7 +57,7 @@ public class JBakeProject implements Project {
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
-        dynamicactions = new NodeDynamicActions(dir, "projectactions", 9);
+        dynamicactions = new NodeDynamicActions(dir, "projectactions");
     }
 
     @Override
@@ -156,24 +156,22 @@ public class JBakeProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
+                dynamicactions.setNodeBasicActions(
+                        CommonProjectActions.renameProjectAction(),
+                        CommonProjectActions.copyProjectAction(),
+                        CommonProjectActions.closeProjectAction()
+                );
+                dynamicactions.setNodeActions(
+                        new DynamicCLIAction(
+                                new CLICommand(projectDir, "Bake")
+                                        .cliCommandLine("jbake -b")
+                        )
+                );
             }
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return dynamicactions.getActions(
-                        new Action[]{
-                            CommonProjectActions.newFileAction(),
-                            CommonProjectActions.renameProjectAction(),
-                            CommonProjectActions.closeProjectAction(),
-                            null,
-                            CommonProjectActions.copyProjectAction(),
-                            CommonProjectActions.moveProjectAction(),
-                            null,
-                            new DynamicCLIAction(
-                                    new CLICommand(projectDir, "Bake")
-                                            .cliCommandLine("jbake -b")
-                            )
-                        });
+                return dynamicactions.getAllNodeActions();
             }
 
             @Override
