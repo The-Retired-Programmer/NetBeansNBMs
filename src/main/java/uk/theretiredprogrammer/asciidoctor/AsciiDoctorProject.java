@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022 richard linsdale.
+ * Copyright 2022 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,23 +37,27 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.DynamicAction;
+import uk.theretiredprogrammer.actionssupport.CLICommand;
+import uk.theretiredprogrammer.actionssupport.DynamicCLIAction;
+import uk.theretiredprogrammer.actionssupport.NodeDynamicActions;
 
 public class AsciiDoctorProject implements Project {
 
     private final FileObject projectDir;
-    private final ProjectState state;
+    //private final ProjectState state;
     private Lookup lkp;
+    private final NodeDynamicActions dynamicactions;
 
     /**
      * Constructor
-     * 
+     *
      * @param dir project root folder
      * @param state the project state
      */
     AsciiDoctorProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
-        this.state = state;
+        //this.state = state;
+        dynamicactions = new NodeDynamicActions(dir, "projectactions");
     }
 
     @Override
@@ -152,22 +156,28 @@ public class AsciiDoctorProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
+                dynamicactions.setNodeBasicActions(
+                        CommonProjectActions.renameProjectAction(),
+                        CommonProjectActions.copyProjectAction(),
+                        CommonProjectActions.closeProjectAction()
+                );
+                dynamicactions.setNodeActions(
+                        new DynamicCLIAction(
+                                new CLICommand(projectDir, "Build book")
+                                        .cliCommandLine("bash -c \"asciidoctor-pdf -d book -a toc -o target/book.pdf assemblebook.adoc\"")
+                                        .enableIf(() -> projectDir.getFileObject("assemblebook", "adoc") != null)
+                        ),
+                        new DynamicCLIAction(
+                                new CLICommand(projectDir, "Build webpage")
+                                        .cliCommandLine("bash -c \"asciidoctor -d article -a toc2 -o target/webpage.html assemblewebpage.adoc && ./assemble.webresources\"")
+                                        .enableIf(() -> projectDir.getFileObject("assemblewebpage", "adoc") != null && projectDir.getFileObject("assemble", "webresources") != null)
+                        )
+                );
             }
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return new Action[]{
-                    CommonProjectActions.renameProjectAction(),
-                    CommonProjectActions.copyProjectAction(),
-                    CommonProjectActions.closeProjectAction(),
-                    null,
-                    new DynamicAction(projectDir, testexists(projectDir, "assemblebook", "adoc", "Build book"), "bash -c \"asciidoctor-pdf -d book -a toc -o target/book.pdf assemblebook.adoc\""),
-                    new DynamicAction(projectDir, testexists(projectDir, "assemble", "webresources", testexists(projectDir, "assemblewebpage", "adoc", "Build webpage")), "bash -c \"asciidoctor -d article -a toc2 -o target/webpage.html assemblewebpage.adoc && ./assemble.webresources\"")
-                };
-            }
-            
-            private String testexists(FileObject directory, String filename, String ext, String labelifexists) {
-                return directory.getFileObject(filename,ext)!= null ? labelifexists: null;
+                return dynamicactions.getAllNodeActions();
             }
 
             @Override

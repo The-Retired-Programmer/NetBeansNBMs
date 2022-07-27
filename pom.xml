@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.theretiredprogrammer</groupId>
     <artifactId>asciidoctorproject</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.1</version>
     <packaging>nbm</packaging>
     
     <name>AsciiDoctor Project NB Plugin</name>
@@ -19,7 +19,7 @@
     </licenses>
        
     <properties>
-        <netbeans.version>RELEASE130</netbeans.version>
+        <netbeans.version>RELEASE140</netbeans.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>uk.theretiredprogrammer</groupId>
             <artifactId>actionssupport</artifactId>
-            <version>1.2.0</version>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
