@@ -26,9 +26,15 @@ public class DynamicCLIAction extends DynamicAction {
     public DynamicCLIAction(CLICommand cliCommand) {
         cliCommand.setParent(this);
         this.cliCommand = cliCommand;
-        super.label(cliCommand.getLabel());
-        super.onAction(() -> onAction());
-        super.enable();
+        label(cliCommand.getLabel());
+        onAction(() -> onCLIAction());
+        setEnabled(cliCommand.getEnableIf().get());
+    }
+    
+    public DynamicCLIAction enableIf() {
+        setEnabled(cliCommand.getEnableIf().get());
+        
+        return this;
     }
 
     public void issueClose() {
@@ -43,7 +49,7 @@ public class DynamicCLIAction extends DynamicAction {
         }
     }
 
-    private void onAction() {
+    private void onCLIAction() {
         cliactionthread = new CLIActionThread(cliCommand);
         cliactionthread.start();
     }

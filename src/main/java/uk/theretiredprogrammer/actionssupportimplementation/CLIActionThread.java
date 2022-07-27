@@ -52,15 +52,16 @@ public class CLIActionThread extends Thread {
             io.setInputVisible(true);
         }
         try ( OutputWriter msg = io.getOut();  OutputWriter err = io.getErr()) {
-            errorreporter = err;
-            ProcessBuilder pb = new ProcessBuilder(parse2words(cliCommand.getCliCommandLine()))
-                    .directory(FileUtil.toFile(cliCommand.getDir()));
-            if (cliCommand.getInopt() == FILE) {
-                pb.redirectInput(FileUtil.toFile(cliCommand.getInputfile()));
-            }
-            FromProcessThread stderr;
-            FromProcessThread stdout;
             try {
+                msg.reset();
+                errorreporter = err;
+                ProcessBuilder pb = new ProcessBuilder(parse2words(cliCommand.getCliCommandLine()))
+                        .directory(FileUtil.toFile(cliCommand.getDir()));
+                if (cliCommand.getInopt() == FILE) {
+                    pb.redirectInput(FileUtil.toFile(cliCommand.getInputfile()));
+                }
+                FromProcessThread stderr;
+                FromProcessThread stdout;
                 process = pb.start();
                 stderr = new FromProcessThread("stderr", process.errorReader(), err, (p, e) -> write2err(p, e));
                 stderr.start();

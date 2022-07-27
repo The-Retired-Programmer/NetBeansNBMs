@@ -45,16 +45,6 @@ public class DynamicAction extends AbstractAction {
         return this;
     }
 
-    public DynamicAction enable() {
-        setEnabled(true);
-        return this;
-    }
-
-    public DynamicAction disable() {
-        setEnabled(false);
-        return this;
-    }
-
     public String getLabel() {
         return label;
     }

@@ -16,14 +16,13 @@
 package uk.theretiredprogrammer.actionssupport;
 
 import java.util.Properties;
+import java.util.function.Supplier;
 import javax.swing.Action;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.ImageUtilities;
 
 public class CLICommand {
-
-    private DynamicCLIAction parent;
 
     public static enum InputOptions {
         NONE, FILE, UI
@@ -35,6 +34,8 @@ public class CLICommand {
     private InputOptions inopt = InputOptions.NONE;
     private String cliCommandLine;
     private Action[] actions;
+    private DynamicCLIAction parent;
+    private Supplier<Boolean> enableExpression = () -> true;
 
     public CLICommand(FileObject dir, String label) {
         this.dir = dir;
@@ -53,6 +54,11 @@ public class CLICommand {
 
     public CLICommand cliCommandLine(String cliCommandLine) {
         this.cliCommandLine = cliCommandLine.replace("${NODEPATH}", FileUtil.toFile(dir).getPath());
+        return this;
+    }
+    
+    public CLICommand enableIf(Supplier<Boolean> enableExpression) {
+        this.enableExpression = enableExpression;
         return this;
     }
 
@@ -101,6 +107,10 @@ public class CLICommand {
 
     public Action[] getActions() {
         return actions;
+    }
+    
+    public Supplier<Boolean> getEnableIf() {
+        return enableExpression;
     }
 
     // extract clicommand values from properties
@@ -152,7 +162,7 @@ public class CLICommand {
             super();
             icon(ImageUtilities.loadImageIcon("uk/theretiredprogrammer/actionssupport/accept.png", false));
             onAction(() -> closeSTDIN());
-            enable();
+            setEnabled(true);
         }
 
         private void closeSTDIN() {
@@ -167,7 +177,7 @@ public class CLICommand {
             super();
             icon(ImageUtilities.loadImageIcon("uk/theretiredprogrammer/actionssupport/cancel.png", false));
             onAction(() -> cancel());
-            enable();
+            setEnabled(true);
         }
 
         private void cancel() {
@@ -180,7 +190,7 @@ public class CLICommand {
         SideBarAction_BAD() {
             super();
             icon(ImageUtilities.loadImageIcon("uk/theretiredprogrammer/actionssupport/thumb_down.png", false));
-            enable();
+            setEnabled(true);
         }
     }
 
