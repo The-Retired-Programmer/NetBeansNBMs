@@ -33,7 +33,6 @@ public class DynamicCLIAction extends DynamicAction {
     
     public DynamicCLIAction enableIf() {
         setEnabled(cliCommand.getEnableIf().get());
-        
         return this;
     }
 
