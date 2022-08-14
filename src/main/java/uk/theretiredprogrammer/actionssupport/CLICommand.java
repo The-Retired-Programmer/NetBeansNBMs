@@ -42,7 +42,7 @@ public class CLICommand {
         this.label = label;
     }
 
-    public CLICommand(FileObject dir, Properties properties, int prefix) {
+    CLICommand(FileObject dir, Properties properties, int prefix) {
         this.dir = dir;
         insertActionParameters(properties, Integer.toString(prefix));
     }

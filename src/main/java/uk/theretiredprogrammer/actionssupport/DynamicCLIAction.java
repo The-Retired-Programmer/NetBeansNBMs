@@ -36,13 +36,13 @@ public class DynamicCLIAction extends DynamicAction {
         return this;
     }
 
-    public void issueClose() {
+    void issueClose() {
         if (cliactionthread != null) {
             cliactionthread.inputClose();
         }
     }
 
-    public void issueCancel() {
+    void issueCancel() {
         if (cliactionthread != null) {
             cliactionthread.cancel();
         }
