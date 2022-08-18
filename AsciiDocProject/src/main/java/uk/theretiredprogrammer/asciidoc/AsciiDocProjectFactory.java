@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.asciidoctor;
+package uk.theretiredprogrammer.asciidoc;
 
 import java.io.IOException;
 import org.netbeans.api.project.Project;
@@ -24,7 +24,7 @@ import org.openide.util.lookup.ServiceProvider;
 
 
 @ServiceProvider(service = ProjectFactory.class)
-public class AsciiDoctorProjectFactory implements ProjectFactory {
+public class AsciiDocProjectFactory implements ProjectFactory {
 
     @Override
     public boolean isProject(FileObject projectDirectory) {
@@ -39,7 +39,7 @@ public class AsciiDoctorProjectFactory implements ProjectFactory {
 
     @Override
     public Project loadProject(FileObject dir, ProjectState state) throws IOException {
-        return isProject(dir) ? new AsciiDoctorProject(dir, state) : null;
+        return isProject(dir) ? new AsciiDocProject(dir, state) : null;
     }
 
     @Override

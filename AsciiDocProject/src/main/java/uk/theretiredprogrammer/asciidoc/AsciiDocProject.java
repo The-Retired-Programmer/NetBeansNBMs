@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.asciidoctor;
+package uk.theretiredprogrammer.asciidoc;
 
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
@@ -41,7 +41,7 @@ import uk.theretiredprogrammer.actionssupport.CLICommand;
 import uk.theretiredprogrammer.actionssupport.DynamicCLIAction;
 import uk.theretiredprogrammer.actionssupport.NodeDynamicActions;
 
-public class AsciiDoctorProject implements Project {
+public class AsciiDocProject implements Project {
 
     private final FileObject projectDir;
     //private final ProjectState state;
@@ -54,7 +54,7 @@ public class AsciiDoctorProject implements Project {
      * @param dir project root folder
      * @param state the project state
      */
-    AsciiDoctorProject(FileObject dir, ProjectState state) {
+    AsciiDocProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
         dynamicactions = new NodeDynamicActions(dir, "projectactions");
@@ -79,7 +79,7 @@ public class AsciiDoctorProject implements Project {
     private final class Info implements ProjectInformation {
 
         @StaticResource()
-        public static final String ICON = "uk/theretiredprogrammer/asciidoctor/folder_edit.png";
+        public static final String ICON = "uk/theretiredprogrammer/asciidoc/folder_edit.png";
 
         @Override
         public Icon getIcon() {
@@ -108,18 +108,18 @@ public class AsciiDoctorProject implements Project {
 
         @Override
         public Project getProject() {
-            return AsciiDoctorProject.this;
+            return AsciiDocProject.this;
         }
     }
 
     class LogicalView implements LogicalViewProvider {
 
         @StaticResource()
-        public static final String ICON = "uk/theretiredprogrammer/asciidoctor/folder_edit.png";
+        public static final String ICON = "uk/theretiredprogrammer/asciidoc/folder_edit.png";
 
-        private final AsciiDoctorProject project;
+        private final AsciiDocProject project;
 
-        public LogicalView(AsciiDoctorProject project) {
+        public LogicalView(AsciiDocProject project) {
             this.project = project;
         }
 
@@ -141,9 +141,9 @@ public class AsciiDoctorProject implements Project {
 
         private final class ProjectNode extends FilterNode {
 
-            final AsciiDoctorProject project;
+            final AsciiDocProject project;
 
-            public ProjectNode(Node node, AsciiDoctorProject project)
+            public ProjectNode(Node node, AsciiDocProject project)
                     throws DataObjectNotFoundException {
                 super(node,
                         //NodeFactorySupport.createCompositeChildren(

@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.theretiredprogrammer</groupId>
-    <artifactId>asciidoctorproject</artifactId>
+    <artifactId>asciidocproject</artifactId>
     <version>1.2.1</version>
     <packaging>nbm</packaging>
     
-    <name>AsciiDoctor Project NB Plugin</name>
-    <description>Netbeans Plug-in - Recognises an AsciiDoctor project</description>
+    <name>AsciiDoc Project NB Plugin</name>
+    <description>Netbeans Plug-in - Recognises an AsciiDoc project</description>
  
     <url>http://www.theretiredprogrammer.uk/asciidoctor-plugin</url>
     
@@ -87,7 +87,7 @@
                     <version>4.3</version>
                     <extensions>true</extensions>
                     <configuration>
-                        <cluster>asciidoctor</cluster>
+                        <cluster>TRP-Tools</cluster>
                         <homePageUrl>${project.url}</homePageUrl>
                         <licenseFile>LICENSE</licenseFile>
                         <licenseName>The Apache License, Version 2.0</licenseName>
