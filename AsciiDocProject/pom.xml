@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>uk.theretiredprogrammer</groupId>
+        <artifactId>netbeansnbms</artifactId>
+        <version>1</version>
+    </parent>
+    
     <groupId>uk.theretiredprogrammer</groupId>
     <artifactId>asciidocproject</artifactId>
     <version>1.2.1</version>
@@ -9,7 +15,7 @@
     <name>AsciiDoc Project NB Plugin</name>
     <description>Netbeans Plug-in - Recognises an AsciiDoc project</description>
  
-    <url>http://www.theretiredprogrammer.uk/asciidoctor-plugin</url>
+    <url>http://www.theretiredprogrammer.uk/asciidoc-plugin</url>
     
     <licenses>
         <license>
@@ -17,6 +23,14 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+    
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/The-Retired-Programmer/NetBeansNBMs</url>
+        </repository>
+    </distributionManagement>
        
     <properties>
         <netbeans.version>RELEASE140</netbeans.version>

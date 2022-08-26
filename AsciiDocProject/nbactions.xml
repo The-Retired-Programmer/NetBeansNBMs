@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-Deploy NBM</actionName>
+            <displayName>Deploy NBM</displayName>
+            <goals>
+                <goal>deploy:deploy-file</goal>
+            </goals>
+        </action>
+        
+        
+    </actions>
