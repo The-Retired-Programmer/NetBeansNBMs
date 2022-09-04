@@ -4,7 +4,7 @@
     
     <groupId>uk.theretiredprogrammer</groupId>
     <artifactId>netbeansnbms</artifactId>
-    <version>1</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     
     <name>NetBeansNBMs</name>
@@ -34,17 +34,41 @@
     
     <repositories>
         <repository>
-          <id>central</id>
-          <url>https://repo1.maven.org/maven2</url>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/The-Retired-Programmer/NetBeansNBMs</url>
         </repository>
         <repository>
-          <id>github</id>
-          <url>https://maven.pkg.github.com/The-Retired-Programmer/NetBeansNBMs</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
         </repository>
-      </repositories>
+    </repositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-annotations-common</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
        
     <build>
         <pluginManagement>
@@ -76,12 +100,9 @@
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>3.0.0</version>
                     <configuration>
-                        <groupId>${project.groupId}</groupId>
-                        <artifactId>${project.artifactId}</artifactId>
-                        <version>${project.version}</version>
                         <repositoryId>github</repositoryId>
                         <url>https://maven.pkg.github.com/The-Retired-Programmer/NetBeansNBMs</url>
-                        <generatePom>true</generatePom>
+                        <generatePom>false</generatePom>
                     </configuration>
                 </plugin> 
             </plugins>

@@ -4,11 +4,11 @@
     <parent>
         <groupId>uk.theretiredprogrammer</groupId>
         <artifactId>netbeansnbms</artifactId>
-        <version>1</version>
+        <version>1.1.0</version>
     </parent>
   
     <artifactId>actionssupport</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.2</version>
     <packaging>nbm</packaging>
     
     <name>ActionsSupport</name>
@@ -17,11 +17,6 @@
     <url>http://www.theretiredprogrammer.uk/actionssupport</url>
     
     <dependencies>
-        <dependency>
-            <groupId>org.netbeans.api</groupId>
-            <artifactId>org-netbeans-api-annotations-common</artifactId>
-            <version>${netbeans.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems</artifactId>
@@ -53,24 +48,6 @@
             <version>${netbeans.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.6.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>5.6.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.6.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-windows</artifactId>
             <version>${netbeans.version}</version>
@@ -99,17 +76,6 @@
                     <publicPackages>
                         <publicPackage>uk.theretiredprogrammer.actionssupport</publicPackage>
                     </publicPackages>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <file>${project.build.directory}/${project.artifactId}-${project.version}.nbm</file>
-                    <files>${project.build.directory}/${project.artifactId}-${project.version}.jar</files>
-                    <types>jar</types>
-                    <classifier>jar</classifier>
                 </configuration>
             </plugin>
         </plugins>

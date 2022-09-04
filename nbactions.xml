@@ -3,10 +3,9 @@
         <action>
             <actionName>CUSTOM-Deploy</actionName>
             <displayName>Deploy</displayName>
+            <recursive>false</recursive>
             <goals>
                 <goal>deploy</goal>
             </goals>
         </action>
-        
-        
     </actions>

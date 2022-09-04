@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: uk/theretiredprogrammer/asciidoctor/Bundle.properties
-OpenIDE-Module-Display-Category: TheRetiredProgrammer - Tools
+OpenIDE-Module-Localizing-Bundle: uk/theretiredprogrammer/asciidoc/Bundle.properties
+OpenIDE-Module-Display-Category: Tools - TheRetiredProgrammer
 
