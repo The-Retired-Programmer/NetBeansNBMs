@@ -51,9 +51,8 @@ public class CLICommandRunnerTest {
     public void testParse2wordsA() {
         System.out.println("parse2words - help");
         String command = "help";
-        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help"};
-        String[] result = instance.parse2words(command);
+        String[] result = CommandHandler.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -61,9 +60,8 @@ public class CLICommandRunnerTest {
     public void testParse2wordsB() {
         System.out.println("parse2words - muliple words");
         String command = "help help2 help3";
-        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help", "help2", "help3"};
-        String[] result = instance.parse2words(command);
+        String[] result = CommandHandler.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -71,9 +69,8 @@ public class CLICommandRunnerTest {
     public void testParse2wordsC() {
         System.out.println("parse2words - multiple words with leading spaces and multiple spaces as separators");
         String command = "    help   help2                    help3 Help4";
-        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help", "help2", "help3", "Help4"};
-        String[] result = instance.parse2words(command);
+        String[] result = CommandHandler.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -81,9 +78,8 @@ public class CLICommandRunnerTest {
     public void testParse2wordsD() {
         System.out.println("parse2words - quoted help");
         String command = "\"help\"";
-        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help"};
-        String[] result = instance.parse2words(command);
+        String[] result = CommandHandler.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -91,9 +87,8 @@ public class CLICommandRunnerTest {
     public void testParse2wordsE() {
         System.out.println("parse2words - quoted and unquoted");
         String command = "  \"help\" -b filename -c \"file name\"     ";
-        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help", "-b", "filename", "-c", "file name"};
-        String[] result = instance.parse2words(command);
+        String[] result = CommandHandler.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -101,9 +96,8 @@ public class CLICommandRunnerTest {
     public void testParse2wordsF() {
         System.out.println("parse2words - quoted unterminated");
         String command = "  \"help  ";
-        CLIActionThread instance = new CLIActionThread(null);
         String[] expResult = new String[] {"help"};
-        String[] result = instance.parse2words(command);
+        String[] result = CommandHandler.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
 }

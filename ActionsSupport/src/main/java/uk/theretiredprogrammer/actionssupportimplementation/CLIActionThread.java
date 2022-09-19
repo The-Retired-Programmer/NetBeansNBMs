@@ -19,8 +19,6 @@ import uk.theretiredprogrammer.actionssupport.CLICommand;
 import java.io.IOException;
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
-import java.util.ArrayList;
-import java.util.List;
 import org.openide.filesystems.FileUtil;
 import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
@@ -41,7 +39,6 @@ public class CLIActionThread extends Thread {
     }
 
     @Override
-    @SuppressWarnings("SleepWhileInLoop")
     public void run() {
         long start = currentTimeMillis();
 
@@ -55,7 +52,7 @@ public class CLIActionThread extends Thread {
             try {
                 msg.reset();
                 errorreporter = err;
-                ProcessBuilder pb = new ProcessBuilder(parse2words(cliCommand.getCliCommandLine()))
+                ProcessBuilder pb = new ProcessBuilder(CommandHandler.toPhrases(cliCommand.getCliCommandLine()))
                         .directory(FileUtil.toFile(cliCommand.getDir()));
                 if (cliCommand.getInopt() == FILE) {
                     pb.redirectInput(FileUtil.toFile(cliCommand.getInputfile()));
@@ -107,110 +104,5 @@ public class CLIActionThread extends Thread {
 
     public void cancel() {
         process.destroy();
-    }
-
-    private enum State {
-        WHITESPACE, INQUOTED, BASIC, DONE
-    };
-
-    String[] parse2words(String command) {
-        List<String> wordlist = new ArrayList<>();
-        StringBuilder wordbuilder = new StringBuilder();
-        CharProvider chars = new CharProvider(command.trim());
-        State state = State.WHITESPACE;
-        while (true) {
-            char nextc = chars.nextchar();
-            switch (state) {
-                case WHITESPACE:
-                    switch (nextc) {
-                        case '\0':
-                            state = State.DONE;
-                            break;
-                        case ' ':
-                            break;
-                        case '"':
-                            state = State.INQUOTED;
-                            wordbuilder.setLength(0);
-                            break;
-                        default:
-                            state = State.BASIC;
-                            wordbuilder.setLength(0);
-                            wordbuilder.append(nextc);
-                            break;
-                    }
-                    break;
-                case INQUOTED:
-                    switch (nextc) {
-                        case '\0':
-                            //ignore missing trailing quote
-                            if (!wordbuilder.isEmpty()) {
-                                wordlist.add(wordbuilder.toString());
-                            }
-                            state = State.DONE;
-                            break;
-                        case ' ':
-                            wordbuilder.append(nextc);
-                            break;
-                        case '"':
-                            state = State.WHITESPACE;
-                            if (!wordbuilder.isEmpty()) {
-                                wordlist.add(wordbuilder.toString());
-                            }
-                            break;
-                        default:
-                            wordbuilder.append(nextc);
-                            break;
-                    }
-                    break;
-                case BASIC:
-                    switch (nextc) {
-                        case '\0':
-                            if (!wordbuilder.isEmpty()) {
-                                wordlist.add(wordbuilder.toString());
-                            }
-                            state = State.DONE;
-                            break;
-                        case ' ':
-                            state = State.WHITESPACE;
-                            if (!wordbuilder.isEmpty()) {
-                                wordlist.add(wordbuilder.toString());
-                            }
-                            break;
-                        case '"':
-                            wordbuilder.append(nextc);
-                            break;
-                        default:
-                            wordbuilder.append(nextc);
-                            break;
-                    }
-                    break;
-                case DONE:
-                    String[] words = new String[wordlist.size()];
-                    int i = 0;
-                    for (String word : wordlist) {
-                        words[i++] = word.trim();
-                    }
-                    return words;
-            }
-        }
-    }
-
-    private class CharProvider {
-
-        private final String source;
-        private int nextpos;
-
-        CharProvider(String source) {
-            this.source = source;
-            this.nextpos = 0;
-        }
-
-        char nextchar() {
-            return rdr(nextpos++);
-        }
-
-        private char rdr(int index) {
-            return index >= source.length() ? '\0' : source.charAt(index);
-        }
     }
 }

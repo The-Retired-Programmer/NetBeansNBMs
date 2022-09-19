@@ -15,83 +15,55 @@
  */
 package uk.theretiredprogrammer.actionssupportimplementation;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.function.BiConsumer;
+import java.io.Writer;
+import uk.theretiredprogrammer.actionssupport.CLIExec2;
 
-public class ToProcessThread extends Thread {
+public class ToProcessThread extends CopyThread {
 
     private final Reader source;
-    private final BufferedWriter toprocess;
-    private final BiConsumer<String, String> errorreporter;
+    private final Writer target;
 
-    public ToProcessThread(String name, Reader source, BufferedWriter toprocess, BiConsumer<String, String> errorreporter) {
-        super(name);
+    public ToProcessThread(String name, Reader source, Writer target, CLIExec2 parent, int millisecs2flush) {
+        super(name, parent);
         this.source = source;
-        this.toprocess = toprocess;
-        this.errorreporter = errorreporter;
+        this.target = target;
+        this.millisecs2flush = millisecs2flush;
     }
-
-    // parameters to flush if no further data available; is 100ms
-    private static final int INIT_COUNTDOWN = 20;
-    private static final int MS_DELAY_PER_LOOP = 5;
 
     @Override
-    @SuppressWarnings("SleepWhileInLoop")
-    public void run() {
-        int countdown = INIT_COUNTDOWN;
-        while (true) {
+    protected synchronized boolean copyAvailableItems() throws IOException {
+        boolean hascopied = false;
+        while (source.ready()) {
+            target.write((char) source.read());
+            hascopied = true;
+        }
+        return hascopied;
+    }
+
+    @Override
+    public synchronized void close_target() throws IOException {
+        target.close();
+        transferdone = true;
+    }
+
+    @Override
+    public synchronized void flush_target() throws IOException {
+        if (!transferdone) {
             try {
-                while (source.ready()) {
-                    countdown = INIT_COUNTDOWN;
-                    toprocess.write((char) source.read());
-                }
-                if (isCloseRequired()) {
-                    toprocess.close();
-                    return;
-                }
-                if (isEndRequired()) {
-                    return;
-                }
-                if (countdown > 0) {
-                    if (--countdown == 0) {
-                        toprocess.flush();
-                    }
-                }
-                sleep(MS_DELAY_PER_LOOP);
+                target.flush();
             } catch (IOException ex) {
-                errorreporter.accept(getName() + " copying", ex.getLocalizedMessage());
-            } catch (InterruptedException ex) {
-                errorreporter.accept(getName() + " interrupted during copying", ex.getLocalizedMessage());
+                parent.printerror(getName() + " flush failed", ex.getLocalizedMessage());
             }
         }
+        transferdone = true;
     }
 
-    private boolean closeRequired = false;
-    private boolean endRequired = false;
-
-    public synchronized void close() {
-        closeRequired = true;
-    }
-
-    public synchronized void end() {
-        endRequired = true;
-    }
-
-    private synchronized boolean isCloseRequired() {
-        if (closeRequired) {
-            closeRequired = false;
-            return true;
-        }
-        return false;
-    }
-
-    private synchronized boolean isEndRequired() {
-        if (endRequired) {
-            endRequired = false;
-            return true;
-        }
-        return false;
+    @Override
+    public synchronized void println(String line) throws IOException {
+        target.write(line);
+        target.write('\n');
+        target.flush();
     }
 }

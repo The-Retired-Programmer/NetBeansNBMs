@@ -16,43 +16,43 @@
 package uk.theretiredprogrammer.actionssupportimplementation;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.InputStream;
+import java.io.OutputStream;
 import uk.theretiredprogrammer.actionssupport.CLIExec2;
 
-public class FromProcessThread extends CopyThread {
+public class CopyStreamThread extends CopyThread {
 
-    private final Reader source;
-    private final Writer target;
+    private final InputStream source;
+    private final OutputStream target;
 
-    public FromProcessThread(String name, Reader source, Writer target, CLIExec2 parent) {
-        super(name, parent);
+    public CopyStreamThread(String name, InputStream source, OutputStream target, CLIExec2 parent, int millisecs2flush) {
+        super(name, parent, millisecs2flush);
         this.target = target;
         this.source = source;
     }
 
     @Override
     synchronized boolean copyAvailableItems() throws IOException {
-        boolean hascopied = false;
-        while (source.ready()) {
+        try {
             int c = source.read();
             if (c == -1) {
-                target.flush();
-                return hascopied;
+                target.close();
+                transferdone = true;
+                return true;
             }
-            target.write(Character.toChars(c));
-            hascopied = true;
+            target.write(c);
+        } catch (IOException ex) {
+            parent.printerror(getName() + " copying", ex.getLocalizedMessage());
         }
-        return hascopied;
+        return true;
     }
 
     @Override
     public synchronized void close_target() throws IOException {
-        // not required
     }
 
     @Override
-    public synchronized void flush_target() throws IOException {
+    public synchronized void flush_target() {
         if (!transferdone) {
             try {
                 target.flush();
@@ -65,7 +65,7 @@ public class FromProcessThread extends CopyThread {
 
     @Override
     public synchronized void println(String line) throws IOException {
-        target.write(line);
+        target.write(line.getBytes("UTF-8"));
         target.write('\n');
         target.flush();
     }
