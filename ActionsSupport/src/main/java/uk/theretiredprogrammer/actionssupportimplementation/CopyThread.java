@@ -16,7 +16,7 @@
 package uk.theretiredprogrammer.actionssupportimplementation;
 
 import java.io.IOException;
-import uk.theretiredprogrammer.actionssupport.CLIExec2;
+import uk.theretiredprogrammer.actionssupport.CLIExec;
 
 public abstract class CopyThread extends Thread {
     
@@ -26,14 +26,14 @@ public abstract class CopyThread extends Thread {
     public static final int NO_MILLISECS2FLUSH = 0;
     int millisecs2flush = NO_MILLISECS2FLUSH;
     boolean transferdone;
-    CLIExec2 parent;
+    CLIExec parent;
     
-    public CopyThread(String name, CLIExec2 parent) {
+    public CopyThread(String name, CLIExec parent) {
         this(name, parent, NO_MILLISECS2FLUSH);
         this.parent = parent;
     }
     
-    public CopyThread(String name, CLIExec2 parent, int millisecs2flush) {
+    public CopyThread(String name, CLIExec parent, int millisecs2flush) {
         super(name);
         this.parent = parent;
         this.millisecs2flush = millisecs2flush;

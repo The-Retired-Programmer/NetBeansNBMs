@@ -37,16 +37,16 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import uk.theretiredprogrammer.actionssupport.CLIExecUsingOutput;
 import uk.theretiredprogrammer.actionssupport.DynamicCLIAction;
-import uk.theretiredprogrammer.actionssupport.NodeDynamicActions;
-import uk.theretiredprogrammer.actionssupport.CLICommand;
+import uk.theretiredprogrammer.actionssupport.NodeDynamicActionsManager;
 
 public class JBakeProject implements Project {
 
     private final FileObject projectDir;
     //private final ProjectState state;
     private Lookup lkp;
-    private final NodeDynamicActions dynamicactions;
+    private final NodeDynamicActionsManager nodedynamicactionsmanager;
 
     /**
      * Constructor
@@ -57,7 +57,7 @@ public class JBakeProject implements Project {
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
-        dynamicactions = new NodeDynamicActions(dir, "projectactions");
+        nodedynamicactionsmanager = new NodeDynamicActionsManager(dir, "projectactions");
     }
 
     @Override
@@ -156,22 +156,20 @@ public class JBakeProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                dynamicactions.setNodeBasicActions(
+                nodedynamicactionsmanager.setNodeBasicActions(
                         CommonProjectActions.renameProjectAction(),
                         CommonProjectActions.copyProjectAction(),
                         CommonProjectActions.closeProjectAction()
                 );
-                dynamicactions.setNodeActions(
-                        new DynamicCLIAction(
-                                new CLICommand(projectDir, "Bake")
-                                        .cliCommandLine("jbake -b")
-                        )
+                nodedynamicactionsmanager.setNodeActions(
+                        new DynamicCLIAction("Bake",
+                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Bake", "jbake -b"))
                 );
             }
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return dynamicactions.getAllNodeActions();
+                return nodedynamicactionsmanager.getAllNodeActions();
             }
 
             @Override

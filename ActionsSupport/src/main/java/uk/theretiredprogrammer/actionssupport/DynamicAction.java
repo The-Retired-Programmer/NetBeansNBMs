@@ -17,36 +17,21 @@ package uk.theretiredprogrammer.actionssupport;
 
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
-import javax.swing.ImageIcon;
 import org.openide.awt.DynamicMenuContent;
 
 public class DynamicAction extends AbstractAction {
 
     private Runnable action;
-    private String label;
 
-    public DynamicAction() {
+    public DynamicAction(String label) {
         putValue(DynamicMenuContent.HIDE_WHEN_DISABLED, true);
-    }
-
-    public DynamicAction label(String label) {
-        this.label = label;
+        setEnabled(true);
         putValue("popupText", label);
-        return this;
     }
-
+    
     public DynamicAction onAction(Runnable action) {
         this.action = action;
         return this;
-    }
-
-    public DynamicAction icon(ImageIcon icon) {
-        putValue(SMALL_ICON, icon);
-        return this;
-    }
-
-    public String getLabel() {
-        return label;
     }
 
     @Override

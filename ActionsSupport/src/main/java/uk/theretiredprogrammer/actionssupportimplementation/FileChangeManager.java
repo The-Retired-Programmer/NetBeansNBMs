@@ -23,7 +23,7 @@ import org.openide.filesystems.FileChangeListener;
 import org.openide.filesystems.FileEvent;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
-import uk.theretiredprogrammer.actionssupport.NodeDynamicActions.FileChangeType;
+import uk.theretiredprogrammer.actionssupport.NodeDynamicActionsManager.FileChangeType;
 
 public class FileChangeManager {
 

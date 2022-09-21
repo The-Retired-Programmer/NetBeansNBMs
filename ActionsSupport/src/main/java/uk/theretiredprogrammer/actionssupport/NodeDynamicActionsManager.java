@@ -15,68 +15,35 @@
  */
 package uk.theretiredprogrammer.actionssupport;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.swing.Action;
 import org.openide.filesystems.FileObject;
+import uk.theretiredprogrammer.actionssupportimplementation.ActionsPropertyFile;
 import uk.theretiredprogrammer.actionssupportimplementation.FileChangeManager;
 
-public class NodeDynamicActions {
+public class NodeDynamicActionsManager {
 
     public static enum FileChangeType {
         CREATED, CHANGED, RENAMEDTO, RENAMEDFROM, DELETED
     }
 
-    private final FileObject filefolder;
-    private final String actionpropertiesfilename;
     private final FileChangeManager filechangemanager;
+    private final ActionsPropertyFile actionspropertyfile;
+    private List<Action> basicactions;
+    private List<DynamicCLIAction> nodeactions;
 
-    public NodeDynamicActions(FileObject filefolder, String actionpropertiesfilename) {
-        this.filefolder = filefolder;
-        this.actionpropertiesfilename = actionpropertiesfilename;
+    public NodeDynamicActionsManager(FileObject filefolder, String actionpropertiesfilename) {
         this.filechangemanager = new FileChangeManager(filefolder);
-        processPropertiesFile();
-        registerFile(actionpropertiesfilename, "properties", fct -> processPropertiesFile());
+        this.actionspropertyfile = new ActionsPropertyFile(filefolder, actionpropertiesfilename, filechangemanager);
     }
 
     public final void registerFile(String filename, String fileext, Consumer<FileChangeType> callback) {
         filechangemanager.register(filename, fileext, callback);
     }
-
-    private void processPropertiesFile() {
-        dynamicactions = new ArrayList<>();
-        FileObject propertiesFO = filefolder.getFileObject(actionpropertiesfilename, "properties");
-        if (propertiesFO == null) {
-            return;
-        }
-        Properties properties = new Properties();
-        try {
-            try ( InputStream propsin = propertiesFO.getInputStream()) {
-                properties.load(propsin);
-            }
-        } catch (IOException ex) {
-            return;
-        }
-        String pcount = properties.getProperty("COMMANDCOUNT");
-        if (pcount == null) {
-            return;
-        }
-        int propertycount = Integer.parseInt(pcount);
-        // set up the commands
-        for (int j = 1; j <= propertycount; j++) {
-            dynamicactions.add(new DynamicCLIAction(new CLICommand(filefolder, properties, j)));
-        }
-    }
-
-    private List<Action> basicactions;
-    private List<DynamicCLIAction> nodeactions;
-    private List<DynamicCLIAction> dynamicactions;
 
     public void setNodeBasicActions(Action... actions) {
         basicactions = Arrays.asList(actions);
@@ -87,11 +54,12 @@ public class NodeDynamicActions {
     }
 
     public Action[] getAllNodeActions() {
-        return combine(basicactions, combine(selectOnlyEnabled(nodeactions), selectOnlyEnabled(dynamicactions))).toArray(Action[]::new);
+        return combine(basicactions, combine(selectOnlyEnabled(nodeactions),
+                selectOnlyEnabled(actionspropertyfile.getPropertyActions()))).toArray(Action[]::new);
     }
-    
+
     private List<Action> selectOnlyEnabled(List<DynamicCLIAction> actions) {
-        return actions.stream().filter((a)-> a.enableIf().isEnabled()).collect(Collectors.toList());
+        return actions.stream().filter((a) -> a.isEnabled()).collect(Collectors.toList());
     }
 
     private List<Action> combine(List<Action> first, List<Action> second) {

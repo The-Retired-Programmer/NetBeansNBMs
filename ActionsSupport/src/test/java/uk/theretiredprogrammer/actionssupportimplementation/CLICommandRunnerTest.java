@@ -52,7 +52,7 @@ public class CLICommandRunnerTest {
         System.out.println("parse2words - help");
         String command = "help";
         String[] expResult = new String[] {"help"};
-        String[] result = CommandHandler.toPhrases(command);
+        String[] result = CLICommandParser.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -61,7 +61,7 @@ public class CLICommandRunnerTest {
         System.out.println("parse2words - muliple words");
         String command = "help help2 help3";
         String[] expResult = new String[] {"help", "help2", "help3"};
-        String[] result = CommandHandler.toPhrases(command);
+        String[] result = CLICommandParser.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -70,7 +70,7 @@ public class CLICommandRunnerTest {
         System.out.println("parse2words - multiple words with leading spaces and multiple spaces as separators");
         String command = "    help   help2                    help3 Help4";
         String[] expResult = new String[] {"help", "help2", "help3", "Help4"};
-        String[] result = CommandHandler.toPhrases(command);
+        String[] result = CLICommandParser.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -79,7 +79,7 @@ public class CLICommandRunnerTest {
         System.out.println("parse2words - quoted help");
         String command = "\"help\"";
         String[] expResult = new String[] {"help"};
-        String[] result = CommandHandler.toPhrases(command);
+        String[] result = CLICommandParser.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -88,7 +88,7 @@ public class CLICommandRunnerTest {
         System.out.println("parse2words - quoted and unquoted");
         String command = "  \"help\" -b filename -c \"file name\"     ";
         String[] expResult = new String[] {"help", "-b", "filename", "-c", "file name"};
-        String[] result = CommandHandler.toPhrases(command);
+        String[] result = CLICommandParser.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
     
@@ -97,7 +97,7 @@ public class CLICommandRunnerTest {
         System.out.println("parse2words - quoted unterminated");
         String command = "  \"help  ";
         String[] expResult = new String[] {"help"};
-        String[] result = CommandHandler.toPhrases(command);
+        String[] result = CLICommandParser.toPhrases(command);
         assertArrayEquals(expResult, result);
     }
 }

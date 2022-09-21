@@ -37,16 +37,18 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.CLICommand;
+import uk.theretiredprogrammer.actionssupport.CLIExecUsingOutput;
 import uk.theretiredprogrammer.actionssupport.DynamicCLIAction;
-import uk.theretiredprogrammer.actionssupport.NodeDynamicActions;
+import uk.theretiredprogrammer.actionssupport.NodeDynamicActionsManager;
 
 public class AsciiDocProject implements Project {
 
     private final FileObject projectDir;
     //private final ProjectState state;
     private Lookup lkp;
-    private final NodeDynamicActions dynamicactions;
+    private final NodeDynamicActionsManager nodedynamicactionsmanager;
+    private DynamicCLIAction buildbookaction;
+    private DynamicCLIAction buildwebpageaction;
 
     /**
      * Constructor
@@ -57,7 +59,18 @@ public class AsciiDocProject implements Project {
     AsciiDocProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
-        dynamicactions = new NodeDynamicActions(dir, "projectactions");
+        nodedynamicactionsmanager = new NodeDynamicActionsManager(dir, "projectactions");
+        nodedynamicactionsmanager.registerFile("assemblebook", "adoc", fct -> updateBuildbookEnabled());
+        nodedynamicactionsmanager.registerFile("assemblewebpage", "adoc", fct -> updateBuildwebpageEnabled());
+        nodedynamicactionsmanager.registerFile("assemble", "webresources", fct -> updateBuildwebpageEnabled());
+    }
+    
+    private void updateBuildbookEnabled() {
+        buildbookaction.enable(projectDir.getFileObject("assemblebook", "adoc") != null);
+    }
+    
+    private void updateBuildwebpageEnabled() {
+        buildwebpageaction.enable(projectDir.getFileObject("assemblewebpage", "adoc") != null && projectDir.getFileObject("assemble", "webresources") != null);
     }
 
     @Override
@@ -156,28 +169,26 @@ public class AsciiDocProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                dynamicactions.setNodeBasicActions(
+                nodedynamicactionsmanager.setNodeBasicActions(
                         CommonProjectActions.renameProjectAction(),
                         CommonProjectActions.copyProjectAction(),
                         CommonProjectActions.closeProjectAction()
                 );
-                dynamicactions.setNodeActions(
-                        new DynamicCLIAction(
-                                new CLICommand(projectDir, "Build book")
-                                        .cliCommandLine("bash -c \"asciidoctor-pdf -d book -a toc -o target/book.pdf assemblebook.adoc\"")
-                                        .enableIf(() -> projectDir.getFileObject("assemblebook", "adoc") != null)
-                        ),
-                        new DynamicCLIAction(
-                                new CLICommand(projectDir, "Build webpage")
-                                        .cliCommandLine("bash -c \"asciidoctor -d article -a toc2 -o target/webpage.html assemblewebpage.adoc && ./assemble.webresources\"")
-                                        .enableIf(() -> projectDir.getFileObject("assemblewebpage", "adoc") != null && projectDir.getFileObject("assemble", "webresources") != null)
-                        )
+                nodedynamicactionsmanager.setNodeActions(
+                        buildbookaction = new DynamicCLIAction("Build book",
+                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Build book",
+                                        "bash -c \"asciidoctor-pdf -d book -a toc -o target/book.pdf assemblebook.adoc\"")),
+                        buildwebpageaction = new DynamicCLIAction("Build webpage",
+                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Build webpage",
+                                        "bash -c \"asciidoctor -d article -a toc2 -o target/webpage.html assemblewebpage.adoc && ./assemble.webresources\""))
                 );
+                updateBuildbookEnabled();
+                updateBuildwebpageEnabled();
             }
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return dynamicactions.getAllNodeActions();
+                return nodedynamicactionsmanager.getAllNodeActions();
             }
 
             @Override

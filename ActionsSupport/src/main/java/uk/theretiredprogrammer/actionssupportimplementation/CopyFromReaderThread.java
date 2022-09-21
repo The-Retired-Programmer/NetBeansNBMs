@@ -18,14 +18,14 @@ package uk.theretiredprogrammer.actionssupportimplementation;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import uk.theretiredprogrammer.actionssupport.CLIExec2;
+import uk.theretiredprogrammer.actionssupport.CLIExec;
 
-public class ToProcessThread extends CopyThread {
+public class CopyFromReaderThread extends CopyThread {
 
     private final Reader source;
     private final Writer target;
 
-    public ToProcessThread(String name, Reader source, Writer target, CLIExec2 parent, int millisecs2flush) {
+    public CopyFromReaderThread(String name, Reader source, Writer target, CLIExec parent, int millisecs2flush) {
         super(name, parent);
         this.source = source;
         this.target = target;

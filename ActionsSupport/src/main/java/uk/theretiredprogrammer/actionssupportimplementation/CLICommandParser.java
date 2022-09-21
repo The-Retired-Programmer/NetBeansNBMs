@@ -18,7 +18,7 @@ package uk.theretiredprogrammer.actionssupportimplementation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandHandler {
+public class CLICommandParser {
 
     private enum State {
         WHITESPACE, INQUOTED, BASIC, DONE

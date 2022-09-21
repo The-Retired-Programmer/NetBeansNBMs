@@ -18,14 +18,14 @@ package uk.theretiredprogrammer.actionssupportimplementation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import uk.theretiredprogrammer.actionssupport.CLIExec2;
+import uk.theretiredprogrammer.actionssupport.CLIExec;
 
 public class CopyStreamThread extends CopyThread {
 
     private final InputStream source;
     private final OutputStream target;
 
-    public CopyStreamThread(String name, InputStream source, OutputStream target, CLIExec2 parent, int millisecs2flush) {
+    public CopyStreamThread(String name, InputStream source, OutputStream target, CLIExec parent, int millisecs2flush) {
         super(name, parent, millisecs2flush);
         this.target = target;
         this.source = source;

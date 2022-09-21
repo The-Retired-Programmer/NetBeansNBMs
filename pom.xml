@@ -81,7 +81,7 @@
                     <configuration>
                         <cluster>TRP-Tools</cluster>
                         <homePageUrl>${project.url}</homePageUrl>
-                        <licenseFile>LICENSE</licenseFile>
+                        <licenseFile>../LICENSE</licenseFile>
                         <licenseName>The Apache License, Version 2.0</licenseName>
                     </configuration>
                 </plugin>
@@ -108,4 +108,7 @@
             </plugins>
         </pluginManagement>
     </build>
+    <modules>
+        <module>AsciiDocFiles</module>
+    </modules>
 </project>

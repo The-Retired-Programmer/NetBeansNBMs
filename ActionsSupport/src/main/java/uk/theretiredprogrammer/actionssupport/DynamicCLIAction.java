@@ -15,41 +15,26 @@
  */
 package uk.theretiredprogrammer.actionssupport;
 
-import uk.theretiredprogrammer.actionssupportimplementation.CLIActionThread;
+import uk.theretiredprogrammer.actionssupportimplementation.CLIAsync;
 
 public class DynamicCLIAction extends DynamicAction {
 
-    private final CLICommand cliCommand;
-    private CLIActionThread cliactionthread = null;
+    private final CLIExecUsingOutput cliexec;
 
     @SuppressWarnings("LeakingThisInConstructor")
-    public DynamicCLIAction(CLICommand cliCommand) {
-        cliCommand.setParent(this);
-        this.cliCommand = cliCommand;
-        label(cliCommand.getLabel());
+    public DynamicCLIAction(String label, CLIExecUsingOutput cliexec) {
+        super(label);
+        this.cliexec = cliexec;
         onAction(() -> onCLIAction());
-        setEnabled(cliCommand.getEnableIf().get());
     }
     
-    public DynamicCLIAction enableIf() {
-        setEnabled(cliCommand.getEnableIf().get());
+    public DynamicCLIAction enable(boolean enable) {
+        setEnabled(enable);
         return this;
     }
 
-    void issueClose() {
-        if (cliactionthread != null) {
-            cliactionthread.inputClose();
-        }
-    }
-
-    void issueCancel() {
-        if (cliactionthread != null) {
-            cliactionthread.cancel();
-        }
-    }
-
     private void onCLIAction() {
-        cliactionthread = new CLIActionThread(cliCommand);
-        cliactionthread.start();
+        Thread thd = new CLIAsync(cliexec);
+        thd.start();
     }
 }
