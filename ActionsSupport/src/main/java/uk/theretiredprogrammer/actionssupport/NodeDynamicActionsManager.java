@@ -33,8 +33,8 @@ public class NodeDynamicActionsManager {
 
     private final FileChangeManager filechangemanager;
     private final ActionsPropertyFile actionspropertyfile;
-    private List<Action> basicactions;
-    private List<DynamicCLIAction> nodeactions;
+    private List<Action> basicactions = new ArrayList<>();
+    private List<DynamicCLIAction> nodeactions = new ArrayList<>();
 
     public NodeDynamicActionsManager(FileObject filefolder, String actionpropertiesfilename) {
         this.filechangemanager = new FileChangeManager(filefolder);
