@@ -47,8 +47,10 @@ public class AsciiDocProject implements Project {
     //private final ProjectState state;
     private Lookup lkp;
     private final NodeDynamicActionsManager nodedynamicactionsmanager;
-    private DynamicCLIAction buildbookaction;
-    private DynamicCLIAction buildwebpageaction;
+    private DynamicCLIAction assemblebookaction;
+    private DynamicCLIAction assemblearticleaction;
+    private DynamicCLIAction assemblewebpageaction;
+    private final AsciiDocPropertyFile asciidocproperties;
 
     /**
      * Constructor
@@ -60,17 +62,7 @@ public class AsciiDocProject implements Project {
         this.projectDir = dir;
         //this.state = state;
         nodedynamicactionsmanager = new NodeDynamicActionsManager(dir, "projectactions");
-        nodedynamicactionsmanager.registerFile("assemblebook", "adoc", fct -> updateBuildbookEnabled());
-        nodedynamicactionsmanager.registerFile("assemblewebpage", "adoc", fct -> updateBuildwebpageEnabled());
-        nodedynamicactionsmanager.registerFile("assemble", "webresources", fct -> updateBuildwebpageEnabled());
-    }
-    
-    private void updateBuildbookEnabled() {
-        buildbookaction.enable(projectDir.getFileObject("assemblebook", "adoc") != null);
-    }
-    
-    private void updateBuildwebpageEnabled() {
-        buildwebpageaction.enable(projectDir.getFileObject("assemblewebpage", "adoc") != null && projectDir.getFileObject("assemble", "webresources") != null);
+        asciidocproperties = new AsciiDocPropertyFile(dir, nodedynamicactionsmanager);
     }
 
     @Override
@@ -161,7 +153,7 @@ public class AsciiDocProject implements Project {
                 super(node,
                         //NodeFactorySupport.createCompositeChildren(
                         //        project,
-                        //        "Projects/uk-theretiredprogrammer-jbake/Nodes"),
+                        //        "Projects/uk-theretiredprogrammer-asciidoc/Nodes"),
                         new FilterNode.Children(node),
                         new ProxyLookup(
                                 new Lookup[]{
@@ -175,15 +167,19 @@ public class AsciiDocProject implements Project {
                         CommonProjectActions.closeProjectAction()
                 );
                 nodedynamicactionsmanager.setNodeActions(
-                        buildbookaction = new DynamicCLIAction("Build book",
-                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Build book",
-                                        "bash -c \"asciidoctor-pdf -d book -a toc -o target/book.pdf assemblebook.adoc\"")),
-                        buildwebpageaction = new DynamicCLIAction("Build webpage",
-                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Build webpage",
-                                        "bash -c \"asciidoctor -d article -a toc2 -o target/webpage.html assemblewebpage.adoc && ./assemble.webresources\""))
+                        assemblebookaction = new DynamicCLIAction("Assemble book",
+                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Assemble book",
+                                        "bash -c \"asciidoctor-pdf -d book -a toc -o target/" + asciidocproperties.bookto() + ".pdf src/" + asciidocproperties.bookfrom() + ".adoc\"")),
+                        assemblearticleaction = new DynamicCLIAction("Assemble article",
+                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Assemble article",
+                                        "bash -c \"asciidoctor-pdf -d article -o target/" + asciidocproperties.articleto() + ".pdf src/" + asciidocproperties.articlefrom() + ".adoc\"")),
+                        assemblewebpageaction = new DynamicCLIAction("Assemble webpage",
+                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Assemble webpage",
+                                        "bash -c \"asciidoctor -d article -a toc2 -o target/" + asciidocproperties.webpageto() + ".html src/" + asciidocproperties.webpagefrom() + ".adoc && ./assemble.webresources\""))
                 );
-                updateBuildbookEnabled();
-                updateBuildwebpageEnabled();
+                assemblebookaction.enable(asciidocproperties.isBookAssembly());
+                assemblearticleaction.enable(asciidocproperties.isArticleAssembly());
+                assemblewebpageaction.enable(asciidocproperties.isWebpageAssembly());
             }
 
             @Override

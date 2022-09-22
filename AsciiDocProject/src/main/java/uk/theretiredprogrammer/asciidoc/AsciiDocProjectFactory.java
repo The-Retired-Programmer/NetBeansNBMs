@@ -28,13 +28,8 @@ public class AsciiDocProjectFactory implements ProjectFactory {
 
     @Override
     public boolean isProject(FileObject projectDirectory) {
-        
-        FileObject asciidoctorassemblebook = projectDirectory.getFileObject("assemblebook.adoc");
-        if (asciidoctorassemblebook != null && asciidoctorassemblebook.isData()) {
-            return true;
-        }
-        FileObject asciidoctorassemblewebpage= projectDirectory.getFileObject("assemblewebpage.adoc");
-        return asciidoctorassemblewebpage != null && asciidoctorassemblewebpage.isData();
+        FileObject asciidocpropertiesfile = projectDirectory.getFileObject("asciidoc.properties");
+        return asciidocpropertiesfile != null && asciidocpropertiesfile.isData();
     }
 
     @Override
