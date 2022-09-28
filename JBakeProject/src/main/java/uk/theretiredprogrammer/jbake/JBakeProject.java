@@ -37,16 +37,16 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.CLIExecUsingOutput;
-import uk.theretiredprogrammer.actionssupport.DynamicCLIAction;
-import uk.theretiredprogrammer.actionssupport.NodeDynamicActionsManager;
+import uk.theretiredprogrammer.actionssupport.CLIExec;
+import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
+import uk.theretiredprogrammer.actionssupport.NodeActions;
 
 public class JBakeProject implements Project {
 
     private final FileObject projectDir;
     //private final ProjectState state;
     private Lookup lkp;
-    private final NodeDynamicActionsManager nodedynamicactionsmanager;
+    private final NodeActions nodedynamicactionsmanager;
 
     /**
      * Constructor
@@ -57,7 +57,7 @@ public class JBakeProject implements Project {
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
-        nodedynamicactionsmanager = new NodeDynamicActionsManager(dir, "projectactions");
+        nodedynamicactionsmanager = new NodeActions(dir, "projectactions", "Bake");
     }
 
     @Override
@@ -162,8 +162,11 @@ public class JBakeProject implements Project {
                         CommonProjectActions.closeProjectAction()
                 );
                 nodedynamicactionsmanager.setNodeActions(
-                        new DynamicCLIAction("Bake",
-                                new CLIExecUsingOutput(projectDir, projectDir.getName() + " - Bake", "jbake -b"))
+                        new DynamicAsyncAction("Bake")
+                                .onAction(() -> new CLIExec(projectDir,"jbake -b")
+                                .stderrToOutputWindow()
+                                .stdoutToOutputWinow()
+                                .executeUsingOutput("Baking"))
                 );
             }
 
