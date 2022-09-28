@@ -15,16 +15,21 @@
  */
 package uk.theretiredprogrammer.actionssupport;
 
+import uk.theretiredprogrammer.actionssupportimplementation.ProjectOutputTabs;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.Exceptions;
+import org.openide.windows.InputOutput;
+import org.openide.windows.OutputWriter;
 import uk.theretiredprogrammer.actionssupportimplementation.CLICommandParser;
 import uk.theretiredprogrammer.actionssupportimplementation.CopyStreamThread;
 import uk.theretiredprogrammer.actionssupportimplementation.CopyThread;
@@ -46,16 +51,29 @@ public class CLIExec {
     private Writer stdoutWriter = null;
     private Writer stderrWriter = null;
     private Reader stdinReader = null;
-    private CopyThread stderr;
-    private CopyThread stdin;
+    private CopyThread stderrthread;
+    private CopyThread stdinthread;
     private int stdinFlushPeriod = 0;
+    private boolean stdinFromOutputWindow;
+    private boolean stderrToOutputWindow;
+    private boolean stdoutToOutputWindow;
+    private final String tabkey;
+    private Consumer<OutputWriter> postprocessing = null;
+    private Consumer<OutputWriter> preprocessing = null;
+    private boolean needscancel;
 
     public CLIExec(FileObject dir, String clicommand) {
+        tabkey = dir.getName();
         pb = new ProcessBuilder(CLICommandParser.toPhrases(clicommand.replace("${NODEPATH}", FileUtil.toFile(dir).getPath())));
         pb.directory(FileUtil.toFile(dir));
         pb.redirectError(ProcessBuilder.Redirect.DISCARD);
         pb.redirectInput(ProcessBuilder.Redirect.PIPE);
         pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+    }
+
+    public CLIExec needsCancel() {
+        this.needscancel = true;
+        return this;
     }
 
     public CLIExec stdout(FileObject fo) {
@@ -64,14 +82,14 @@ public class CLIExec {
 
     public CLIExec stdout(File file) {
         pb.redirectOutput(ProcessBuilder.Redirect.to(file));
-        stdoutthreadcreate = () -> null ;
+        stdoutthreadcreate = () -> null;
         return this;
     }
 
     public CLIExec stdout(OutputStream os) {
         this.stdoutStream = os;
         pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
-        stdoutthreadcreate = ()-> new CopyStreamThread("stdout", process.getInputStream(), stdoutStream, this, NO_MILLISECS2FLUSH);
+        stdoutthreadcreate = () -> new CopyStreamThread("stdout", process.getInputStream(), stdoutStream, this, NO_MILLISECS2FLUSH);
         return this;
     }
 
@@ -82,21 +100,33 @@ public class CLIExec {
         return this;
     }
 
+    public CLIExec stdoutToOutputWinow() {
+        this.stdoutToOutputWindow = true;
+        return this;
+    }
+
+    private CLIExec setIfStdoutToOutputWindow(Writer wtr) {
+        if (stdoutToOutputWindow) {
+            stdout(wtr);
+        }
+        return this;
+    }
+
     public CLIExec stderr(FileObject fo) {
         return stderr(FileUtil.toFile(fo));
     }
 
     public CLIExec stderr(File file) {
         pb.redirectError(ProcessBuilder.Redirect.to(file));
-        stderrthreadcreate = () -> null ;
+        stderrthreadcreate = () -> null;
         return this;
     }
 
     public CLIExec stderr(OutputStream os) {
         this.stderrStream = os;
         pb.redirectError(ProcessBuilder.Redirect.PIPE);
-        stderrthreadcreate = ()-> new CopyStreamThread("stderr", process.getErrorStream(), stderrStream, this, NO_MILLISECS2FLUSH);
-        
+        stderrthreadcreate = () -> new CopyStreamThread("stderr", process.getErrorStream(), stderrStream, this, NO_MILLISECS2FLUSH);
+
         return this;
     }
 
@@ -106,7 +136,20 @@ public class CLIExec {
         stderrthreadcreate = () -> new CopyToWriterThread("stderr", process.errorReader(), stderrWriter, this);
         return this;
     }
-    
+
+    public CLIExec stderrToOutputWindow() {
+        this.stderrToOutputWindow = true;
+        return this;
+    }
+    //
+
+    private CLIExec setIfStderrToOutputWindow(Writer wtr) {
+        if (stderrToOutputWindow) {
+            stderr(wtr);
+        }
+        return this;
+    }
+
     public CLIExec stderr2stdoutput() {
         pb.redirectErrorStream(true);
         return this;
@@ -118,7 +161,7 @@ public class CLIExec {
 
     public CLIExec stdin(File file) {
         pb.redirectInput(ProcessBuilder.Redirect.from(file));
-        stdinthreadcreate = () -> null ;
+        stdinthreadcreate = () -> null;
         return this;
     }
 
@@ -136,49 +179,123 @@ public class CLIExec {
         return this;
     }
 
+    public CLIExec stdinFromOutputWindow() {
+        this.stdinFromOutputWindow = true;
+        return this;
+    }
+
+    public boolean isStdinFromOutputWindow() {
+        return stdinFromOutputWindow;
+    }
+
+    private CLIExec setIfStdinFromOutputWindow(Reader rdr) {
+        if (stdinFromOutputWindow) {
+            stdin(rdr);
+        }
+        return this;
+    }
+
     public CLIExec stdinFlushPeriod(int millisecs) {
         this.stdinFlushPeriod = millisecs;
         return this;
     }
-    
+
     public CLIExec stdinFlushPeriod() {
         this.stdinFlushPeriod = DEFAULT_MILLISECS2FLUSH;
         return this;
     }
 
-    public void stdinClose() {
+    public CLIExec preprocessing(Consumer<OutputWriter> preprocessing) {
+        this.preprocessing = preprocessing;
+        return this;
+    }
+
+    public CLIExec postprocessing(Consumer<OutputWriter> postprocessing) {
+        this.postprocessing = postprocessing;
+        return this;
+    }
+
+    private void stdinClose() {
         try {
-            stdin.close_target();
+            stdinthread.close_target();
         } catch (IOException ex) {
-           printerror("closing stdin", ex.getLocalizedMessage());
+            printerror("closing stdin", ex.getLocalizedMessage());
         }
     }
-    
-    public void processCancel() {
+
+    private void processCancel() {
         process.destroy();
+    }
+
+    public void executeUsingOutput(String startmessage) {
+        InputOutput io = needscancel
+                ? ProjectOutputTabs.getDefault().getCancellable(startmessage, () -> processCancel())
+                : (isStdinFromOutputWindow()
+                        ? ProjectOutputTabs.getDefault().get(tabkey, () -> stdinClose())
+                        : ProjectOutputTabs.getDefault().get(tabkey));
+        OutputWriter outwtr = io.getOut();
+        OutputWriter errwtr = io.getErr();
+        outwtr.println(startmessage);
+        setIfStderrToOutputWindow(errwtr);
+        setIfStdoutToOutputWindow(outwtr);
+        setIfStdinFromOutputWindow(io.getIn());
+        io.setInputVisible(isStdinFromOutputWindow());
+        if (preprocessing != null) {
+            preprocessing.accept(errwtr);
+        }
+        execute();
+        if (postprocessing != null) {
+            postprocessing.accept(errwtr);
+        }
+        outwtr.println("... done");
+    }
+
+    public void executeUsingOutput() {
+        InputOutput io = isStdinFromOutputWindow()
+                ? ProjectOutputTabs.getDefault().get(tabkey, () -> stdinClose())
+                : ProjectOutputTabs.getDefault().get(tabkey);
+        OutputWriter outwtr = io.getOut();
+        OutputWriter errwtr = io.getErr();
+        setIfStderrToOutputWindow(errwtr);
+        setIfStdoutToOutputWindow(outwtr);
+        setIfStdinFromOutputWindow(io.getIn());
+        io.setInputVisible(isStdinFromOutputWindow());
+        if (preprocessing != null) {
+            preprocessing.accept(errwtr);
+        }
+        execute();
+        if (postprocessing != null) {
+            postprocessing.accept(errwtr);
+        }
     }
 
     public void execute() {
         try {
             process = pb.start();
-            stderr = stderrthreadcreate.get();
-            if (stderr != null) stderr.start();
-            CopyThread stdout = stdoutthreadcreate.get();
-            if (stdout != null) stdout.start();
-            stdin = stdinthreadcreate.get();
-            if (stdin != null) stdin.start();
+            stderrthread = stderrthreadcreate.get();
+            if (stderrthread != null) {
+                stderrthread.start();
+            }
+            CopyThread stdoutthread = stdoutthreadcreate.get();
+            if (stdoutthread != null) {
+                stdoutthread.start();
+            }
+            stdinthread = stdinthreadcreate.get();
+            if (stdinthread != null) {
+                stdinthread.start();
+            }
             process.waitFor();
-            if (stdout != null && stdout.isAlive()) {
-                stdout.flush_target();
-                stdout.join();
+            if (stdoutthread != null && stdoutthread.isAlive()) {
+                stdoutthread.flush_target();
+                stdoutthread.join();
             }
-            if (stdin != null && stdin.isAlive()) {
-                stdin.flush_target();
-                stdin.join();
+            if (stdinthread != null && stdinthread.isAlive()) {
+                stdinthread.flush_target();
+                stdinthread.join();
             }
-            if (stderr != null && stderr.isAlive()) {
-                stderr.flush_target();
-                stderr.join();
+            if (stderrthread != null && stderrthread.isAlive()) {
+                stderrthread.flush_target();
+                stderrthread.join();
             }
         } catch (InterruptedException ex) {
             printerror("CLIExec interrupted", ex.getLocalizedMessage());
@@ -186,10 +303,14 @@ public class CLIExec {
             printerror("CLIExec IO error", ex.getLocalizedMessage());
         }
     }
-     
+
     public void printerror(String phase, String exmsg) {
         try {
-            stderr.println(phase + "; " + exmsg);
+            if (stderrthread != null) {
+                stderrthread.println(phase + "; " + exmsg);
+            } else {
+                StatusDisplayer.getDefault().setStatusText(phase + "; " + exmsg);
+            }
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }

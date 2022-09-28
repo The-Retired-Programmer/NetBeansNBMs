@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.actionssupport;
 
+import uk.theretiredprogrammer.actionssupportimplementation.ProjectOutputTabs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.openide.filesystems.FileObject;
 import uk.theretiredprogrammer.actionssupportimplementation.ActionsPropertyFile;
 import uk.theretiredprogrammer.actionssupportimplementation.FileChangeManager;
 
-public class NodeDynamicActionsManager {
+public class NodeActions {
 
     public static enum FileChangeType {
         CREATED, CHANGED, RENAMEDTO, RENAMEDFROM, DELETED
@@ -34,11 +35,12 @@ public class NodeDynamicActionsManager {
     private final FileChangeManager filechangemanager;
     private final ActionsPropertyFile actionspropertyfile;
     private List<Action> basicactions = new ArrayList<>();
-    private List<DynamicCLIAction> nodeactions = new ArrayList<>();
+    private final List<DynamicAsyncAction> nodeactions = new ArrayList<>();
 
-    public NodeDynamicActionsManager(FileObject filefolder, String actionpropertiesfilename) {
+    public NodeActions(FileObject filefolder, String actionpropertiesfilename, String tabprefix) {
         this.filechangemanager = new FileChangeManager(filefolder);
         this.actionspropertyfile = new ActionsPropertyFile(filefolder, actionpropertiesfilename, filechangemanager);
+        ProjectOutputTabs.getDefault().create(filefolder.getName(), tabprefix+" "+filefolder.getName());
     }
 
     public final void registerFile(String filename, String fileext, Consumer<FileChangeType> callback) {
@@ -49,16 +51,21 @@ public class NodeDynamicActionsManager {
         basicactions = Arrays.asList(actions);
     }
 
-    public void setNodeActions(DynamicCLIAction... actions) {
-        nodeactions = Arrays.asList(actions);
+    public void setNodeActions(DynamicAsyncAction... actions) {
+        nodeactions.clear();
+        for (DynamicAsyncAction action : actions) {
+            if (action != null) {
+                nodeactions.add(action);
+            }
+        }
     }
 
     public Action[] getAllNodeActions() {
         return combine(basicactions, combine(selectOnlyEnabled(nodeactions),
-                selectOnlyEnabled(actionspropertyfile.getPropertyActions()))).toArray(Action[]::new);
+                selectOnlyEnabled(actionspropertyfile.getActions()))).toArray(Action[]::new);
     }
 
-    private List<Action> selectOnlyEnabled(List<DynamicCLIAction> actions) {
+    private List<Action> selectOnlyEnabled(List<DynamicAsyncAction> actions) {
         return actions.stream().filter((a) -> a.isEnabled()).collect(Collectors.toList());
     }
 

@@ -15,19 +15,17 @@
  */
 package uk.theretiredprogrammer.actionssupportimplementation;
 
-import uk.theretiredprogrammer.actionssupport.CLIExecUsingOutput;
+public class Async extends Thread {
 
-public class CLIAsync extends Thread {
+    private final Runnable worker;
 
-    private final CLIExecUsingOutput cliExec;
-
-    public CLIAsync(CLIExecUsingOutput cliExec) {
-        super("CLIAsync");
-        this.cliExec = cliExec;
+    public Async(Runnable worker) {
+        super("Async");
+        this.worker = worker;
     }
 
     @Override
     public void run() {
-        cliExec.execute();
+        worker.run();
     }
 }

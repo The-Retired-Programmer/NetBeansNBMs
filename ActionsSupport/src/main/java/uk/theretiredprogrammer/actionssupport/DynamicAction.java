@@ -28,9 +28,14 @@ public class DynamicAction extends AbstractAction {
         setEnabled(true);
         putValue("popupText", label);
     }
-    
+
     public DynamicAction onAction(Runnable action) {
         this.action = action;
+        return this;
+    }
+
+    public DynamicAction enable(boolean enable) {
+        setEnabled(enable);
         return this;
     }
 

@@ -15,26 +15,31 @@
  */
 package uk.theretiredprogrammer.actionssupport;
 
-import uk.theretiredprogrammer.actionssupportimplementation.CLIAsync;
+import uk.theretiredprogrammer.actionssupportimplementation.Async;
 
-public class DynamicCLIAction extends DynamicAction {
+public class DynamicAsyncAction extends DynamicAction {
 
-    private final CLIExecUsingOutput cliexec;
+    private Runnable asyncAction;
 
-    @SuppressWarnings("LeakingThisInConstructor")
-    public DynamicCLIAction(String label, CLIExecUsingOutput cliexec) {
+    public DynamicAsyncAction(String label) {
         super(label);
-        this.cliexec = cliexec;
-        onAction(() -> onCLIAction());
     }
     
-    public DynamicCLIAction enable(boolean enable) {
-        setEnabled(enable);
+    @Override
+    public DynamicAsyncAction onAction(Runnable action) {
+        this.asyncAction = action;
+        super.onAction(() -> onAsyncAction());
+        return this;
+    }
+    
+    @Override
+    public DynamicAsyncAction enable(boolean enable) {
+        super.enable(enable);
         return this;
     }
 
-    private void onCLIAction() {
-        Thread thd = new CLIAsync(cliexec);
+    private void onAsyncAction() {
+        Thread thd = new Async(asyncAction);
         thd.start();
     }
 }

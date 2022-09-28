@@ -15,24 +15,25 @@
  */
 package uk.theretiredprogrammer.actionssupportimplementation;
 
-import uk.theretiredprogrammer.actionssupport.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import org.openide.filesystems.FileObject;
+import uk.theretiredprogrammer.actionssupport.CLIExec;
+import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
 
 public class ActionsPropertyFile {
 
-    private final List<DynamicCLIAction> dynamicactions = new ArrayList<>();
+    private final List<DynamicAsyncAction> dynamicactions = new ArrayList<>();
 
     public ActionsPropertyFile(FileObject filefolder, String actionpropertiesfilename, FileChangeManager filechangemanager) {
         parsePropertiesFile(filefolder, actionpropertiesfilename);
         filechangemanager.register(actionpropertiesfilename, "properties", fct -> parsePropertiesFile(filefolder, actionpropertiesfilename));
     }
 
-    public List<DynamicCLIAction> getPropertyActions() {
+    public List<DynamicAsyncAction> getActions() {
         return dynamicactions;
     }
 
@@ -57,21 +58,26 @@ public class ActionsPropertyFile {
         int propertycount = Integer.parseInt(pcount);
         // set up the commands
         for (int j = 1; j <= propertycount; j++) {
-            DynamicCLIAction action = actionFromProperties(filefolder, properties, j);
-            if (action != null) {
-                dynamicactions.add(action);
+            CLIExec cliexec = cliExecFromProperties(filefolder, properties, j);
+            if (cliexec != null) {
+                String label = properties.getProperty(Integer.toString(j) + ".label");
+                dynamicactions.add(
+                        new DynamicAsyncAction(label)
+                                .onAction(() -> cliexec.executeUsingOutput(label)));
             }
         }
     }
 
-    private DynamicCLIAction actionFromProperties(FileObject dir, Properties properties, int iPrefix) {
+    private CLIExec cliExecFromProperties(FileObject dir, Properties properties, int iPrefix) {
         String prefix = Integer.toString(iPrefix);
         String label = properties.getProperty(prefix + ".label");
         String cmdline = properties.getProperty(prefix + ".command");
         if (cmdline == null || label == null) {
             return null;
         }
-        CLIExecUsingOutput cliexec = new CLIExecUsingOutput(dir, dir.getName() + " - " + label, cmdline);
+        CLIExec cliexec = new CLIExec(dir, cmdline)
+                .stderrToOutputWindow()
+                .stdoutToOutputWinow();
         String inputfrom = properties.getProperty(prefix + ".inputfrom");
         if (inputfrom != null) {
             switch (inputfrom.toLowerCase()) {
@@ -82,14 +88,27 @@ public class ActionsPropertyFile {
                     }
                     break;
                 case "ui":
-                    cliexec.stdinFromUI();
+                    cliexec.stdinFromOutputWindow();
                     break;
             }
         }
-        String sbactions = properties.getProperty(prefix + ".sidebaractions");
-        if (sbactions != null) {
-            cliexec.sidebarActions(new SideBarActions().add(sbactions.split(","), cliexec).get());
+        String cancel = properties.getProperty(prefix + ".needscancel");
+        if (cancel != null && cancel.equals("yes")) {
+            cliexec.needsCancel();
         }
-        return new DynamicCLIAction(label, cliexec);
+            
+//        String sbactions = properties.getProperty(prefix + ".sidebaractions");
+//        if (sbactions != null) {
+//            for (String sbaction : sbactions.split(",")) {
+//                switch (sbaction.trim().toLowerCase()) {
+//                    case "close":
+//                        cliexec.enableSidebarCloseAction();
+//                        break;
+//                    case "cancel":
+//                        cliexec.enableSidebarCancelAction();
+//                }
+//            }
+//        }
+        return cliexec;
     }
 }
