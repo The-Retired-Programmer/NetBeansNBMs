@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.openide.filesystems.FileObject;
-import uk.theretiredprogrammer.actionssupport.NodeDynamicActionsManager;
+import uk.theretiredprogrammer.actionssupport.NodeActions;
 
 public class AsciiDocPropertyFile {
 
@@ -76,7 +76,7 @@ public class AsciiDocPropertyFile {
         return assemblydefined && webpagerules != null ? webpagerules.to : "UNKNOWN";
     }
 
-    public AsciiDocPropertyFile(FileObject projectdir, NodeDynamicActionsManager nodedynamicactionsmanager) {
+    public AsciiDocPropertyFile(FileObject projectdir, NodeActions nodedynamicactionsmanager) {
         updateProperties(projectdir);
         nodedynamicactionsmanager.registerFile("asciidoc", "properties", fct -> updateProperties(projectdir));
     }
@@ -93,7 +93,6 @@ public class AsciiDocPropertyFile {
                 properties.load(propsin);
             }
             parseAssemblyProperties(properties);
-            parseDocumentsProperties(properties);
         } catch (IOException ex) {
             assemblydefined = false;
         }
@@ -120,9 +119,5 @@ public class AsciiDocPropertyFile {
                     throw new IOException("Illegal assembly value");
             }
         }
-    }
-
-    private void parseDocumentsProperties(Properties properties) {
-        // null at present - no documents properties
     }
 }
