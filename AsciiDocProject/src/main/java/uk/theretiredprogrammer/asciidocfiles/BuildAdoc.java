@@ -35,7 +35,7 @@ import uk.theretiredprogrammer.actionssupport.CLIExec;
 @ActionRegistration(
         displayName = "#CTL_BuildAdoc"
 )
-@ActionReference(path = "Loaders/text/x-asciidoc/Actions", position = 0)
+@ActionReference(path = "Loaders/text/x-asciidoc/Actions", position = 150)
 @Messages("CTL_BuildAdoc=Build pdf")
 public final class BuildAdoc implements ActionListener {
 
