@@ -63,7 +63,7 @@ public class ActionsPropertyFile {
                 String label = properties.getProperty(Integer.toString(j) + ".label");
                 dynamicactions.add(
                         new DynamicAsyncAction(label)
-                                .onAction(() -> cliexec.executeUsingOutput(label)));
+                                .onAction(() -> cliexec.executeUsingOutputWindow(label)));
             }
         }
     }

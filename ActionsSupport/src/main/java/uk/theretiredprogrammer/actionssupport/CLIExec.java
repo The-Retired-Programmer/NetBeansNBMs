@@ -227,7 +227,7 @@ public class CLIExec {
         process.destroy();
     }
 
-    public void executeUsingOutput(String startmessage) {
+    public void executeUsingOutputWindow(String startmessage) {
         InputOutput io = needscancel
                 ? ProjectOutputTabs.getDefault().getCancellable(startmessage, () -> processCancel())
                 : (isStdinFromOutputWindow()
@@ -250,7 +250,7 @@ public class CLIExec {
         outwtr.println("... done");
     }
 
-    public void executeUsingOutput() {
+    public void executeUsingOutputWindow() {
         InputOutput io = isStdinFromOutputWindow()
                 ? ProjectOutputTabs.getDefault().get(tabkey, () -> stdinClose())
                 : ProjectOutputTabs.getDefault().get(tabkey);
