@@ -57,7 +57,7 @@ public class JBakeProject implements Project {
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
-        nodedynamicactionsmanager = new NodeActions(dir, "projectactions", "Bake");
+        nodedynamicactionsmanager = new NodeActions(dir, "projectactions", "Baking");
     }
 
     @Override
@@ -165,8 +165,8 @@ public class JBakeProject implements Project {
                         new DynamicAsyncAction("Bake")
                                 .onAction(() -> new CLIExec(projectDir,"jbake -b")
                                 .stderrToOutputWindow()
-                                .stdoutToOutputWinow()
-                                .executeUsingOutput("Baking"))
+                                .stdoutToOutputWindow()
+                                .executeUsingOutputWindow("Baking"))
                 );
             }
 
