@@ -100,7 +100,7 @@ public class CLIExec {
         return this;
     }
 
-    public CLIExec stdoutToOutputWinow() {
+    public CLIExec stdoutToOutputWindow() {
         this.stdoutToOutputWindow = true;
         return this;
     }

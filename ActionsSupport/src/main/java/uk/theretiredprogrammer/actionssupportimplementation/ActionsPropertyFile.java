@@ -77,7 +77,7 @@ public class ActionsPropertyFile {
         }
         CLIExec cliexec = new CLIExec(dir, cmdline)
                 .stderrToOutputWindow()
-                .stdoutToOutputWinow();
+                .stdoutToOutputWindow();
         String inputfrom = properties.getProperty(prefix + ".inputfrom");
         if (inputfrom != null) {
             switch (inputfrom.toLowerCase()) {
@@ -96,19 +96,6 @@ public class ActionsPropertyFile {
         if (cancel != null && cancel.equals("yes")) {
             cliexec.needsCancel();
         }
-            
-//        String sbactions = properties.getProperty(prefix + ".sidebaractions");
-//        if (sbactions != null) {
-//            for (String sbaction : sbactions.split(",")) {
-//                switch (sbaction.trim().toLowerCase()) {
-//                    case "close":
-//                        cliexec.enableSidebarCloseAction();
-//                        break;
-//                    case "cancel":
-//                        cliexec.enableSidebarCancelAction();
-//                }
-//            }
-//        }
         return cliexec;
     }
 }
