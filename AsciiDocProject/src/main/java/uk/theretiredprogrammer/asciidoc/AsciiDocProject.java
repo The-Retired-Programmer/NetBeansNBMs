@@ -182,10 +182,10 @@ public class AsciiDocProject implements Project {
 
             private void assemblebook() {
                 new CLIExec(projectDir,
-                        "bash -c \"asciidoctor-pdf -d book -a toc -o generated_assemblies/" + asciidocproperties.bookto()
-                        + ".pdf src/" + asciidocproperties.bookfrom() + ".adoc\"")
+                        "asciidoctor-pdf -d book -a toc -o generated_assemblies/" + asciidocproperties.bookto()
+                        + ".pdf src/" + asciidocproperties.bookfrom() + ".adoc")
                         .stderrToOutputWindow()
-                        .executeUsingOutput("Assembling book - " + asciidocproperties.bookto() + ".pdf");
+                        .executeUsingOutputWindow("Assembling book - " + asciidocproperties.bookto() + ".pdf");
             }
 
             private DynamicAsyncAction createArticleAction() {
@@ -196,10 +196,10 @@ public class AsciiDocProject implements Project {
 
             private void assemblearticle() {
                 new CLIExec(projectDir,
-                        "bash -c \"asciidoctor-pdf -d article -o generated_assemblies/" + asciidocproperties.articleto()
-                        + ".pdf src/" + asciidocproperties.articlefrom() + ".adoc\"")
+                        "asciidoctor-pdf -d article -o generated_assemblies/" + asciidocproperties.articleto()
+                        + ".pdf src/" + asciidocproperties.articlefrom() + ".adoc")
                         .stderrToOutputWindow()
-                        .executeUsingOutput("Assembling article - " + asciidocproperties.articleto() + ".pdf");
+                        .executeUsingOutputWindow("Assembling article - " + asciidocproperties.articleto() + ".pdf");
             }
 
             private DynamicAsyncAction createWebpageAction() {
@@ -210,11 +210,11 @@ public class AsciiDocProject implements Project {
 
             private void assemblewebpage() {
                 new CLIExec(projectDir,
-                        "bash -c \"asciidoctor -d article -a toc2 -o generated_assemblies/" + asciidocproperties.webpageto()
-                        + ".html src/" + asciidocproperties.webpagefrom() + ".adoc\"")
+                        "asciidoctor -d article -a toc2 -o generated_assemblies/" + asciidocproperties.webpageto()
+                        + ".html src/" + asciidocproperties.webpagefrom() + ".adoc")
                         .stderrToOutputWindow()
                         .postprocessing((errwtr) -> copyAssemblyResources(projectDir, errwtr))
-                        .executeUsingOutput("Assembling website - " + asciidocproperties.webpageto() + ".html");
+                        .executeUsingOutputWindow("Assembling webpage - " + asciidocproperties.webpageto() + ".html");
             }
 
             private void copyAssemblyResources(FileObject projectDir, OutputWriter errwtr) {

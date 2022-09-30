@@ -52,10 +52,10 @@ public final class BuildAdoc implements ActionListener {
                 FileObject input = dataObject.getPrimaryFile();
                 TargetLocation targetlocation = new TargetLocation(input);
                 new CLIExec(targetlocation.getProjectRoot(),
-                        "bash -c \"asciidoctor-pdf -d article -o " + targetlocation.get("pdf").getPath() + " "
-                        + input.getPath() + "\"")
+                        "asciidoctor-pdf -d article -o " + targetlocation.get("pdf").getPath() + " "
+                        + input.getPath())
                         .stderrToOutputWindow()
-                        .executeUsingOutput("Building " + input.getName() + ".pdf");
+                        .executeUsingOutputWindow("Building " + input.getName() + ".pdf");
             } catch (IOException ex) {
                 StatusDisplayer.getDefault().setStatusText(ex.getLocalizedMessage());
             }
