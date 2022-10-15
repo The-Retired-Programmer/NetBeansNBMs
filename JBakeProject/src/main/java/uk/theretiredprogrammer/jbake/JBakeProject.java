@@ -166,7 +166,7 @@ public class JBakeProject implements Project {
                                 .onAction(() -> new CLIExec(projectDir,"jbake -b")
                                 .stderrToOutputWindow()
                                 .stdoutToOutputWindow()
-                                .executeUsingOutputWindow("Baking"))
+                                .execute("Baking"))
                 );
             }
 
