@@ -23,17 +23,22 @@ import uk.theretiredprogrammer.actionssupport.NodeActions;
 
 public class AsciiDocPropertyFile {
 
-    
     private boolean assemblydefined;
     private AssemblyRules bookrules;
     private AssemblyRules webpagerules;
     private AssemblyRules articlerules;
+    private String asciidocparameters = "";
 
     private void clearPropertyValues() {
         assemblydefined = false;
         bookrules = null;
         webpagerules = null;
         articlerules = null;
+        asciidocparameters = "";
+    }
+
+    public String asciidocUserParameters() {
+        return asciidocparameters;
     }
 
     public boolean isAssembly() {
@@ -119,5 +124,28 @@ public class AsciiDocPropertyFile {
                     throw new IOException("Illegal assembly value");
             }
         }
+        StringBuilder sb = new StringBuilder();
+        for (String propertyname : properties.stringPropertyNames()) {
+            if (propertyname.startsWith("-")) {
+                int ubarpos = propertyname.indexOf('_');
+                if (ubarpos == -1) {
+                    sb.append(propertyname);
+                } else {
+                    sb.append(propertyname.substring(0, ubarpos));
+                    sb.append(" ");
+                    String pname = propertyname.substring(ubarpos + 1);
+                    if (pname != null && (!pname.isBlank())) {
+                        sb.append(propertyname.substring(ubarpos + 1));
+                        String propertyvalue = properties.getProperty(propertyname);
+                        if (propertyvalue != null && (!propertyvalue.isBlank())) {
+                            sb.append("=");
+                            sb.append(propertyvalue);
+                        }
+                    }
+                }
+                sb.append(" ");
+            }
+        }
+        asciidocparameters = sb.toString();
     }
 }

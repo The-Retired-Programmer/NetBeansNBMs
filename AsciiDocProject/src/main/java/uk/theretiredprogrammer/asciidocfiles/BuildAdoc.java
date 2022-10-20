@@ -17,16 +17,17 @@ package uk.theretiredprogrammer.asciidocfiles;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.List;
+import org.netbeans.api.project.FileOwnerQuery;
+import org.netbeans.api.project.Project;
 import org.openide.loaders.DataObject;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import uk.theretiredprogrammer.actionssupport.CLIExec;
+import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 
 @ActionID(
         category = "Build",
@@ -36,7 +37,7 @@ import uk.theretiredprogrammer.actionssupport.CLIExec;
         displayName = "#CTL_BuildAdoc"
 )
 @ActionReference(path = "Loaders/text/x-asciidoc/Actions", position = 150)
-@Messages("CTL_BuildAdoc=Build pdf")
+@Messages("CTL_BuildAdoc=Publish")
 public final class BuildAdoc implements ActionListener {
 
     private final List<DataObject> context;
@@ -48,16 +49,20 @@ public final class BuildAdoc implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         for (DataObject dataObject : context) {
-            try {
-                FileObject input = dataObject.getPrimaryFile();
-                TargetLocation targetlocation = new TargetLocation(input);
-                new CLIExec(targetlocation.getProjectRoot(),
-                        "asciidoctor-pdf -d article -o " + targetlocation.get("pdf").getPath() + " "
-                        + input.getPath())
+            FileObject input = dataObject.getPrimaryFile();
+            Project project = FileOwnerQuery.getOwner(input);
+            if (project != null && project instanceof AsciiDocProject) {
+                AsciiDocProject aproject = (AsciiDocProject) project;
+                new CLIExec(aproject.getProjectDirectory(),
+                        "asciidoctor -r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath())
                         .stderrToOutputWindow()
-                        .executeUsingOutputWindow("Building " + input.getName() + ".pdf");
-            } catch (IOException ex) {
-                StatusDisplayer.getDefault().setStatusText(ex.getLocalizedMessage());
+                        .ioTabName(aproject.getTabname())
+                        .execute("Publishing " + input.getNameExt());
+            } else {
+                new CLIExec(input.getParent(), "asciidoctor -r asciidoctor-pdf " + input.getPath())
+                    .stderrToOutputWindow()
+                    .ioTabName("Publish AsciiDocs")
+                    .execute("Publishing " + input.getNameExt());
             }
         }
     }

@@ -17,7 +17,6 @@ package uk.theretiredprogrammer.asciidoc;
 
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -28,7 +27,6 @@ import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
 import org.netbeans.spi.project.ui.support.CommonProjectActions;
 import org.openide.filesystems.FileObject;
-import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.nodes.AbstractNode;
@@ -39,11 +37,7 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import org.openide.windows.OutputWriter;
-import uk.theretiredprogrammer.actionssupport.CLIExec;
-import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
-import uk.theretiredprogrammer.asciidocfiles.TargetLocation;
 
 public class AsciiDocProject implements Project {
 
@@ -62,7 +56,7 @@ public class AsciiDocProject implements Project {
     AsciiDocProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
-        nodedynamicactionsmanager = new NodeActions(dir, "projectactions", "Build");
+        nodedynamicactionsmanager = new NodeActions(dir, "projectactions");
         asciidocproperties = new AsciiDocPropertyFile(dir, nodedynamicactionsmanager);
     }
 
@@ -80,6 +74,14 @@ public class AsciiDocProject implements Project {
             });
         }
         return lkp;
+    }
+    
+    public String getAsciiDoctorParameters() {
+        return "-R src -D generated_documents ";
+    }
+    
+    public String getTabname(){
+        return "Publish " + projectDir.getName();
     }
 
     private final class Info implements ProjectInformation {
@@ -167,95 +169,6 @@ public class AsciiDocProject implements Project {
                         CommonProjectActions.copyProjectAction(),
                         CommonProjectActions.closeProjectAction()
                 );
-                nodedynamicactionsmanager.setNodeActions(
-                        createBookAction(),
-                        createArticleAction(),
-                        createWebpageAction()
-                );
-            }
-
-            private DynamicAsyncAction createBookAction() {
-                return new DynamicAsyncAction("Assemble book")
-                        .onAction(() -> assemblebook())
-                        .enable(asciidocproperties.isBookAssembly());
-            }
-
-            private void assemblebook() {
-                new CLIExec(projectDir,
-                        "asciidoctor-pdf -d book -a toc -o generated_assemblies/" + asciidocproperties.bookto()
-                        + ".pdf src/" + asciidocproperties.bookfrom() + ".adoc")
-                        .stderrToOutputWindow()
-                        .executeUsingOutputWindow("Assembling book - " + asciidocproperties.bookto() + ".pdf");
-            }
-
-            private DynamicAsyncAction createArticleAction() {
-                return new DynamicAsyncAction("Assemble article")
-                        .onAction(() -> assemblearticle())
-                        .enable(asciidocproperties.isArticleAssembly());
-            }
-
-            private void assemblearticle() {
-                new CLIExec(projectDir,
-                        "asciidoctor-pdf -d article -o generated_assemblies/" + asciidocproperties.articleto()
-                        + ".pdf src/" + asciidocproperties.articlefrom() + ".adoc")
-                        .stderrToOutputWindow()
-                        .executeUsingOutputWindow("Assembling article - " + asciidocproperties.articleto() + ".pdf");
-            }
-
-            private DynamicAsyncAction createWebpageAction() {
-                return new DynamicAsyncAction("Assemble webpage")
-                        .onAction(() -> assemblewebpage())
-                        .enable(asciidocproperties.isWebpageAssembly());
-            }
-
-            private void assemblewebpage() {
-                new CLIExec(projectDir,
-                        "asciidoctor -d article -a toc2 -o generated_assemblies/" + asciidocproperties.webpageto()
-                        + ".html src/" + asciidocproperties.webpagefrom() + ".adoc")
-                        .stderrToOutputWindow()
-                        .postprocessing((errwtr) -> copyAssemblyResources(projectDir, errwtr))
-                        .executeUsingOutputWindow("Assembling webpage - " + asciidocproperties.webpageto() + ".html");
-            }
-
-            private void copyAssemblyResources(FileObject projectDir, OutputWriter errwtr) {
-                try {
-                    FileObject fo = TargetLocation.openorcreatefolder(projectDir, "generated_assemblies");
-                    FileObject resourcesfo = TargetLocation.openorcreatefolder(fo, "resources");
-                    emptyFolder(resourcesfo);
-                    copyfromfolderrecursively(projectDir.getFileObject("src"), "resources", resourcesfo);
-                } catch (IOException ex) {
-                    errwtr.println("Error when copying assembly resources: " + ex.getLocalizedMessage());
-                }
-
-            }
-
-            private void emptyFolder(FileObject folder) throws IOException {
-                if (folder.isFolder()) {
-                    for (FileObject fo : folder.getChildren()) {
-                        fo.delete();
-                    }
-                }
-            }
-
-            private void copyfromfolder(FileObject fromfolder, FileObject tofolder) throws IOException {
-                if (fromfolder.isFolder()) {
-                    for (FileObject fo : fromfolder.getChildren()) {
-                        FileUtil.copyFile(fo, tofolder, fo.getName());
-                    }
-                }
-            }
-
-            private void copyfromfolderrecursively(FileObject fromfolder, String foldername, FileObject tofolder) throws IOException {
-                if (!fromfolder.isFolder()) {
-                    return;
-                }
-                if (fromfolder.getName().equals(foldername)) {
-                    copyfromfolder(fromfolder, tofolder);
-                    return;
-                }
-                for (FileObject fo : fromfolder.getChildren()) {
-                    copyfromfolderrecursively(fo, foldername, tofolder);
-                }
             }
 
             @Override
