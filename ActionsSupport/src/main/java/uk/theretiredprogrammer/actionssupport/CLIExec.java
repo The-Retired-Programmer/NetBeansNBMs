@@ -15,7 +15,7 @@
  */
 package uk.theretiredprogrammer.actionssupport;
 
-import uk.theretiredprogrammer.actionssupportimplementation.ProjectOutputTabs;
+import uk.theretiredprogrammer.actionssupportimplementation.InputOutputTab;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,16 +54,15 @@ public class CLIExec {
     private CopyThread stderrthread;
     private CopyThread stdinthread;
     private int stdinFlushPeriod = 0;
-    private boolean stdinFromOutputWindow;
-    private boolean stderrToOutputWindow;
-    private boolean stdoutToOutputWindow;
-    private final String tabkey;
+    private boolean stdinFromOutputWindow = false;
+    private boolean stderrToOutputWindow = false;
+    private boolean stdoutToOutputWindow = false;
     private Consumer<OutputWriter> postprocessing = null;
     private Consumer<OutputWriter> preprocessing = null;
     private boolean needscancel;
+    private String tabname;
 
     public CLIExec(FileObject dir, String clicommand) {
-        tabkey = dir.getName();
         pb = new ProcessBuilder(CLICommandParser.toPhrases(clicommand.replace("${NODEPATH}", FileUtil.toFile(dir).getPath())));
         pb.directory(FileUtil.toFile(dir));
         pb.redirectError(ProcessBuilder.Redirect.DISCARD);
@@ -83,6 +82,7 @@ public class CLIExec {
     public CLIExec stdout(File file) {
         pb.redirectOutput(ProcessBuilder.Redirect.to(file));
         stdoutthreadcreate = () -> null;
+        stdoutToOutputWindow = false;
         return this;
     }
 
@@ -90,6 +90,7 @@ public class CLIExec {
         this.stdoutStream = os;
         pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
         stdoutthreadcreate = () -> new CopyStreamThread("stdout", process.getInputStream(), stdoutStream, this, NO_MILLISECS2FLUSH);
+        stdoutToOutputWindow = false;
         return this;
     }
 
@@ -97,6 +98,7 @@ public class CLIExec {
         this.stdoutWriter = wtr;
         pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
         stdoutthreadcreate = () -> new CopyToWriterThread("stdout", process.inputReader(), stdoutWriter, this);
+        stdoutToOutputWindow = false;
         return this;
     }
 
@@ -108,6 +110,7 @@ public class CLIExec {
     private CLIExec setIfStdoutToOutputWindow(Writer wtr) {
         if (stdoutToOutputWindow) {
             stdout(wtr);
+            stdoutToOutputWindow = true;
         }
         return this;
     }
@@ -119,6 +122,7 @@ public class CLIExec {
     public CLIExec stderr(File file) {
         pb.redirectError(ProcessBuilder.Redirect.to(file));
         stderrthreadcreate = () -> null;
+        stderrToOutputWindow = false;
         return this;
     }
 
@@ -126,7 +130,7 @@ public class CLIExec {
         this.stderrStream = os;
         pb.redirectError(ProcessBuilder.Redirect.PIPE);
         stderrthreadcreate = () -> new CopyStreamThread("stderr", process.getErrorStream(), stderrStream, this, NO_MILLISECS2FLUSH);
-
+        stderrToOutputWindow = false;
         return this;
     }
 
@@ -134,6 +138,7 @@ public class CLIExec {
         this.stderrWriter = wtr;
         pb.redirectError(ProcessBuilder.Redirect.PIPE);
         stderrthreadcreate = () -> new CopyToWriterThread("stderr", process.errorReader(), stderrWriter, this);
+        stderrToOutputWindow = false;
         return this;
     }
 
@@ -146,6 +151,7 @@ public class CLIExec {
     private CLIExec setIfStderrToOutputWindow(Writer wtr) {
         if (stderrToOutputWindow) {
             stderr(wtr);
+            stderrToOutputWindow = true;
         }
         return this;
     }
@@ -162,6 +168,7 @@ public class CLIExec {
     public CLIExec stdin(File file) {
         pb.redirectInput(ProcessBuilder.Redirect.from(file));
         stdinthreadcreate = () -> null;
+        stdinFromOutputWindow = false;
         return this;
     }
 
@@ -169,6 +176,7 @@ public class CLIExec {
         this.stdinStream = is;
         pb.redirectInput(ProcessBuilder.Redirect.PIPE);
         stdinthreadcreate = () -> new CopyStreamThread("stdin", stdinStream, process.getOutputStream(), this, stdinFlushPeriod);
+        stdinFromOutputWindow = false;
         return this;
     }
 
@@ -176,6 +184,7 @@ public class CLIExec {
         this.stdinReader = rdr;
         pb.redirectInput(ProcessBuilder.Redirect.PIPE);
         stdinthreadcreate = () -> new CopyFromReaderThread("stdin", stdinReader, process.outputWriter(), this, stdinFlushPeriod);
+        stdinFromOutputWindow = false;
         return this;
     }
 
@@ -191,6 +200,7 @@ public class CLIExec {
     private CLIExec setIfStdinFromOutputWindow(Reader rdr) {
         if (stdinFromOutputWindow) {
             stdin(rdr);
+            stdinFromOutputWindow = true;
         }
         return this;
     }
@@ -214,6 +224,11 @@ public class CLIExec {
         this.postprocessing = postprocessing;
         return this;
     }
+    
+    public CLIExec ioTabName(String tabname){
+        this.tabname = tabname;
+        return this;
+    }
 
     private void stdinClose() {
         try {
@@ -226,50 +241,51 @@ public class CLIExec {
     private void processCancel() {
         process.destroy();
     }
-
-    public void executeUsingOutputWindow(String startmessage) {
-        InputOutput io = needscancel
-                ? ProjectOutputTabs.getDefault().getCancellable(startmessage, () -> processCancel())
-                : (isStdinFromOutputWindow()
-                        ? ProjectOutputTabs.getDefault().get(tabkey, () -> stdinClose())
-                        : ProjectOutputTabs.getDefault().get(tabkey));
-        OutputWriter outwtr = io.getOut();
-        OutputWriter errwtr = io.getErr();
-        outwtr.println(startmessage);
-        setIfStderrToOutputWindow(errwtr);
-        setIfStdoutToOutputWindow(outwtr);
-        setIfStdinFromOutputWindow(io.getIn());
-        io.setInputVisible(isStdinFromOutputWindow());
-        if (preprocessing != null) {
-            preprocessing.accept(errwtr);
-        }
-        execute();
-        if (postprocessing != null) {
-            postprocessing.accept(errwtr);
-        }
-        outwtr.println("... done");
-    }
-
-    public void executeUsingOutputWindow() {
-        InputOutput io = isStdinFromOutputWindow()
-                ? ProjectOutputTabs.getDefault().get(tabkey, () -> stdinClose())
-                : ProjectOutputTabs.getDefault().get(tabkey);
-        OutputWriter outwtr = io.getOut();
-        OutputWriter errwtr = io.getErr();
-        setIfStderrToOutputWindow(errwtr);
-        setIfStdoutToOutputWindow(outwtr);
-        setIfStdinFromOutputWindow(io.getIn());
-        io.setInputVisible(isStdinFromOutputWindow());
-        if (preprocessing != null) {
-            preprocessing.accept(errwtr);
-        }
-        execute();
-        if (postprocessing != null) {
-            postprocessing.accept(errwtr);
+    
+    public void execute(String startmessage) {
+        if (stdinFromOutputWindow || stdoutToOutputWindow || stderrToOutputWindow) {
+            executeUsingOutputWindow(startmessage);
+        } else {
+            simpleExecute();
         }
     }
-
+    
     public void execute() {
+        if (stdinFromOutputWindow || stdoutToOutputWindow || stderrToOutputWindow) {
+            executeUsingOutputWindow(null);
+        } else {
+            simpleExecute();
+        }
+    }
+
+    private void executeUsingOutputWindow(String startmessage) {
+        InputOutput io = needscancel
+                ? InputOutputTab.getCancellable(tabname, () -> processCancel())
+                : (isStdinFromOutputWindow()
+                        ? InputOutputTab.getClosable(tabname, () -> stdinClose())
+                        : InputOutputTab.get(tabname));
+        OutputWriter outwtr = io.getOut();
+        OutputWriter errwtr = io.getErr();
+        if (startmessage != null) {
+            outwtr.println(startmessage);
+        }
+        setIfStderrToOutputWindow(errwtr);
+        setIfStdoutToOutputWindow(outwtr);
+        setIfStdinFromOutputWindow(io.getIn());
+        io.setInputVisible(isStdinFromOutputWindow());
+        if (preprocessing != null) {
+            preprocessing.accept(errwtr);
+        }
+        simpleExecute();
+        if (postprocessing != null) {
+            postprocessing.accept(errwtr);
+        }
+        if (startmessage != null) {
+            outwtr.println("... done");
+        }
+    }
+
+    private void simpleExecute() {
         try {
             process = pb.start();
             stderrthread = stderrthreadcreate.get();

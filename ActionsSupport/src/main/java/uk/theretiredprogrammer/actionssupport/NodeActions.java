@@ -15,7 +15,6 @@
  */
 package uk.theretiredprogrammer.actionssupport;
 
-import uk.theretiredprogrammer.actionssupportimplementation.ProjectOutputTabs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,10 +36,9 @@ public class NodeActions {
     private List<Action> basicactions = new ArrayList<>();
     private final List<DynamicAsyncAction> nodeactions = new ArrayList<>();
 
-    public NodeActions(FileObject filefolder, String actionpropertiesfilename, String tabprefix) {
+    public NodeActions(FileObject filefolder, String actionpropertiesfilename) {
         this.filechangemanager = new FileChangeManager(filefolder);
         this.actionspropertyfile = new ActionsPropertyFile(filefolder, actionpropertiesfilename, filechangemanager);
-        ProjectOutputTabs.getDefault().create(filefolder.getName(), tabprefix+" "+filefolder.getName());
     }
 
     public final void registerFile(String filename, String fileext, Consumer<FileChangeType> callback) {

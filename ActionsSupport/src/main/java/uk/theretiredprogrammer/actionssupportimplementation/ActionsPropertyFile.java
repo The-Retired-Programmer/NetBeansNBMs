@@ -63,7 +63,7 @@ public class ActionsPropertyFile {
                 String label = properties.getProperty(Integer.toString(j) + ".label");
                 dynamicactions.add(
                         new DynamicAsyncAction(label)
-                                .onAction(() -> cliexec.executeUsingOutputWindow(label)));
+                                .onAction(() -> cliexec.execute(label)));
             }
         }
     }
@@ -75,9 +75,11 @@ public class ActionsPropertyFile {
         if (cmdline == null || label == null) {
             return null;
         }
+        String tabname = properties.getProperty(prefix + ".tabname",label);
         CLIExec cliexec = new CLIExec(dir, cmdline)
                 .stderrToOutputWindow()
-                .stdoutToOutputWindow();
+                .stdoutToOutputWindow()
+                .ioTabName(tabname);
         String inputfrom = properties.getProperty(prefix + ".inputfrom");
         if (inputfrom != null) {
             switch (inputfrom.toLowerCase()) {
