@@ -38,6 +38,29 @@ import static uk.theretiredprogrammer.actionssupportimplementation.CopyThread.NO
 import uk.theretiredprogrammer.actionssupportimplementation.CopyToWriterThread;
 import uk.theretiredprogrammer.actionssupportimplementation.CopyFromReaderThread;
 
+/**
+ * CLIExec implements both configuration prior to execution of a CLI style
+ * command and also its execution.
+ *
+ * Builder style method chaining is provided for configuration includes both
+ * general configuration and input/output options.
+ *
+ * Execution methods are available to utilise either an Output Window tab, in
+ * addition to a basic execution option.
+ *
+ * Details of the CLI Command String, which includes limited parameter
+ * substitution where ${NODEPATH} is replaced with the node folder path. The
+ * command has to be parsed into CLI "phrases", such as options, option
+ * parameters, filenames etc. As this constructor never can have a full
+ * understanding of every command's syntax, it employs a basic parsing technique
+ * (breaking on word breaks i.e. white space). This works in the vast majority
+ * of cases, but there are times where the CLI "phrase" should include multiple
+ * words. If this is the case, the phrase should be written with enclosing
+ * double quotes. These quotes will be stripped from the generated command prior
+ * to it being passed to ProcessBuilder.
+ *
+ * @author richard linsdale
+ */
 public class CLIExec {
 
     private final ProcessBuilder pb;
@@ -62,6 +85,17 @@ public class CLIExec {
     private boolean needscancel;
     private String tabname;
 
+    /**
+     * Create the initial CLIExec object with the mandatory information. The
+     * initial state for IO is: STDIN - no data passed to stream, STDOUT -
+     * discarded, STDERR - discarded, STDIN flush period = 0 (ie OFF).
+     *
+     * It can be configured by use of the various builder style methods.
+     *
+     * @param dir The node folder - will be used as the working directory when
+     * executing this object.
+     * @param clicommand the command to be run when executing this command.
+     */
     public CLIExec(FileObject dir, String clicommand) {
         pb = new ProcessBuilder(CLICommandParser.toPhrases(clicommand.replace("${NODEPATH}", FileUtil.toFile(dir).getPath())));
         pb.directory(FileUtil.toFile(dir));
@@ -70,15 +104,23 @@ public class CLIExec {
         pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
     }
 
-    public CLIExec needsCancel() {
-        this.needscancel = true;
-        return this;
-    }
-
+    /**
+     * A FileObject accepts STDOUT output.
+     *
+     * @param fo The FileObject that accepts data from the Processes STDOUT
+     * stream.
+     * @return this object
+     */
     public CLIExec stdout(FileObject fo) {
         return stdout(FileUtil.toFile(fo));
     }
 
+    /**
+     * A File accepts STDOUT output.
+     *
+     * @param file The File that accepts data from the Processes STDOUT stream.
+     * @return this object
+     */
     public CLIExec stdout(File file) {
         pb.redirectOutput(ProcessBuilder.Redirect.to(file));
         stdoutthreadcreate = () -> null;
@@ -86,6 +128,13 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * An OutputStream accepts STDOUT output.
+     *
+     * @param os The OutputStream that accepts data from the Processes STDOUT
+     * stream.
+     * @return this object
+     */
     public CLIExec stdout(OutputStream os) {
         this.stdoutStream = os;
         pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
@@ -94,6 +143,12 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * A Writer accepts STDOUT output.
+     *
+     * @param wtr The writer that accepts data from the Processes STDOUT stream.
+     * @return this object
+     */
     public CLIExec stdout(Writer wtr) {
         this.stdoutWriter = wtr;
         pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
@@ -102,6 +157,11 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * Present STDOUT in the Output Window.
+     *
+     * @return this object
+     */
     public CLIExec stdoutToOutputWindow() {
         this.stdoutToOutputWindow = true;
         return this;
@@ -115,10 +175,23 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * A FileObject accepts STDERR output.
+     *
+     * @param fo The FileObject that accepts data from the Processes STDERR
+     * stream.
+     * @return this object
+     */
     public CLIExec stderr(FileObject fo) {
         return stderr(FileUtil.toFile(fo));
     }
 
+    /**
+     * A File accepts STDERR output.
+     *
+     * @param file The File that accepts data from the Processes STDERR stream.
+     * @return this object
+     */
     public CLIExec stderr(File file) {
         pb.redirectError(ProcessBuilder.Redirect.to(file));
         stderrthreadcreate = () -> null;
@@ -126,6 +199,13 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * An OutputStream accepts STDERR output.
+     *
+     * @param os The OutputStream that accepts data from the Processes STDERR
+     * stream.
+     * @return this object
+     */
     public CLIExec stderr(OutputStream os) {
         this.stderrStream = os;
         pb.redirectError(ProcessBuilder.Redirect.PIPE);
@@ -134,6 +214,12 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * A Writer accepts STDERR output.
+     *
+     * @param wtr The Writer that accepts data from the Processes STDERR stream.
+     * @return this object
+     */
     public CLIExec stderr(Writer wtr) {
         this.stderrWriter = wtr;
         pb.redirectError(ProcessBuilder.Redirect.PIPE);
@@ -142,6 +228,11 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * Present STDERR in the Output Window.
+     *
+     * @return this object
+     */
     public CLIExec stderrToOutputWindow() {
         this.stderrToOutputWindow = true;
         return this;
@@ -156,15 +247,33 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * Present both STDOUT and STDERR outputs on STDOUT.
+     *
+     * @return this object
+     */
     public CLIExec stderr2stdoutput() {
         pb.redirectErrorStream(true);
         return this;
     }
 
+    /**
+     * A FileObject is the STDIN source.
+     *
+     * @param fo The FileObject that provides data for the Processes STDIN
+     * stream.
+     * @return this object
+     */
     public CLIExec stdin(FileObject fo) {
         return stdin(FileUtil.toFile(fo));
     }
 
+    /**
+     * A File is the STDIN source.
+     *
+     * @param file The File that provides data for the Processes STDIN stream.
+     * @return this object
+     */
     public CLIExec stdin(File file) {
         pb.redirectInput(ProcessBuilder.Redirect.from(file));
         stdinthreadcreate = () -> null;
@@ -172,6 +281,13 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * An InputStream is the STDIN source.
+     *
+     * @param is The InputStream that provides data for the Processes STDIN
+     * stream.
+     * @return this object
+     */
     public CLIExec stdin(InputStream is) {
         this.stdinStream = is;
         pb.redirectInput(ProcessBuilder.Redirect.PIPE);
@@ -180,6 +296,12 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * A Reader is the STDIN source.
+     *
+     * @param rdr The Reader that provides data for the Processes STDIN stream.
+     * @return this object
+     */
     public CLIExec stdin(Reader rdr) {
         this.stdinReader = rdr;
         pb.redirectInput(ProcessBuilder.Redirect.PIPE);
@@ -188,12 +310,17 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * The Output Window is the STDIN source.
+     *
+     * @return this object
+     */
     public CLIExec stdinFromOutputWindow() {
         this.stdinFromOutputWindow = true;
         return this;
     }
 
-    public boolean isStdinFromOutputWindow() {
+    private boolean isStdinFromOutputWindow() {
         return stdinFromOutputWindow;
     }
 
@@ -205,27 +332,63 @@ public class CLIExec {
         return this;
     }
 
+    /**
+     * Define the period of inactivity prior to flushing the STDIN stream.
+     *
+     * @param millisecs a milliseconds period
+     * @return this object
+     */
     public CLIExec stdinFlushPeriod(int millisecs) {
         this.stdinFlushPeriod = millisecs;
         return this;
     }
 
+    /**
+     * Use the default period of inactivity prior to flushing the STDIN stream.
+     *
+     * @return this object
+     */
     public CLIExec stdinFlushPeriod() {
         this.stdinFlushPeriod = DEFAULT_MILLISECS2FLUSH;
         return this;
     }
 
+    /**
+     * Define a method to be executed prior to the main Execute Process running.
+     *
+     * This method will be executed as part of the Execute method, if the
+     * OutputWindow is to be used for input or output.
+     *
+     * @param preprocessing the pre processing method
+     * @return this object
+     */
     public CLIExec preprocessing(Consumer<OutputWriter> preprocessing) {
         this.preprocessing = preprocessing;
         return this;
     }
 
+    /**
+     * Define a method to be executed after to the main Execute Process running.
+     *
+     * This method will be executed as part of the Execute method, if the
+     * OutputWindow is to be used for input or output.
+     *
+     * @param postprocessing the post processing method
+     * @return this object
+     */
     public CLIExec postprocessing(Consumer<OutputWriter> postprocessing) {
         this.postprocessing = postprocessing;
         return this;
     }
-    
-    public CLIExec ioTabName(String tabname){
+
+    /**
+     * Define the tab to be used, if the Output Window is to be used for input
+     * or output.
+     *
+     * @param tabname that output window tabname to be used.
+     * @return this object
+     */
+    public CLIExec ioTabName(String tabname) {
         this.tabname = tabname;
         return this;
     }
@@ -241,7 +404,33 @@ public class CLIExec {
     private void processCancel() {
         process.destroy();
     }
-    
+
+    /**
+     * Add a cancel icon in the Output Window Toolbar.
+     *
+     * It's action will be to cancel the Process generated by the execute
+     * command.
+     *
+     * @return this object
+     */
+    public CLIExec needsCancel() {
+        this.needscancel = true;
+        return this;
+    }
+
+    /**
+     * Execute the CLI command as a process.
+     *
+     * The execution process will be connected to the defined STDIN, STDOUT and
+     * STDERR data and execution started in its own Process. This method will
+     * wait for the process to complete before returning.
+     *
+     * If an Output Window is being used, then the startmessage will be written
+     * to the window prior to executing the command and the message "... doneE
+     * will be written to the window once execution is completed.
+     *
+     * @param startmessage the start message to be written to the Output window.
+     */
     public void execute(String startmessage) {
         if (stdinFromOutputWindow || stdoutToOutputWindow || stderrToOutputWindow) {
             executeUsingOutputWindow(startmessage);
@@ -249,7 +438,15 @@ public class CLIExec {
             simpleExecute();
         }
     }
-    
+
+    /**
+     * Execute the CLI command as a process.
+     *
+     * The execution process will be connected to the defined STDIN, STDOUT and
+     * STDERR data and execution started in its own Process. This method will
+     * wait for the process to complete before returning.
+     *
+     */
     public void execute() {
         if (stdinFromOutputWindow || stdoutToOutputWindow || stderrToOutputWindow) {
             executeUsingOutputWindow(null);
@@ -320,6 +517,21 @@ public class CLIExec {
         }
     }
 
+    /**
+     * Attempt to write an error message to the STDERR receiver.
+     *
+     * The error message will combine the Phase parameter and the Exception
+     * Message parameter.
+     *
+     * If there is a defined STDERR receiver then the error message will be
+     * written to that stream/writer/file.
+     *
+     * If the STDERR receiver has not been defined then the error message will
+     * be written to the Status Display.
+     *
+     * @param phase the phase
+     * @param exmsg the exception message
+     */
     public void printerror(String phase, String exmsg) {
         try {
             if (stderrthread != null) {

@@ -17,10 +17,23 @@ package uk.theretiredprogrammer.actionssupport;
 
 import uk.theretiredprogrammer.actionssupportimplementation.Async;
 
+/**
+ * DynamicAsyncAction is a extension of DynamicAction.
+ * <pre>
+ * It's action method runs the Action method on another thread, so not
+ * blocking the Action calling thread.
+ * </pre>
+ * @author richard linsdale
+ */
 public class DynamicAsyncAction extends DynamicAction {
 
     private Runnable asyncAction;
 
+    /**
+     * Construct a DynamicAsyncAction which is enabled
+     *
+     * @param label The label used when this DynamicAsyncAction is displayed.
+     */
     public DynamicAsyncAction(String label) {
         super(label);
     }
