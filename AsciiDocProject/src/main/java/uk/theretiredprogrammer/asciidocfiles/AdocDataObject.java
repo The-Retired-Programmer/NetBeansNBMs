@@ -16,8 +16,6 @@
 package uk.theretiredprogrammer.asciidocfiles;
 
 import java.io.IOException;
-import org.netbeans.core.spi.multiview.MultiViewElement;
-import org.netbeans.core.spi.multiview.text.MultiViewEditorElement;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -29,10 +27,9 @@ import org.openide.loaders.MultiDataObject;
 import org.openide.loaders.MultiFileLoader;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
-import org.openide.windows.TopComponent;
 
 @Messages({
-    "LBL_Adoc_LOADER=Files of Adoc"
+    "LBL_Adoc_LOADER=AsciiDoc files"
 })
 @MIMEResolver.ExtensionRegistration(
         displayName = "#LBL_Adoc_LOADER",
@@ -97,29 +94,15 @@ import org.openide.windows.TopComponent;
             position = 1400
     )
 })
-public class AdocDataObject extends MultiDataObject {
+public class AdocDataObject extends MultiDataObject implements Lookup.Provider {
 
     public AdocDataObject(FileObject pf, MultiFileLoader loader) throws DataObjectExistsException, IOException {
         super(pf, loader);
-        registerEditor("text/x-asciidoc", true);
+        registerEditor("text/x-asciidoc", false);
     }
 
     @Override
     protected int associateLookup() {
         return 1;
     }
-
-    @MultiViewElement.Registration(
-            displayName = "#LBL_Adoc_EDITOR",
-            iconBase = "uk/theretiredprogrammer/asciidocfiles/page_edit.png",
-            mimeType = "text/x-asciidoc",
-            persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED,
-            preferredID = "Adoc",
-            position = 1000
-    )
-    @Messages("LBL_Adoc_EDITOR=Source")
-    public static MultiViewEditorElement createEditor(Lookup lkp) {
-        return new MultiViewEditorElement(lkp);
-    }
-
 }
