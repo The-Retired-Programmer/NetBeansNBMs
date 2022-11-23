@@ -45,7 +45,6 @@ public class AsciiDocProject implements Project {
     //private final ProjectState state;
     private Lookup lkp;
     private final NodeActions nodedynamicactionsmanager;
-    private final AsciiDocPropertyFile asciidocproperties;
 
     /**
      * Constructor
@@ -57,7 +56,6 @@ public class AsciiDocProject implements Project {
         this.projectDir = dir;
         //this.state = state;
         nodedynamicactionsmanager = new NodeActions(dir, "projectactions");
-        asciidocproperties = new AsciiDocPropertyFile(dir, nodedynamicactionsmanager);
     }
 
     @Override
@@ -75,12 +73,12 @@ public class AsciiDocProject implements Project {
         }
         return lkp;
     }
-    
+
     public String getAsciiDoctorParameters() {
         return "-R src -D generated_documents ";
     }
-    
-    public String getTabname(){
+
+    public String getTabname() {
         return "Publish " + projectDir.getName();
     }
 

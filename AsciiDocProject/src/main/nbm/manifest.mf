@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Layer: uk/theretiredprogrammer/asciidocfiles/layer.xml
+OpenIDE-Module-Layer: uk/theretiredprogrammer/asciidoc/layer.xml
 OpenIDE-Module-Localizing-Bundle: uk/theretiredprogrammer/asciidoc/Bundle.properties
 OpenIDE-Module-Display-Category: Tools - TheRetiredProgrammer
 

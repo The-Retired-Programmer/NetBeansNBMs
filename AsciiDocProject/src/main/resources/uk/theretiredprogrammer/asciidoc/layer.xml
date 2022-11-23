@@ -22,7 +22,7 @@
     </folder>
     <folder name="Spellcheckers">
         <file name="ASCIIDOC">
-            <attr name="displayName" bundlevalue="uk.theretiredprogrammer.asciidocfiles.Bundle#Spellcheckers/ASCIIDOC"/>
+            <attr name="displayName" stringvalue="ASCIIDOC"/>
         </file>
     </folder>
 </filesystem>
