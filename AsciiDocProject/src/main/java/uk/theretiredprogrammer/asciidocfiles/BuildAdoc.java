@@ -60,9 +60,9 @@ public final class BuildAdoc implements ActionListener {
                         .execute("Publishing " + input.getNameExt());
             } else {
                 new CLIExec(input.getParent(), "asciidoctor -r asciidoctor-pdf " + input.getPath())
-                    .stderrToOutputWindow()
-                    .ioTabName("Publish AsciiDocs")
-                    .execute("Publishing " + input.getNameExt());
+                        .stderrToOutputWindow()
+                        .ioTabName("Publish AsciiDocs")
+                        .execute("Publishing " + input.getNameExt());
             }
         }
     }

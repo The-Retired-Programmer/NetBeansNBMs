@@ -4,6 +4,13 @@
     <folder name="Editors">
         <folder name="text">
             <folder name="x-asciidoc">
+                <folder name="Popup">
+                    <file name="uk-theretiredprogrammer-asciidocfiles-BuildAdoc.shadow">
+                        <!--uk.theretiredprogrammer.asciidocfiles.BuildAdoc-->
+                        <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-asciidocfiles-BuildAdoc.instance"/>
+                        <attr intvalue="400" name="position"/>
+                    </file>
+                </folder>
                 <folder name="TokenListProvider">
                     <file name="org-netbeans-modules-spellchecker-plain-PlainTokenListProvider.instance" />
                 </folder>
