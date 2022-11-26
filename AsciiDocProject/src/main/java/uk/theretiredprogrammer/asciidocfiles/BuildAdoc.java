@@ -56,6 +56,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
         rp.post(this);
     }
     
+    @Override
     public void run() {
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
