@@ -15,15 +15,14 @@
  */
 package uk.theretiredprogrammer.actionssupport;
 
-import uk.theretiredprogrammer.actionssupportimplementation.Async;
+import org.openide.util.RequestProcessor;
 
 /**
  * DynamicAsyncAction is a extension of DynamicAction.
- * <pre>
- * It's action method runs the Action method on another thread, so not
- * blocking the Action calling thread.
- * </pre>
- * @author richard linsdale
+ *
+ * It's action method runs the Action method on another thread, so not blocking
+ * the Action calling thread.
+ *
  */
 public class DynamicAsyncAction extends DynamicAction {
 
@@ -37,14 +36,14 @@ public class DynamicAsyncAction extends DynamicAction {
     public DynamicAsyncAction(String label) {
         super(label);
     }
-    
+
     @Override
     public DynamicAsyncAction onAction(Runnable action) {
         this.asyncAction = action;
         super.onAction(() -> onAsyncAction());
         return this;
     }
-    
+
     @Override
     public DynamicAsyncAction enable(boolean enable) {
         super.enable(enable);
@@ -52,7 +51,7 @@ public class DynamicAsyncAction extends DynamicAction {
     }
 
     private void onAsyncAction() {
-        Thread thd = new Async(asyncAction);
-        thd.start();
+        RequestProcessor rp = new RequestProcessor("dynamicasyncaction");
+        rp.post(asyncAction);
     }
 }

@@ -86,8 +86,9 @@ public class CLIExec {
     private String tabname;
 
     /**
-     * Create the initial CLIExec object with the mandatory information. The
-     * initial state for IO is: STDIN - no data passed to stream, STDOUT -
+     * Create the initial CLIExec object with the mandatory information.
+     *
+     * The initial state for IO is: STDIN - no data passed to stream, STDOUT -
      * discarded, STDERR - discarded, STDIN flush period = 0 (ie OFF).
      *
      * It can be configured by use of the various builder style methods.
