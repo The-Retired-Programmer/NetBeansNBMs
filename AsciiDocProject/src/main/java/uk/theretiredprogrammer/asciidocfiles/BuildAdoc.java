@@ -26,6 +26,7 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.actionssupport.CLIExec;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 
@@ -38,16 +39,24 @@ import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 )
 @ActionReference(path = "Loaders/text/x-asciidoc/Actions", position = 150)
 @Messages("CTL_BuildAdoc=Publish")
-public final class BuildAdoc implements ActionListener {
+public final class BuildAdoc implements ActionListener, Runnable {
 
     private final List<DataObject> context;
 
     public BuildAdoc(List<DataObject> context) {
         this.context = context;
+        //ExecutionEngine;
+        //RequestProcessor;
+        //NbProcessDescriptor
     }
 
     @Override
     public void actionPerformed(ActionEvent ev) {
+        RequestProcessor rp = new RequestProcessor("text-x-asciidoc_publish");
+        rp.post(this);
+    }
+    
+    public void run() {
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
             Project project = FileOwnerQuery.getOwner(input);
