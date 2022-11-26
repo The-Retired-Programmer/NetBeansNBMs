@@ -16,8 +16,6 @@
 package uk.theretiredprogrammer.pgsql;
 
 import java.io.IOException;
-import org.netbeans.core.spi.multiview.MultiViewElement;
-import org.netbeans.core.spi.multiview.text.MultiViewEditorElement;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -27,9 +25,7 @@ import org.openide.loaders.DataObject;
 import org.openide.loaders.DataObjectExistsException;
 import org.openide.loaders.MultiDataObject;
 import org.openide.loaders.MultiFileLoader;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle.Messages;
-import org.openide.windows.TopComponent;
 
 @Messages({
     "LBL_PGSQL_LOADER=Files of PGSQL"
@@ -101,24 +97,11 @@ public class PGSQLDataObject extends MultiDataObject {
 
     public PGSQLDataObject(FileObject pf, MultiFileLoader loader) throws DataObjectExistsException, IOException {
         super(pf, loader);
-        registerEditor("text/x-pgsql", true);
+        registerEditor("text/x-pgsql", false);
     }
 
     @Override
     protected int associateLookup() {
         return 1;
-    }
-
-    @MultiViewElement.Registration(
-            displayName = "#LBL_PGSQL_EDITOR",
-            iconBase = "uk/theretiredprogrammer/pgsql/database_go.png",
-            mimeType = "text/x-pgsql",
-            persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED,
-            preferredID = "PGSQL",
-            position = 1000
-    )
-    @Messages("LBL_PGSQL_EDITOR=Source")
-    public static MultiViewEditorElement createEditor(Lookup lkp) {
-        return new MultiViewEditorElement(lkp);
     }
 }

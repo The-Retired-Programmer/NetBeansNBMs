@@ -28,6 +28,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.actionssupport.CLIExec;
 import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
 
@@ -40,7 +41,7 @@ import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
 )
 @ActionReference(path = "Loaders/text/x-pgsql/Actions", position = 150)
 @Messages("CTL_ExecuteFile=Execute")
-public final class ExecutePGSQLFile implements ActionListener {
+public final class ExecutePGSQLFile implements ActionListener, Runnable {
 
     private final List<DataObject> context;
 
@@ -50,6 +51,12 @@ public final class ExecutePGSQLFile implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ev) {
+        RequestProcessor rp = new RequestProcessor("text-x-pgsql_execute");
+        rp.post(this);
+    }
+    
+    @Override
+    public void run() {
         try {
             for (DataObject dataObject : context) {
                 FileObject input = dataObject.getPrimaryFile();
@@ -64,7 +71,7 @@ public final class ExecutePGSQLFile implements ActionListener {
                 }
             }
         } catch (IOException ex) {
-            StatusDisplayer.getDefault().setStatusText("failed to run psql: " + ex.getLocalizedMessage());
+            StatusDisplayer.getDefault().setStatusText("failed to run pgsql: " + ex.getLocalizedMessage());
         }
     }
 }

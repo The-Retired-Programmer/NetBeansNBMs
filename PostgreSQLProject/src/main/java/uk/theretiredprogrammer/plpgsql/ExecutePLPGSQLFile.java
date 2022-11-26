@@ -28,28 +28,35 @@ import org.openide.awt.ActionRegistration;
 import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.actionssupport.CLIExec;
 import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
 
 @ActionID(
         category = "Build",
-        id = "uk.theretiredprogrammer.plpsql.ExecutePLPGSQLFile"
+        id = "uk.theretiredprogrammer.plpgsql.ExecutePLPGSQLFile"
 )
 @ActionRegistration(
         displayName = "#CTL_ExecuteFile"
 )
 @ActionReference(path = "Loaders/text/x-plpgsql/Actions", position = 150)
 @Messages("CTL_ExecuteFile=Execute")
-public final class ExecutePLPGSQLFile implements ActionListener {
+public final class ExecutePLPGSQLFile implements ActionListener, Runnable {
 
     private final List<DataObject> context;
 
     public ExecutePLPGSQLFile(List<DataObject> context) {
         this.context = context;
     }
-
+    
     @Override
     public void actionPerformed(ActionEvent ev) {
+        RequestProcessor rp = new RequestProcessor("text-x-plpgsql_execute");
+        rp.post(this);
+    }
+    
+    @Override
+    public void run() {
         try {
             for (DataObject dataObject : context) {
                 FileObject input = dataObject.getPrimaryFile();
@@ -64,7 +71,7 @@ public final class ExecutePLPGSQLFile implements ActionListener {
                 }
             }
         } catch (IOException ex) {
-            StatusDisplayer.getDefault().setStatusText("failed to run plpsql: " + ex.getLocalizedMessage());
+            StatusDisplayer.getDefault().setStatusText("failed to run plpgsql: " + ex.getLocalizedMessage());
         }
     }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Editors">
+        <folder name="text">
+            <folder name="x-pgsql">
+                <folder name="Popup">
+                    <file name="uk-theretiredprogrammer-pgsql-ExecutePGSQLFile.shadow">
+                        <!--uk.theretiredprogrammer.pgsql.ExecutePGSQLFile-->
+                        <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-pgsql-ExecutePGSQLFile.instance"/>
+                        <attr intvalue="400" name="position"/>
+                    </file>
+                </folder>
+            </folder>
+            <folder name="x-plpgsql">
+                <folder name="Popup">
+                    <file name="uk-theretiredprogrammer-plpgsql-ExecutePLPGSQLFile.shadow">
+                        <!--uk.theretiredprogrammer.plpgsql.ExecutePLPGSQLFile-->
+                        <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-plpgsql-ExecutePLPGSQLFile.instance"/>
+                        <attr intvalue="400" name="position"/>
+                    </file>
+                </folder>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>

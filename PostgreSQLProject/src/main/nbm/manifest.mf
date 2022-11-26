@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
 OpenIDE-Module-Localizing-Bundle: uk/theretiredprogrammer/postgresql/Bundle.properties
+OpenIDE-Module-Layer: uk/theretiredprogrammer/postgresql/layer.xml
 OpenIDE-Module-Display-Category: Tools - TheRetiredProgrammer
 
