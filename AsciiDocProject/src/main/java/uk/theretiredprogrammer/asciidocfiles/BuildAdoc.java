@@ -27,7 +27,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.CLIExec;
+import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 
 @ActionID(
@@ -45,9 +45,6 @@ public final class BuildAdoc implements ActionListener, Runnable {
 
     public BuildAdoc(List<DataObject> context) {
         this.context = context;
-        //ExecutionEngine;
-        //RequestProcessor;
-        //NbProcessDescriptor
     }
 
     @Override
@@ -55,7 +52,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
         RequestProcessor rp = new RequestProcessor("text-x-asciidoc_publish");
         rp.post(this);
     }
-    
+
     @Override
     public void run() {
         for (DataObject dataObject : context) {
@@ -63,16 +60,16 @@ public final class BuildAdoc implements ActionListener, Runnable {
             Project project = FileOwnerQuery.getOwner(input);
             if (project != null && project instanceof AsciiDocProject) {
                 AsciiDocProject aproject = (AsciiDocProject) project;
-                new CLIExec(aproject.getProjectDirectory(),
-                        "asciidoctor -r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath())
-                        .stderrToOutputWindow()
+                new NbCliDescriptor(aproject.getProjectDirectory(),
+                        "asciidoctor", "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath())
+                        .stderrToIO()
                         .ioTabName(aproject.getTabname())
-                        .execute("Publishing " + input.getNameExt());
+                        .exec("Publishing " + input.getNameExt());
             } else {
-                new CLIExec(input.getParent(), "asciidoctor -r asciidoctor-pdf " + input.getPath())
-                        .stderrToOutputWindow()
+                new NbCliDescriptor(input.getParent(), "asciidoctor", "-r asciidoctor-pdf " + input.getPath())
+                        .stderrToIO()
                         .ioTabName("Publish AsciiDocs")
-                        .execute("Publishing " + input.getNameExt());
+                        .exec("Publishing " + input.getNameExt());
             }
         }
     }
