@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@TemplateRegistration(folder = "Other", content = "PLPGSQL_Template.plpgsql")
+@TemplateRegistration(folder = "Other", content = "PLPGSQL.plpgsql")
 package uk.theretiredprogrammer.plpgsql;
 
 import org.netbeans.api.templates.TemplateRegistration;

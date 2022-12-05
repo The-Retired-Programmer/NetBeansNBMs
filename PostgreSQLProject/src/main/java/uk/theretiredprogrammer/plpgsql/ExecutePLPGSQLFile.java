@@ -29,7 +29,7 @@ import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.CLIExec;
+import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
 import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
 
 @ActionID(
@@ -48,13 +48,13 @@ public final class ExecutePLPGSQLFile implements ActionListener, Runnable {
     public ExecutePLPGSQLFile(List<DataObject> context) {
         this.context = context;
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent ev) {
         RequestProcessor rp = new RequestProcessor("text-x-plpgsql_execute");
         rp.post(this);
     }
-    
+
     @Override
     public void run() {
         try {
@@ -63,11 +63,12 @@ public final class ExecutePLPGSQLFile implements ActionListener, Runnable {
                 Project project = FileOwnerQuery.getOwner(input);
                 if (project != null && project instanceof PostgreSQLProject) {
                     PostgreSQLProject aproject = (PostgreSQLProject) project;
-                    new CLIExec(input.getParent(), "psql -f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager")
-                            .stderrToOutputWindow()
-                            .stdoutToOutputWindow()
-                            .ioTabName("Execute")
-                            .execute("Executing " + input.getNameExt());
+                    new NbCliDescriptor(input.getParent(),
+                            "psql", " -f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager")
+                            .ioTabName("Execute PgSQL")
+                            .stdoutToIO()
+                            .stderrToIO()
+                            .exec("Executing " + input.getNameExt());
                 }
             }
         } catch (IOException ex) {
