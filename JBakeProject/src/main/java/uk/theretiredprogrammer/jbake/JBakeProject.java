@@ -37,12 +37,12 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.CLIExec;
 import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
+import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
 
 public class JBakeProject implements Project {
-    
+
     private final FileObject projectDir;
     //private final ProjectState state;
     private Lookup lkp;
@@ -59,12 +59,12 @@ public class JBakeProject implements Project {
         //this.state = state;
         nodedynamicactionsmanager = new NodeActions(dir, "projectactions");
     }
-    
+
     @Override
     public FileObject getProjectDirectory() {
         return projectDir;
     }
-    
+
     @Override
     public Lookup getLookup() {
         if (lkp == null) {
@@ -75,54 +75,54 @@ public class JBakeProject implements Project {
         }
         return lkp;
     }
-    
+
     private final class Info implements ProjectInformation {
-        
+
         @StaticResource()
         public static final String JBAKE_ICON = "uk/theretiredprogrammer/jbake/jbake_logo.png";
-        
+
         @Override
         public Icon getIcon() {
             return new ImageIcon(ImageUtilities.loadImage(JBAKE_ICON));
         }
-        
+
         @Override
         public String getName() {
             return getProjectDirectory().getName();
         }
-        
+
         @Override
         public String getDisplayName() {
             return getName();
         }
-        
+
         @Override
         public void addPropertyChangeListener(PropertyChangeListener pcl) {
             //do nothing, won't change
         }
-        
+
         @Override
         public void removePropertyChangeListener(PropertyChangeListener pcl) {
             //do nothing, won't change
         }
-        
+
         @Override
         public Project getProject() {
             return JBakeProject.this;
         }
     }
-    
+
     class LogicalView implements LogicalViewProvider {
-        
+
         @StaticResource()
         public static final String JBAKE_ICON = "uk/theretiredprogrammer/jbake/jbake_logo.png";
-        
+
         private final JBakeProject project;
-        
+
         public LogicalView(JBakeProject project) {
             this.project = project;
         }
-        
+
         @Override
         public Node createLogicalView() {
             try {
@@ -138,11 +138,11 @@ public class JBakeProject implements Project {
                 return new AbstractNode(Children.LEAF);
             }
         }
-        
+
         private final class ProjectNode extends FilterNode {
-            
+
             final JBakeProject project;
-            
+
             public ProjectNode(Node node, JBakeProject project)
                     throws DataObjectNotFoundException {
                 super(node,
@@ -163,35 +163,35 @@ public class JBakeProject implements Project {
                 );
                 nodedynamicactionsmanager.setNodeActions(
                         new DynamicAsyncAction("Bake")
-                                .onAction(() -> new CLIExec(projectDir, "jbake -b")
-                                .stderrToOutputWindow()
-                                .stdoutToOutputWindow()
+                                .onAction(() -> new NbCliDescriptor(projectDir, "jbake", "-b")
+                                .stderrToIO()
+                                .stdoutToIO()
                                 .ioTabName("Bake " + projectDir.getName())
-                                .execute("Baking"))
+                                .exec("Baking"))
                 );
             }
-            
+
             @Override
             public Action[] getActions(boolean arg0) {
                 return nodedynamicactionsmanager.getAllNodeActions();
             }
-            
+
             @Override
             public Image getIcon(int type) {
                 return ImageUtilities.loadImage(JBAKE_ICON);
             }
-            
+
             @Override
             public Image getOpenedIcon(int type) {
                 return getIcon(type);
             }
-            
+
             @Override
             public String getDisplayName() {
                 return project.getProjectDirectory().getName();
             }
         }
-        
+
         @Override
         public Node findPath(Node root, Object target) {
             //leave unimplemented for now
