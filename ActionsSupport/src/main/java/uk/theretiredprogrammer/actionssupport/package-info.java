@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.theretiredprogrammer.actionssupport;
 
 /**
  * The ActionsSupport NBM is a set of classes which can be used by other
  * NetBeans plugins, to allow the creation of Actions, with the ability to run
  * external programs.
- * 
+ *
  * This document is designed for developers of NetBeans Modules who wish to
  * integrate these features into their code.
  *
  * These Action can execute:
  *
- * NetBeans methods, Methods coded within the plugin, External programs which can
- * be executed in a CLI-like manner, allowing the use of such programs from the
- * NetBeans UI
+ * NetBeans methods, Methods coded within the plugin
+ *
+ * External programs which can be executed in a CLI-like manner, allowing the
+ * use of such programs from the NetBeans UI
  *
  * DynamicActions and DynamicAsyncActions
  *
@@ -50,8 +50,8 @@ package uk.theretiredprogrammer.actionssupport;
  * NodeActions supports the creation of Actions for a node, by enabling the
  * creation of DynamicCLIActions using a properties file.
  *
- * It observes the node folder containing the property file, ensuring
- * the actions are updated whenever changes occur to the properties file.
+ * It observes the node folder containing the property file, ensuring the
+ * actions are updated whenever changes occur to the properties file.
  *
  * Additional files within the node folder can be observed, so that changes can
  * trigger updates to any associated objects.

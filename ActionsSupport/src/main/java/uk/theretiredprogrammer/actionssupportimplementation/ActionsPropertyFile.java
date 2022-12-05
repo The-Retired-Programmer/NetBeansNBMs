@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import org.openide.filesystems.FileObject;
-import uk.theretiredprogrammer.actionssupport.CLIExec;
 import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
+import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
 
 public class ActionsPropertyFile {
 
@@ -58,46 +58,37 @@ public class ActionsPropertyFile {
         int propertycount = Integer.parseInt(pcount);
         // set up the commands
         for (int j = 1; j <= propertycount; j++) {
-            CLIExec cliexec = cliExecFromProperties(filefolder, properties, j);
-            if (cliexec != null) {
+            NbCliDescriptor nbclidescriptor = getNbCliDescriptorFromProperties(filefolder, properties, j);
+            if (nbclidescriptor != null) {
                 String label = properties.getProperty(Integer.toString(j) + ".label");
                 dynamicactions.add(
                         new DynamicAsyncAction(label)
-                                .onAction(() -> cliexec.execute(label)));
+                                .onAction(() -> nbclidescriptor.exec(label)));
             }
         }
     }
 
-    private CLIExec cliExecFromProperties(FileObject dir, Properties properties, int iPrefix) {
+    private NbCliDescriptor getNbCliDescriptorFromProperties(FileObject dir, Properties properties, int iPrefix) {
         String prefix = Integer.toString(iPrefix);
         String label = properties.getProperty(prefix + ".label");
         String cmdline = properties.getProperty(prefix + ".command");
         if (cmdline == null || label == null) {
             return null;
         }
-        String tabname = properties.getProperty(prefix + ".tabname",label);
-        CLIExec cliexec = new CLIExec(dir, cmdline)
-                .stderrToOutputWindow()
-                .stdoutToOutputWindow()
+        String tabname = properties.getProperty(prefix + ".tabname", label);
+        String commandargs = properties.getProperty(prefix + ".commandargs", "");
+        NbCliDescriptor nbclidescriptor = new NbCliDescriptor(dir, cmdline, commandargs)
+                .stdoutToIO()
+                .stderrToIO()
                 .ioTabName(tabname);
-        String inputfrom = properties.getProperty(prefix + ".inputfrom");
-        if (inputfrom != null) {
-            switch (inputfrom.toLowerCase()) {
-                case "file":
-                    String inputfilename = properties.getProperty(prefix + ".inputfile");
-                    if (inputfilename != null) {
-                        cliexec.stdin(dir.getFileObject(inputfilename, null));
-                    }
-                    break;
-                case "ui":
-                    cliexec.stdinFromOutputWindow();
-                    break;
-            }
+        String iotabclear = properties.getProperty(prefix + ".cleartab");
+        if (iotabclear != null & iotabclear.equals("every execution")) {
+            nbclidescriptor.ioTabClear();
         }
-        String cancel = properties.getProperty(prefix + ".needscancel");
-        if (cancel != null && cancel.equals("yes")) {
-            cliexec.needsCancel();
+        String cancel = properties.getProperty(prefix + ".killcommand");
+        if (cancel != null) {
+            nbclidescriptor.addKillCommand(cancel.toLowerCase());
         }
-        return cliexec;
+        return nbclidescriptor;
     }
 }

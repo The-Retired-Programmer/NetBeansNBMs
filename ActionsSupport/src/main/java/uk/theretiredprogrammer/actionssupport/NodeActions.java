@@ -40,39 +40,6 @@ import uk.theretiredprogrammer.actionssupportimplementation.FileChangeManager;
  * It provides a method for assembling node actions, combining various
  * sources of actions to create the Actions array required by a node definition.
  *
- * Structure of the Properties file.
- *
- * The properties file must include a property _COMMANDCOUNT_ which indicates
- * the number of actions being defined in this file.
- *
- * Each action definition must have two or more property lines defined:
- *
- * n.label - defines the label displayed in the popup list (required),
- *
- * n.command - defines the CLI command to be executed when the action is selected
- * (required),
- * 
- * n.tabname - defines the tab name to be used in the Output Window. Optional,
- * if not defined then the label property will be used.
- *
- * n.inputfrom - defines the source for the STDIN stream (optional). Value is
- * one of:
- *
- * "file" a file is to be used as the STDIN stream (see inputfile),
- * 
- * "ui" the Output window is to be the STDIN stream, providing keyboard input or
- *
- * "noinput" no input is provided for STDIN (default).
- *
- * n.inputfile - defines the input file for STDIN (required if inputfrom is set
- * to "file"),
- *
- * n.needscancel = yes - adds a cancel button to the Output Window sidebar. This
- * allows a user to cancel the Process created by the DynamicAsyncAction.
- *
- * Note that n must be an integer between 1 and _COMMANDCOUNT_.
-
- * @author richard linsdale
  */
 public class NodeActions {
 
@@ -136,7 +103,7 @@ public class NodeActions {
     public final void registerFile(String filename, String fileext, Consumer<FileChangeType> callback) {
         filechangemanager.register(filename, fileext, callback);
     }
-
+    
     /**
      * Define the set of basic actions which are to be included in the Node's
      * actions popup.
