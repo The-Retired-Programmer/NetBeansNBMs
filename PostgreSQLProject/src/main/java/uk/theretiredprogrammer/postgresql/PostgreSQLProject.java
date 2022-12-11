@@ -39,6 +39,7 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
+import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
 
 public class PostgreSQLProject implements Project {
 
@@ -79,6 +80,10 @@ public class PostgreSQLProject implements Project {
 
     public String getDatabaseName() throws IOException {
         return postgresqlproperties.getDatabase();
+    }
+
+    public SaveBeforeAction getSaveBeforeAction() {
+        return postgresqlproperties.getSaveBeforeAction();
     }
 
     public String getTabname() {

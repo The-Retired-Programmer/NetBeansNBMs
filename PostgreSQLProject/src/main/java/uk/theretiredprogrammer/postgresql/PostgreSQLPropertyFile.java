@@ -20,27 +20,35 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.openide.filesystems.FileObject;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
+import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
+import static uk.theretiredprogrammer.actionssupport.SaveBeforeAction.SaveBeforeActionMode.YES;
 
 public class PostgreSQLPropertyFile {
-    
+
     private String database;
     private boolean defined;
-    
+    private SaveBeforeAction savebeforeaction;
+
+    public PostgreSQLPropertyFile(FileObject projectdir, NodeActions nodedynamicactionsmanager) {
+        updateProperties(projectdir);
+        nodedynamicactionsmanager.registerFile("postgresql", "properties", fct -> updateProperties(projectdir));
+    }
+
     public String getDatabase() throws IOException {
         if (!defined) {
             throw new IOException("Database name not defined (in postgresql.properties)");
         }
         return database;
     }
-    
+
+    public SaveBeforeAction getSaveBeforeAction() {
+        return savebeforeaction;
+    }
+
     private void clearPropertyValues() {
         database = "";
         defined = false;
-    }
-
-    public PostgreSQLPropertyFile(FileObject projectdir, NodeActions nodedynamicactionsmanager) {
-        updateProperties(projectdir);
-        nodedynamicactionsmanager.registerFile("postgresql", "properties", fct -> updateProperties(projectdir));
+        savebeforeaction = null;
     }
 
     private void updateProperties(FileObject projectdir) {
@@ -54,17 +62,16 @@ public class PostgreSQLPropertyFile {
             try ( InputStream propsin = propertyfile.getInputStream()) {
                 properties.load(propsin);
             }
-            parseProperties(properties);
+            parseProperties(projectdir, properties);
         } catch (IOException ex) {
             defined = false;
         }
     }
 
-    private void parseProperties(Properties properties) throws IOException {
+    private void parseProperties(FileObject projectdir, Properties properties) throws IOException {
         database = properties.getProperty("database");
-        if (database == null) {
-            return;
-        }
-        defined = true;
+        defined = database != null;
+        savebeforeaction = new SaveBeforeAction(properties, "save_before_execution", YES);
+        savebeforeaction.setSourceRoot(projectdir);
     }
 }

@@ -63,6 +63,7 @@ public final class ExecutePLPGSQLFile implements ActionListener, Runnable {
                 Project project = FileOwnerQuery.getOwner(input);
                 if (project != null && project instanceof PostgreSQLProject) {
                     PostgreSQLProject aproject = (PostgreSQLProject) project;
+                    aproject.getSaveBeforeAction().saveIfModifiedByMode(dataObject);
                     new NbCliDescriptor(input.getParent(),
                             "psql", " -f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager")
                             .ioTabName("Execute PgSQL")
