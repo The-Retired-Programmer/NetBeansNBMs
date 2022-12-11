@@ -37,6 +37,7 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
 
 public class AsciiDocProject implements Project {
@@ -45,6 +46,7 @@ public class AsciiDocProject implements Project {
     //private final ProjectState state;
     private Lookup lkp;
     private final NodeActions nodedynamicactionsmanager;
+    private final AsciiDocPropertyFile asciidocproperties;
 
     /**
      * Constructor
@@ -52,10 +54,11 @@ public class AsciiDocProject implements Project {
      * @param dir project root folder
      * @param state the project state
      */
-    AsciiDocProject(FileObject dir, ProjectState state) {
+    public AsciiDocProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         //this.state = state;
         nodedynamicactionsmanager = new NodeActions(dir, "projectactions");
+        asciidocproperties = new AsciiDocPropertyFile(dir, nodedynamicactionsmanager);
     }
 
     @Override
@@ -74,8 +77,12 @@ public class AsciiDocProject implements Project {
         return lkp;
     }
 
+    public SaveBeforeAction getSaveBeforeAction() {
+        return asciidocproperties.getSaveBeforeAction();
+    }
+
     public String getAsciiDoctorParameters() {
-        return "-R src -D generated_documents ";
+        return "-R "+asciidocproperties.getSourceRootFolder()+" -D "+asciidocproperties.getGeneratedRootFolder()+" " ;
     }
 
     public String getTabname() {

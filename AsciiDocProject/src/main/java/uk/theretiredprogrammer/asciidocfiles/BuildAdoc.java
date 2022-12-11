@@ -28,6 +28,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
+import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 
 @ActionID(
@@ -60,12 +61,14 @@ public final class BuildAdoc implements ActionListener, Runnable {
             Project project = FileOwnerQuery.getOwner(input);
             if (project != null && project instanceof AsciiDocProject) {
                 AsciiDocProject aproject = (AsciiDocProject) project;
+                aproject.getSaveBeforeAction().saveIfModifiedByMode(dataObject);
                 new NbCliDescriptor(aproject.getProjectDirectory(),
                         "asciidoctor", "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath())
                         .stderrToIO()
                         .ioTabName(aproject.getTabname())
                         .exec("Publishing " + input.getNameExt());
             } else {
+                SaveBeforeAction.saveIfModified(dataObject);
                 new NbCliDescriptor(input.getParent(), "asciidoctor", "-r asciidoctor-pdf " + input.getPath())
                         .stderrToIO()
                         .ioTabName("Publish AsciiDocs")
