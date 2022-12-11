@@ -71,13 +71,13 @@ public class ActionsPropertyFile {
     private NbCliDescriptor getNbCliDescriptorFromProperties(FileObject dir, Properties properties, int iPrefix) {
         String prefix = Integer.toString(iPrefix);
         String label = properties.getProperty(prefix + ".label");
-        String cmdline = properties.getProperty(prefix + ".command");
-        if (cmdline == null || label == null) {
+        String cmd = properties.getProperty(prefix + ".command");
+        if (cmd == null || label == null) {
             return null;
         }
         String tabname = properties.getProperty(prefix + ".tabname", label);
         String commandargs = properties.getProperty(prefix + ".commandargs", "");
-        NbCliDescriptor nbclidescriptor = new NbCliDescriptor(dir, cmdline, commandargs)
+        NbCliDescriptor nbclidescriptor = new NbCliDescriptor(dir, cmd, commandargs)
                 .stdoutToIO()
                 .stderrToIO()
                 .ioTabName(tabname);

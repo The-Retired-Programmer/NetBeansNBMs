@@ -38,13 +38,13 @@ import uk.theretiredprogrammer.actionssupportimplementation.IOCOMMANDS.CommandPa
 import uk.theretiredprogrammer.actionssupportimplementation.Logging;
 
 /**
- * NbCLIExec implements both configuration of a CLI style command and also its
+ * NbCLIDescriptor implements both configuration of a CLI style command and also its
  * execution.
  *
  * Builder style method chaining is provided for configuration includes both
  * general configuration and input/output options.
  *
- * The CLI CommandArgs is processed to do limited parameter substitution,
+ * The CLI CommandArgs has parameter substitution prior to execution
  * ${NODEPATH} is replaced with the node folder path.
  */
 public class NbCliDescriptor {
@@ -65,15 +65,13 @@ public class NbCliDescriptor {
     private boolean iotabclear = false;
 
     /**
-     * Create the initial NbCLIExec object with the mandatory information. It
+     * Create the initial NbCLIDescriptor object with the mandatory information. It
      * can be further configured by use of the various builder style methods.
-     *
      *
      * @param dir The node folder - will be used as the working directory when
      * executing this object.
      * @param clicommand the command to be run when executing this command.
-     * @param cliargs the command arguements to use used when executing this
-     * command.
+     * @param cliargs the command arguments used when executing this command.
      */
     public NbCliDescriptor(FileObject dir, String clicommand, String cliargs) {
         this.dir = dir;
@@ -87,7 +85,7 @@ public class NbCliDescriptor {
     }
 
     /**
-     * Create the empty NbCLIExec object. It can be further configured by use of
+     * Create the empty NbCLIDescriptor object. It can be further configured by use of
      * the various builder style methods.
      */
     public NbCliDescriptor() {
@@ -95,7 +93,7 @@ public class NbCliDescriptor {
     }
 
     /**
-     * Clone a NbCLIExec object.
+     * Clone a NbCLIDescriptor object.
      *
      * @param source the object to clone from.
      */
@@ -152,7 +150,7 @@ public class NbCliDescriptor {
      * Define a method to be executed prior to the main Execute Process running.
      *
      * This method will be executed as part of the exec method, if the
-     * OutputWindow is to be used for input or output.
+     * IOTab is to be used.
      *
      * @param preprocessing the pre processing method
      * @return this object
@@ -163,10 +161,9 @@ public class NbCliDescriptor {
     }
 
     /**
-     * Define a method to be executed after to the main Execute Process running.
+     * Define a method to be executed after the external Process has completed.
      *
-     * This method will be executed as part of the exec method, if the
-     * OutputWindow is to be used for input or output.
+     * This method will be executed as part of the exec method, if IOTab is being used..
      *
      * @param postprocessing the post processing method
      * @return this object
@@ -177,8 +174,7 @@ public class NbCliDescriptor {
     }
 
     /**
-     * Define the tab to be used, if the Output Window is to be used for input
-     * or output.
+     * Define the IOTab to be used.
      *
      * @param tabname tabname to be used/reused.
      * @return this object
@@ -480,7 +476,7 @@ public class NbCliDescriptor {
     }
 
     /**
-     * Execute the NbCliDescription - will run the defined command/arguements in
+     * Execute the NbCliDescription - will run the defined command/arguments in
      * an external process.
      *
      * will create any necessary threads to manage data to and from that
@@ -540,7 +536,7 @@ public class NbCliDescriptor {
             stdin.close(process);
             //  close the process output stream ie STDOUT
             stdout.close(process);
-            // close the process error stream ie TransferOUT
+            // close the process error stream ie STDERR
             stderr.close(process);
         } catch (InterruptedException | IOException ex) {
             logging.severe(ex.toString());
