@@ -80,6 +80,10 @@ public class AsciiDocProject implements Project {
     public SaveBeforeAction getSaveBeforeAction() {
         return asciidocproperties.getSaveBeforeAction();
     }
+    
+    public boolean isParagraphLayout(){
+        return asciidocproperties.isParagraphLayout();
+    }
 
     public String getAsciiDoctorParameters() {
         return "-R "+asciidocproperties.getSourceRootFolder()+" -D "+asciidocproperties.getGeneratedRootFolder()+" " ;

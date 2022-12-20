@@ -18,18 +18,18 @@ package uk.theretiredprogrammer.asciidoc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openide.filesystems.FileObject;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
 import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
 import static uk.theretiredprogrammer.actionssupport.SaveBeforeAction.SaveBeforeActionMode.ALL;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 public class AsciiDocPropertyFile {
 
     private SaveBeforeAction savebeforeaction;
     private String srcroot;
     private String generatedroot;
+    private boolean paragraphLayout;
 
     public AsciiDocPropertyFile(FileObject projectdir, NodeActions nodedynamicactionsmanager) {
         updateProperties(projectdir);
@@ -47,6 +47,10 @@ public class AsciiDocPropertyFile {
     public String getGeneratedRootFolder() {
         return generatedroot;
     }
+    
+    public boolean isParagraphLayout(){
+        return paragraphLayout;
+    }
 
     private void updateProperties(FileObject projectdir) {
         try {
@@ -60,7 +64,7 @@ public class AsciiDocPropertyFile {
             }
             parseProperties(projectdir, properties);
         } catch (IOException ex) {
-            Logger.getLogger("uk.theretiredprogrammer.asciidoc").log(Level.SEVERE, "Unable to read properties from asciidoc.properties: {0}", ex);
+            UserReporting.exceptionWithMessage("Unable to read properties from asciidoc.properties: ", ex);
         }
     }
 
@@ -69,5 +73,17 @@ public class AsciiDocPropertyFile {
         generatedroot = properties.getProperty("generated_root_folder", "generated_documents");
         savebeforeaction = new SaveBeforeAction(properties, "save_before_publishing", ALL);
         savebeforeaction.setSourceRoot(projectdir.getFileObject(srcroot));
+        String layout = properties.getProperty("conversion_layout", "paragraph");
+        switch (layout) {
+            case "paragraph":
+                paragraphLayout = true;
+                break;
+            case "sentence":
+                paragraphLayout = false;
+                break;
+            default:
+                paragraphLayout = true;
+                UserReporting.warning("Unknown value for conversion_layout property - default selected");
+        }
     }
 }
