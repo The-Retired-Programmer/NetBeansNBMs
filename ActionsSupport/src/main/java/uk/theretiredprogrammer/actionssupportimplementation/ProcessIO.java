@@ -21,29 +21,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.function.Supplier;
+import org.netbeans.api.io.OutputWriter;
 
-public abstract class ProcessIO<S,RW> {
-    
-    Logging logging;
-    
-    public abstract void startTransfer(Supplier<S>streamSupplier, Supplier<RW>rwSupplier);
-    
+public abstract class ProcessIO<S, RW> {
+
+    public abstract void startTransfer(Supplier<S> streamSupplier, Supplier<RW> rwSupplier, String iotabname, OutputWriter err);
+
     public abstract void waitFinished(long timeout) throws InterruptedException;
-    
-    public abstract void close(Process process);
-    
-    // common methods
-    
-    public ProcessIO(Logging logging){
-        this.logging = logging;
-    }
-    
-    public ProcessIO(ProcessIO source) {
-        this.logging = source.logging;
-    }
-    
+
+    public abstract void close(Process process, String iotabname, OutputWriter err);
+
     private static final String NEWLINE = System.getProperty("line.separator");
-    
+
     public void streamTransfer(InputStream instream, OutputStream outstream) throws IOException {
         try (outstream) {
             byte[] buf = new byte[8192];

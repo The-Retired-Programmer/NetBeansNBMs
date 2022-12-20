@@ -19,18 +19,17 @@ import org.netbeans.api.io.OutputWriter;
 
 public class STDERR extends TransferOUT {
 
-    public STDERR(Logging logging){
-        super("STDERR", logging);
+    public STDERR() {
+        super("STDERR");
     }
-    
+
     public STDERR(STDERR source) {
         super(source);
     }
-    
+
     @Override
     public void setOutputWriter(OutputWriter outputwriter) {
         super.setOutputWriter(outputwriter);
-        logging.setErrorReporter(outputwriter);
     }
 
     @Override

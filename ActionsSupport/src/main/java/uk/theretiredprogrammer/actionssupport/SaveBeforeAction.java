@@ -17,8 +17,6 @@ package uk.theretiredprogrammer.actionssupport;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.openide.cookies.SaveCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
@@ -108,7 +106,7 @@ public class SaveBeforeAction {
                 return mode;
             }
         }
-        Logger.getLogger("uk.theretiredprogrammer.actionssupport").log(Level.WARNING, "Unknown {0} option: {1}", new String[]{propertyname, prop});
+        UserReporting.warning("Unknown "+propertyname+" option: "+prop);
         return defaultmode;
     }
 
@@ -137,7 +135,7 @@ public class SaveBeforeAction {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger("uk.theretiredprogrammer.actionssupport").log(Level.SEVERE, "Unable to close a modified file prior to execution: {0}", ex);
+            UserReporting.exceptionWithMessage("Unable to close a modified file prior to execution: ", ex);
         }
     }
 
@@ -172,8 +170,7 @@ public class SaveBeforeAction {
                 saveIfModified(DataObject.find(file));
             }
         } catch (DataObjectNotFoundException ex) {
-            Logger.getLogger("uk.theretiredprogrammer.actionssupport").log(Level.SEVERE, "Unable to find adataobject prior to execution: {0}", ex);
+            UserReporting.exceptionWithMessage("Unable to find a dataobject prior to execution: ", ex);
         }
     }
-
 }

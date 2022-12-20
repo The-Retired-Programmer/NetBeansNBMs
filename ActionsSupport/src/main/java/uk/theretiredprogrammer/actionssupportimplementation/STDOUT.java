@@ -18,6 +18,7 @@ package uk.theretiredprogrammer.actionssupportimplementation;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.util.function.Supplier;
+import org.netbeans.api.io.OutputWriter;
 import org.openide.util.RequestProcessor;
 import org.openide.util.RequestProcessor.Task;
 
@@ -25,19 +26,19 @@ public class STDOUT extends TransferOUT {
 
     private Task task;
 
-    public STDOUT(Logging logging) {
-        super("STDOUT", logging);
+    public STDOUT() {
+        super("STDOUT");
     }
-    
+
     public STDOUT(STDOUT source) {
         super(source);
         this.task = source.task;
     }
 
     @Override
-    public void startTransfer(Supplier<InputStream>getStream, Supplier<BufferedReader>getReader) {
+    public void startTransfer(Supplier<InputStream> getStream, Supplier<BufferedReader> getReader, String iotabname, OutputWriter err) {
         RequestProcessor processor = new RequestProcessor("stdout");
-        task = processor.post(() -> super.startTransfer(getStream, getReader));
+        task = processor.post(() -> super.startTransfer(getStream, getReader, iotabname, err));
     }
 
     @Override

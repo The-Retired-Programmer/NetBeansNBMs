@@ -18,13 +18,11 @@ package uk.theretiredprogrammer.actionssupportimplementation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 import org.openide.filesystems.FileAttributeEvent;
 import org.openide.filesystems.FileChangeListener;
 import org.openide.filesystems.FileEvent;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileRenameEvent;
-import org.openide.filesystems.FileUtil;
 import uk.theretiredprogrammer.actionssupport.NodeActions.FileChangeType;
 
 public class FileChangeManager {
@@ -36,8 +34,6 @@ public class FileChangeManager {
     public FileChangeManager(FileObject directory) {
         this.directory = directory;
         directorylistener = new DirectoryListener();
-        String msg  = "AddListenerToFolder: "+FileUtil.toFile(directory).getAbsolutePath();
-        Logger.getLogger("uk.theretiredprogrammer.actionssupportimplementation").warning(msg);
         directory.addFileChangeListener(directorylistener);
     }
 
@@ -46,14 +42,10 @@ public class FileChangeManager {
     }
 
     private void handleFileChange(FileObject file, FileChangeType changetype) {
-        String msg  = "Filechange: "+FileUtil.toFile(file).getAbsolutePath()+"; ChangeType: "+changetype.toString();
-        Logger.getLogger("uk.theretiredprogrammer.actionssupportimplementation").warning(msg);
         handleFileChange(file.getParent(), file.getName(), file.getExt(), changetype);
     }
 
     private void handleFileChange(FileObject directory, String name, String ext, FileChangeType changetype) {
-        String msg  = "ChangeInFolder: "+FileUtil.toFile(directory).getAbsolutePath()+"; Filename: "+name+"."+ext+"; ChangeType: "+changetype.toString();
-        Logger.getLogger("uk.theretiredprogrammer.actionssupportimplementation").warning(msg);
         registrations.stream()
                 .filter(r -> r.name.equals(name) && r.ext.equals(ext) && directory.equals(this.directory))
                 .forEach(r -> r.callback.accept(changetype));

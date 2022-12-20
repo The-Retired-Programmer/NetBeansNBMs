@@ -22,8 +22,10 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import org.netbeans.api.io.OutputWriter;
 import org.openide.util.RequestProcessor;
 import org.openide.util.RequestProcessor.Task;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 public class IOCOMMANDS extends ProcessIO<InputStream, BufferedReader> {
 
@@ -32,13 +34,11 @@ public class IOCOMMANDS extends ProcessIO<InputStream, BufferedReader> {
 
     private Reader inputreader = null;
     private final Map<String, CommandPair> commands = new HashMap<>();
-
-    public IOCOMMANDS(Logging logging) {
-        super(logging);
-    }
     
+    public IOCOMMANDS(){
+    }
+
     public IOCOMMANDS(IOCOMMANDS source) {
-        super(source);
         this.task = source.task;
         this.inuse = source.inuse;
         this.inputreader = source.inputreader;
@@ -50,7 +50,7 @@ public class IOCOMMANDS extends ProcessIO<InputStream, BufferedReader> {
     }
 
     public void addCommand(String command, Runnable action, boolean terminating) {
-        this.commands.put(command, new CommandPair(action,terminating));
+        this.commands.put(command, new CommandPair(action, terminating));
     }
 
     public void setInputreader(Reader inputreader) {
@@ -58,11 +58,11 @@ public class IOCOMMANDS extends ProcessIO<InputStream, BufferedReader> {
     }
 
     @Override
-    public void startTransfer(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier) {
+    public void startTransfer(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier, String iotabname, OutputWriter err) {
         if (!commands.isEmpty() && inputreader != null) {
             inuse = true;
             RequestProcessor processor = new RequestProcessor("commands");
-            task = processor.post(() -> commandsTransfer());
+            task = processor.post(() -> commandsTransfer(iotabname, err));
         }
     }
 
@@ -74,47 +74,47 @@ public class IOCOMMANDS extends ProcessIO<InputStream, BufferedReader> {
     }
 
     @Override
-    public void close(Process process) {
+    public void close(Process process, String iotabname, OutputWriter err) {
         try {
             if (inuse) {
                 inputreader.close();
             }
         } catch (IOException ex) {
-            logging.warning("Closing IOCOMMANDS " + ex);
+            UserReporting.warning(iotabname, err, "Closing IOCOMMANDS " + ex);
         }
     }
 
     @SuppressWarnings("SleepWhileInLoop")
-    private void commandsTransfer() {
+    private void commandsTransfer(String iotabname, OutputWriter err) {
         try {
             BufferedReader inputlinereader = new BufferedReader(inputreader);
             String commandline;
             while ((commandline = inputlinereader.readLine()) != null) {
-                if (processCommands(commandline)) {
+                if (processCommands(commandline, iotabname, err)) {
                     return; // was a terminating command
                 }
             }
         } catch (IOException ex) {
-            logging.severe("Could not read IOCOMMANDS " + ex);
+            UserReporting.error(iotabname, err, "Could not read IOCOMMANDS " + ex);
         }
     }
 
-    private boolean processCommands(String commandline) {
+    private boolean processCommands(String commandline, String iotabname, OutputWriter err) {
         commandline = commandline.toLowerCase();
         CommandPair command = commands.get(commandline);
         if (command == null) {
-            logging.user("unknown command");
+            UserReporting.warning(iotabname, err, "unknown command");
             return false;
         }
         command.commandaction.run();
         return command.terminating;
     }
-    
+
     public class CommandPair {
 
         public final Runnable commandaction;
         public final boolean terminating;
-        
+
         public CommandPair(Runnable commandaction, boolean terminating) {
             this.commandaction = commandaction;
             this.terminating = terminating;

@@ -35,17 +35,16 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import uk.theretiredprogrammer.actionssupportimplementation.IOCOMMANDS.CommandPair;
-import uk.theretiredprogrammer.actionssupportimplementation.Logging;
 
 /**
- * NbCLIDescriptor implements both configuration of a CLI style command and also its
- * execution.
+ * NbCLIDescriptor implements both configuration of a CLI style command and also
+ * its execution.
  *
  * Builder style method chaining is provided for configuration includes both
  * general configuration and input/output options.
  *
- * The CLI CommandArgs has parameter substitution prior to execution
- * ${NODEPATH} is replaced with the node folder path.
+ * The CLI CommandArgs has parameter substitution prior to execution ${NODEPATH}
+ * is replaced with the node folder path.
  */
 public class NbCliDescriptor {
 
@@ -57,7 +56,6 @@ public class NbCliDescriptor {
     private String clicommand;
     private String cliargs;
 
-    private final Logging logging;
     private final STDIN stdin;
     private final STDOUT stdout;
     private final STDERR stderr;
@@ -65,8 +63,8 @@ public class NbCliDescriptor {
     private boolean iotabclear = false;
 
     /**
-     * Create the initial NbCLIDescriptor object with the mandatory information. It
-     * can be further configured by use of the various builder style methods.
+     * Create the initial NbCLIDescriptor object with the mandatory information.
+     * It can be further configured by use of the various builder style methods.
      *
      * @param dir The node folder - will be used as the working directory when
      * executing this object.
@@ -77,16 +75,15 @@ public class NbCliDescriptor {
         this.dir = dir;
         this.clicommand = clicommand;
         this.cliargs = cliargs;
-        this.logging = new Logging();
-        this.stdin = new STDIN(logging);
-        this.stdout = new STDOUT(logging);
-        this.stderr = new STDERR(logging);
-        this.iocommands = new IOCOMMANDS(logging);
+        this.stdin = new STDIN();
+        this.stdout = new STDOUT();
+        this.stderr = new STDERR();
+        this.iocommands = new IOCOMMANDS();
     }
 
     /**
-     * Create the empty NbCLIDescriptor object. It can be further configured by use of
-     * the various builder style methods.
+     * Create the empty NbCLIDescriptor object. It can be further configured by
+     * use of the various builder style methods.
      */
     public NbCliDescriptor() {
         this(null, "", "");
@@ -101,7 +98,6 @@ public class NbCliDescriptor {
         this.dir = source.dir;
         this.clicommand = source.clicommand;
         this.cliargs = source.cliargs;
-        this.logging = source.logging;
         this.stdin = new STDIN(source.stdin);
         this.stderr = new STDERR(source.stderr);
         this.stdout = new STDOUT(source.stdout);
@@ -126,7 +122,7 @@ public class NbCliDescriptor {
 
     /**
      * Define the cli command to be used for process execution.
-     * 
+     *
      * @param clicommand the cli command
      * @return this object
      */
@@ -137,7 +133,7 @@ public class NbCliDescriptor {
 
     /**
      * Define the cli arguements to be used for process execution.
-     * 
+     *
      * @param cliargs the cli arguements
      * @return this object
      */
@@ -149,8 +145,8 @@ public class NbCliDescriptor {
     /**
      * Define a method to be executed prior to the main Execute Process running.
      *
-     * This method will be executed as part of the exec method, if the
-     * IOTab is to be used.
+     * This method will be executed as part of the exec method, if the IOTab is
+     * to be used.
      *
      * @param preprocessing the pre processing method
      * @return this object
@@ -163,7 +159,8 @@ public class NbCliDescriptor {
     /**
      * Define a method to be executed after the external Process has completed.
      *
-     * This method will be executed as part of the exec method, if IOTab is being used..
+     * This method will be executed as part of the exec method, if IOTab is
+     * being used..
      *
      * @param postprocessing the post processing method
      * @return this object
@@ -186,7 +183,7 @@ public class NbCliDescriptor {
 
     /**
      * Clear the IOTab before each usage.
-     * 
+     *
      * @return this object
      */
     public NbCliDescriptor ioTabClear() {
@@ -196,7 +193,7 @@ public class NbCliDescriptor {
 
     /**
      * Add a set of commands to the allowed commands.
-     * 
+     *
      * @param commands the map containing the command definitions
      * @return this object
      */
@@ -517,13 +514,13 @@ public class NbCliDescriptor {
             NbProcessDescriptor processdescriptor = new NbProcessDescriptor(clicommand, substituteNODEPATH(cliargs, dir));
             process = processdescriptor.exec(null, null, FileUtil.toFile(dir));
             // IOCOMMAND handling
-            iocommands.startTransfer(null, null);
+            iocommands.startTransfer(null, null, tabname, errwtr);
             // STDIN handling
-            stdin.startTransfer(() -> process.getOutputStream(), () -> process.outputWriter());
+            stdin.startTransfer(() -> process.getOutputStream(), () -> process.outputWriter(), tabname, errwtr);
             // STDOUT handling
-            stdout.startTransfer(() -> process.getInputStream(), () -> process.inputReader());
+            stdout.startTransfer(() -> process.getInputStream(), () -> process.inputReader(), tabname, errwtr);
             // STDERR handling
-            stderr.startTransfer(() -> process.getErrorStream(), () -> process.errorReader());
+            stderr.startTransfer(() -> process.getErrorStream(), () -> process.errorReader(), tabname, errwtr);
             // wait for completion - and tidy up
             process.waitFor();
             iocommands.waitFinished(1000);
@@ -531,15 +528,15 @@ public class NbCliDescriptor {
             stdout.waitFinished(10000);
             stderr.waitFinished(10000);
             // close the process command handler ie IOCOMMAND
-            iocommands.close(process);
+            iocommands.close(process, tabname, errwtr);
             // close the process input stream ie STDIN
-            stdin.close(process);
+            stdin.close(process, tabname, errwtr);
             //  close the process output stream ie STDOUT
-            stdout.close(process);
+            stdout.close(process, tabname, errwtr);
             // close the process error stream ie STDERR
-            stderr.close(process);
+            stderr.close(process, tabname, errwtr);
         } catch (InterruptedException | IOException ex) {
-            logging.severe(ex.toString());
+            UserReporting.exception(tabname, errwtr, ex);
         }
         if (tabname != null) {
             if (postprocessing != null) {

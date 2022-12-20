@@ -23,10 +23,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.function.Supplier;
+import org.netbeans.api.io.OutputWriter;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import org.openide.util.RequestProcessor;
 import org.openide.util.RequestProcessor.Task;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 public class STDIN extends ProcessIO<OutputStream, Writer> {
 
@@ -46,12 +48,10 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
     private InputStream instream;
     private BufferedReader reader;
     
-    public STDIN(Logging logging) {
-        super(logging);
+    public STDIN() {
     }
-    
+
     public STDIN(STDIN source) {
-        super(source);
         this.mode = source.mode;
         this.task = source.task;
         this.out = source.out;
@@ -62,7 +62,7 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
         this.instream = source.instream;
         this.reader = source.reader;
     }
-    
+
     public void ignore() {
         mode = InStyle.IGNORE;
     }
@@ -98,9 +98,9 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
 
     // active methods called during Process setup and take down
     @Override
-    public void startTransfer(Supplier<OutputStream>streamSupplier, Supplier<Writer>rwSupplier) {
+    public void startTransfer(Supplier<OutputStream> streamSupplier, Supplier<Writer> rwSupplier, String iotabname, OutputWriter err) {
         RequestProcessor processor = new RequestProcessor("stdin");
-        task = processor.post(() -> stdinTransfer(streamSupplier, rwSupplier));
+        task = processor.post(() -> stdinTransfer(streamSupplier, rwSupplier, iotabname, err));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
     }
 
     @Override
-    public void close(Process process) {
+    public void close(Process process, String iotabname, OutputWriter err) {
         try {
             if (out != null) {
                 out.close();
@@ -118,11 +118,11 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
                 writer.close();
             }
         } catch (IOException ex) {
-            logging.warning("Closing STDIN " + ex);
+            UserReporting.warning("Closing STDIN " + ex);
         }
     }
 
-    private void stdinTransfer(Supplier<OutputStream>streamSupplier, Supplier<Writer>rwSupplier) {
+    private void stdinTransfer(Supplier<OutputStream> streamSupplier, Supplier<Writer> rwSupplier, String iotabname, OutputWriter err) {
         try {
             switch (mode) {
                 case IGNORE:
@@ -152,10 +152,10 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
                     readerTransfer(reader, writer);
                     break;
                 default:
-                    logging.severe("Unknown mode in STDIN: " + mode);
+                    UserReporting.error(iotabname, err, "Unknown mode in STDIN: " + mode);
             }
         } catch (IOException ex) {
-            logging.user("Could not write to STDIN " + ex);
+            UserReporting.warning(iotabname, err, "Could not write to STDIN " + ex);
         }
     }
 }

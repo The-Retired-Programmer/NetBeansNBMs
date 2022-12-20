@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import org.netbeans.api.io.OutputWriter;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader> {
 
@@ -46,13 +47,11 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
     private InputStream in = null;
     private BufferedReader reader = null;
 
-    public TransferOUT(String name, Logging logging) {
-        super(logging);
+    public TransferOUT(String name) {
         this.name = name;
     }
-    
+
     public TransferOUT(TransferOUT source) {
-        super(source);
         this.name = source.name;
         this.mode = source.mode;
         this.outputwriter = source.outputwriter;
@@ -108,7 +107,7 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
 
     // methods called during Process setup and take down
     @Override
-    public void startTransfer(Supplier<InputStream>streamSupplier, Supplier<BufferedReader>rwSupplier) {
+    public void startTransfer(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier, String iotabname, OutputWriter err) {
         try {
             switch (mode) {
                 case IGNORE:
@@ -142,7 +141,7 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
                     break;
                 case OUTPUTWRITER:
                     if (outputwriter == null) {
-                        logging.user("Could not read " + name + ": OutputWriter is undefined");
+                        UserReporting.warning(iotabname, err, "Could not read " + name + ": OutputWriter is undefined");
                         return;
                     }
                     reader = rwSupplier.get();
@@ -152,15 +151,15 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
                     }
                     break;
                 default:
-                    logging.severe("Unknown mode in " + name + ": " + mode);
+                    UserReporting.error(iotabname, err, "Unknown mode in " + name + ": " + mode);
             }
         } catch (IOException ex) {
-            logging.user("Could not read " + name + " " + ex);
+            UserReporting.warning(iotabname, err, "Could not read " + name + " " + ex);
         }
     }
 
     @Override
-    public void close(Process process) {
+    public void close(Process process, String iotabname, OutputWriter err) {
         try {
             if (in != null) {
                 in.close();
@@ -169,7 +168,7 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
                 reader.close();
             }
         } catch (IOException ex) {
-            logging.warning("Closing " + name + " " + ex);
+            UserReporting.warning(iotabname, err, "Closing " + name + " " + ex);
         }
     }
 }
