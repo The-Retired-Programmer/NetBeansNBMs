@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: uk/theretiredprogrammer/picoc/Bundle.properties
+OpenIDE-Module-Display-Category: Tools - TheRetiredProgrammer
+
