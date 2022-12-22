@@ -223,11 +223,26 @@ public class HtmlFragment2AsciiDoc {
     private void initialisetagrules() {
         //insert into tagrules for each tag
         inserttagrule("p", this::nothing, this::paraend);
+        inserttagrule("div", this::nothing, this::nothing); // could do better in future
         inserttagrule("span", this::nothing, this::nothing);  // assumes that span usages are standard and so can be ignored
         inserttagrule("img", this::imagestart, this::nothing);
         inserttagrule("a", this::linkstart, this::linkend);
         inserttagrule("strong", this::strong, this::strong);
+        inserttagrule("b", this::strong, this::strong);
         inserttagrule("br", this::linebreak, this::nothing);
+        inserttagrule("hr", this::hrule, this::nothing);
+        inserttagrule("ul", this::ulstart, this::ulend);
+        inserttagrule("li", this::listitem, this::nothing);
+        inserttagrule("table", this::tablestart, this::tableend);
+        inserttagrule("tbody", this::nothing, this::nothing);
+        inserttagrule("tr",this::trstart, this::nothing);
+        inserttagrule("td", this::tdstart, this::nothing);
+        inserttagrule("h1", this::h1start, this::newlineifrequired);
+        inserttagrule("h2", this::h2start, this::newlineifrequired);
+        inserttagrule("h3", this::h3start, this::newlineifrequired);
+        inserttagrule("h4", this::h4start, this::newlineifrequired);
+        inserttagrule("h5", this::h5start, this::newlineifrequired);
+        inserttagrule("h6", this::h6start, this::newlineifrequired);
         // define unknown tagrules
         unknowntagrules = new ElementTranslationRules(this::undefinedstarttag, this::undefinedendtag);
     }
@@ -238,15 +253,93 @@ public class HtmlFragment2AsciiDoc {
 
     private void nothing() {
     }
+    
+    private void newlineifrequired() {
+        formatter.newlineifrequired();
+    }
 
     private void paraend() {
-        formatter.newline();
+        formatter.newlineifrequired();
         formatter.newline();
     }
 
     private void linebreak() {
         formatter.insertnobreaks(" +");
         formatter.newline();
+    }
+    
+    private void hrule() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("'''");
+        formatter.newline();
+    }
+    
+    private void ulstart() {
+        formatter.newlineifrequired();
+        formatter.newline();
+    }
+    
+    private void ulend() {
+        formatter.newlineifrequired();
+        formatter.newline();
+    }
+    
+    private void listitem() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("*  ");
+    }
+    
+    private void tablestart() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("[cols=\"\"]");
+        formatter.newline();
+        formatter.insertnobreaks("|===");
+    }
+    
+    private void tableend() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("|===");
+        formatter.newline();
+    }
+    
+    private void trstart() {
+       formatter.newlineifrequired(); 
+       formatter.newline(); 
+    }
+    
+    private void tdstart() {
+        formatter.newlineifrequired();
+        formatter.insert("|");
+    }
+    
+    private void h1start() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("= ");
+    }
+
+    private void h2start() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("== ");
+    }
+
+    private void h3start() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("=== ");
+    }
+
+    private void h4start() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("==== ");
+    }
+
+    private void h5start() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("===== ");
+    }
+
+    private void h6start() {
+        formatter.newlineifrequired();
+        formatter.insertnobreaks("====== ");
     }
 
     private void strong() {
@@ -261,7 +354,7 @@ public class HtmlFragment2AsciiDoc {
         adocattributes = insertnamedadocattribute(adocattributes, "class", "role");
         adocattributes = insertnamedadocattributefromstyle(adocattributes, "float:", "float");
 
-        formatter.newline();
+        formatter.newlineifrequired();
         formatter.insertnobreaks("image::" + getattribute("src") + "[" + adocattributes + "]");
         formatter.newline();
     }
