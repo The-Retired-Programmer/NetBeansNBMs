@@ -82,7 +82,7 @@ public class ActionsPropertyFile {
                 .stderrToIO()
                 .ioTabName(tabname);
         String iotabclear = properties.getProperty(prefix + ".cleartab");
-        if (iotabclear != null & iotabclear.equals("every execution")) {
+        if (iotabclear != null && iotabclear.equals("every execution")) {
             nbclidescriptor.ioTabClear();
         }
         String cancel = properties.getProperty(prefix + ".killcommand");
