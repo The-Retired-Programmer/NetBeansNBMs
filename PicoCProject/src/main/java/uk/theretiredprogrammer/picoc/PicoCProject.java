@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 richard linsdale.
+ * Copyright 2022-2023 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package uk.theretiredprogrammer.picoc;
 
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -44,9 +45,8 @@ import uk.theretiredprogrammer.actionssupport.NodeActions;
 public class PicoCProject implements Project {
 
     private final FileObject projectDir;
-    //private final ProjectState state;
     private Lookup lkp;
-    private final NodeActions nodeactionsmanager;
+    private final NodeActions nodeactions;
     private final PicoCPropertyFile picocproperties;
 
     /**
@@ -55,11 +55,11 @@ public class PicoCProject implements Project {
      * @param dir project root folder
      * @param state the project state
      */
-    public PicoCProject(FileObject dir, ProjectState state) {
+    public PicoCProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
         //this.state = state;
-        nodeactionsmanager = new NodeActions(dir, "projectactions");
-        picocproperties = new PicoCPropertyFile(dir, nodeactionsmanager);
+        nodeactions = new NodeActions(dir, "projectactions");
+        picocproperties = new PicoCPropertyFile(dir, nodeactions, state);
     }
 
     @Override
@@ -82,9 +82,6 @@ public class PicoCProject implements Project {
         return picocproperties.getSaveBeforeAction();
     }
 
-//    public String getAsciiDoctorParameters() {
-//        return "-R "+picocproperties.getSourceRootFolder()+" -D "+picocproperties.getGeneratedRootFolder()+" " ;
-//    }
     public String getTabname() {
         return "Compile " + projectDir.getName();
     }
@@ -169,13 +166,13 @@ public class PicoCProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodeactionsmanager.setNodeBasicActions(
+                nodeactions.setNodeBasicActions(
                         CommonProjectActions.renameProjectAction(),
                         CommonProjectActions.copyProjectAction(),
                         CommonProjectActions.closeProjectAction()
                 );
                 PicoCBuildWorkers workers = new PicoCBuildWorkers(projectDir.getName(), projectDir.getFileObject("build"));
-                nodeactionsmanager.setNodeActions(
+                nodeactions.setNodeActions(
                         new DynamicAsyncAction("Clean").onAction(() -> workers.cleanBuildFolder()),
                         new DynamicAsyncAction("Build Make file").onAction(() -> workers.buildMakeFile()),
                         new DynamicAsyncAction("Build Executables").onAction(() -> workers.buildExecutables()),
@@ -186,7 +183,7 @@ public class PicoCProject implements Project {
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return nodeactionsmanager.getAllNodeActions();
+                return nodeactions.getAllNodeActions();
             }
 
             @Override
