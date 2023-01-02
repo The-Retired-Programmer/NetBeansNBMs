@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-2023 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class NodeActions {
          */
         RENAMEDFROM,
         /**
-         * The observed f has been deleted
+         * The observed file has been deleted
          */
         DELETED
     }
