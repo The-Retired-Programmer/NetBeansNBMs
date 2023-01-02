@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 richard linsdale.
+ * Copyright 2022-2023 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,8 @@ import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
 public class PostgreSQLProject implements Project {
 
     private final FileObject projectDir;
-    //private final ProjectState state;
     private Lookup lkp;
-    private final NodeActions nodedynamicactionsmanager;
+    private final NodeActions nodeactions;
     private final PostgreSQLPropertyFile postgresqlproperties;
 
     /**
@@ -55,11 +54,10 @@ public class PostgreSQLProject implements Project {
      * @param dir project root folder
      * @param state the project state
      */
-    PostgreSQLProject(FileObject dir, ProjectState state) {
+    PostgreSQLProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
-        //this.state = state;
-        nodedynamicactionsmanager = new NodeActions(dir, "projectactions");
-        postgresqlproperties = new PostgreSQLPropertyFile(dir, nodedynamicactionsmanager);
+        nodeactions = new NodeActions(dir, "projectactions");
+        postgresqlproperties = new PostgreSQLPropertyFile(dir, nodeactions, state);
     }
 
     @Override
@@ -170,7 +168,7 @@ public class PostgreSQLProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodedynamicactionsmanager.setNodeBasicActions(
+                nodeactions.setNodeBasicActions(
                         CommonProjectActions.renameProjectAction(),
                         CommonProjectActions.copyProjectAction(),
                         CommonProjectActions.closeProjectAction()
@@ -179,7 +177,7 @@ public class PostgreSQLProject implements Project {
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return nodedynamicactionsmanager.getAllNodeActions();
+                return nodeactions.getAllNodeActions();
             }
 
             @Override

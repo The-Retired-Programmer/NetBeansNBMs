@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 richard linsdale.
+ * Copyright 2022-2023 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,13 @@ package uk.theretiredprogrammer.postgresql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
+import uk.theretiredprogrammer.actionssupport.NodeActions.FileChangeType;
 import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
 import static uk.theretiredprogrammer.actionssupport.SaveBeforeAction.SaveBeforeActionMode.YES;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 public class PostgreSQLPropertyFile {
 
@@ -29,9 +32,9 @@ public class PostgreSQLPropertyFile {
     private boolean defined;
     private SaveBeforeAction savebeforeaction;
 
-    public PostgreSQLPropertyFile(FileObject projectdir, NodeActions nodedynamicactionsmanager) {
-        updateProperties(projectdir);
-        nodedynamicactionsmanager.registerFile("postgresql", "properties", fct -> updateProperties(projectdir));
+    public PostgreSQLPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException {
+        loadProperties(projectdir);
+        nodeactions.registerFile("postgresql", "properties", fct -> loadProperties(fct, projectdir, state));
     }
 
     public String getDatabase() throws IOException {
@@ -51,27 +54,38 @@ public class PostgreSQLPropertyFile {
         savebeforeaction = null;
     }
 
-    private void updateProperties(FileObject projectdir) {
-        try {
-            clearPropertyValues();
-            FileObject propertyfile = projectdir.getFileObject("postgresql", "properties");
-            if (propertyfile == null) {
-                throw new IOException("postgresql.properties missing");
+    private void loadProperties(FileChangeType ftc, FileObject projectdir, ProjectState state) {
+        switch (ftc) {
+            case RENAMEDFROM:
+            case DELETED:
+                state.notifyDeleted();
+                break;
+            default:
+                try {
+                loadProperties(projectdir);
+            } catch (IOException ex) {
+                UserReporting.exceptionWithMessage("Unable to read properties from postgresql.properties: ", ex);
             }
-            Properties properties = new Properties();
-            try ( InputStream propsin = propertyfile.getInputStream()) {
-                properties.load(propsin);
-            }
-            parseProperties(projectdir, properties);
-        } catch (IOException ex) {
-            defined = false;
         }
     }
 
-    private void parseProperties(FileObject projectdir, Properties properties) throws IOException {
+    private void loadProperties(FileObject projectdir) throws IOException {
+        clearPropertyValues();
+        FileObject propertyfile = projectdir.getFileObject("postgresql", "properties");
+        if (propertyfile == null) {
+            throw new IOException("postgresql.properties missing in " + projectdir.getPath());
+        }
+        Properties properties = new Properties();
+        try ( InputStream propsin = propertyfile.getInputStream()) {
+            properties.load(propsin);
+        }
+        defined = parseProperties(projectdir, properties);
+    }
+
+    private boolean parseProperties(FileObject projectdir, Properties properties) throws IOException {
         database = properties.getProperty("database");
-        defined = database != null;
         savebeforeaction = new SaveBeforeAction(properties, "save_before_execution", YES);
         savebeforeaction.setSourceRoot(projectdir);
+        return database != null;
     }
 }
