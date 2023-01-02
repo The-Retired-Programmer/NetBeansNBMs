@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 richard linsdale.
+ * Copyright 2022-2023 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package uk.theretiredprogrammer.asciidoc;
 
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -37,15 +38,18 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
 import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.image.api.ImageManager;
+import uk.theretiredprogrammer.image.api.ScreenCaptureDescriptor;
 
 public class AsciiDocProject implements Project {
 
     private final FileObject projectDir;
-    //private final ProjectState state;
     private Lookup lkp;
-    private final NodeActions nodedynamicactionsmanager;
+    private final NodeActions nodeactions;
     private final AsciiDocPropertyFile asciidocproperties;
 
     /**
@@ -54,11 +58,10 @@ public class AsciiDocProject implements Project {
      * @param dir project root folder
      * @param state the project state
      */
-    public AsciiDocProject(FileObject dir, ProjectState state) {
+    public AsciiDocProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
-        //this.state = state;
-        nodedynamicactionsmanager = new NodeActions(dir, "projectactions");
-        asciidocproperties = new AsciiDocPropertyFile(dir, nodedynamicactionsmanager);
+        nodeactions = new NodeActions(dir, "projectactions");
+        asciidocproperties = new AsciiDocPropertyFile(dir, nodeactions, state);
     }
 
     @Override
@@ -80,13 +83,13 @@ public class AsciiDocProject implements Project {
     public SaveBeforeAction getSaveBeforeAction() {
         return asciidocproperties.getSaveBeforeAction();
     }
-    
-    public boolean isParagraphLayout(){
+
+    public boolean isParagraphLayout() {
         return asciidocproperties.isParagraphLayout();
     }
 
     public String getAsciiDoctorParameters() {
-        return "-R "+asciidocproperties.getSourceRootFolder()+" -D "+asciidocproperties.getGeneratedRootFolder()+" " ;
+        return "-R " + asciidocproperties.getSourceRootFolder() + " -D " + asciidocproperties.getGeneratedRootFolder() + " ";
     }
 
     public String getTabname() {
@@ -159,6 +162,8 @@ public class AsciiDocProject implements Project {
         private final class ProjectNode extends FilterNode {
 
             final AsciiDocProject project;
+            final ImageManager imagemanager;
+            ScreenCaptureDescriptor screencapturedescriptor;
 
             public ProjectNode(Node node, AsciiDocProject project)
                     throws DataObjectNotFoundException {
@@ -173,16 +178,39 @@ public class AsciiDocProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodedynamicactionsmanager.setNodeBasicActions(
+                nodeactions.setNodeBasicActions(
                         CommonProjectActions.renameProjectAction(),
                         CommonProjectActions.copyProjectAction(),
                         CommonProjectActions.closeProjectAction()
                 );
+                imagemanager = Lookup.getDefault().lookup(ImageManager.class);
+                nodeactions.setNodeActions(
+                        new DynamicAsyncAction("Gain Screen Capture")
+                                .enable(imagemanager != null)
+                                .onAction(() -> usescreencapture()),
+                        new DynamicAsyncAction("Drop Screen Capture")
+                                .enable(imagemanager != null)
+                                .onAction(() -> dropscreencapture())
+                );
+            }
+
+            private void usescreencapture() {
+                FileObject screenshotfolder = projectDir.getFileObject(asciidocproperties.getSourceRootFolder());
+                screencapturedescriptor = imagemanager.createScreenCaptureDescriptor(screenshotfolder, "screenshot", "png", "Publish AsciiDocs");
+                if (!imagemanager.gainDedicatedUse(screencapturedescriptor)) {
+                    UserReporting.error("Publish AsciiDocs", "Failed to Gain Screen Capture");
+                }
+            }
+
+            private void dropscreencapture() {
+                if (!imagemanager.dropDedicatedUse(screencapturedescriptor)) {
+                    UserReporting.error("Publish AsciiDocs", "Failed to Drop Screen Capture");
+                }
             }
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return nodedynamicactionsmanager.getAllNodeActions();
+                return nodeactions.getAllNodeActions();
             }
 
             @Override

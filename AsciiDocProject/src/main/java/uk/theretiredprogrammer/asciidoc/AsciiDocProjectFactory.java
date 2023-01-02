@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022 richard linsdale.
+ * Copyright 2018-2023 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.netbeans.spi.project.ProjectFactory;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 
 @ServiceProvider(service = ProjectFactory.class)
