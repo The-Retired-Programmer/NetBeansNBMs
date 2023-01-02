@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 richard linsdale.
+ * Copyright 2022-2023 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,8 @@ import uk.theretiredprogrammer.actionssupport.NodeActions;
 public class JBakeProject implements Project {
 
     private final FileObject projectDir;
-    //private final ProjectState state;
     private Lookup lkp;
-    private final NodeActions nodedynamicactionsmanager;
+    private final NodeActions nodeactions;
 
     /**
      * Constructor
@@ -56,8 +55,7 @@ public class JBakeProject implements Project {
      */
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
-        //this.state = state;
-        nodedynamicactionsmanager = new NodeActions(dir, "projectactions");
+        nodeactions = new NodeActions(dir, "projectactions");
     }
 
     @Override
@@ -156,12 +154,12 @@ public class JBakeProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodedynamicactionsmanager.setNodeBasicActions(
+                nodeactions.setNodeBasicActions(
                         CommonProjectActions.renameProjectAction(),
                         CommonProjectActions.copyProjectAction(),
                         CommonProjectActions.closeProjectAction()
                 );
-                nodedynamicactionsmanager.setNodeActions(
+                nodeactions.setNodeActions(
                         new DynamicAsyncAction("Bake")
                                 .onAction(() -> new NbCliDescriptor(projectDir, "jbake", "-b")
                                 .stderrToIO()
@@ -173,7 +171,7 @@ public class JBakeProject implements Project {
 
             @Override
             public Action[] getActions(boolean arg0) {
-                return nodedynamicactionsmanager.getAllNodeActions();
+                return nodeactions.getAllNodeActions();
             }
 
             @Override
