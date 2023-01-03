@@ -26,13 +26,17 @@ public class PicoCBuildWorkers {
 
     private final FileObject buildfolder;
     private final String iotabname;
-    
+
     public PicoCBuildWorkers(String iotabname, FileObject buildfolder) {
         this.iotabname = iotabname;
         this.buildfolder = buildfolder;
     }
-    
+
     public final void cleanBuildFolder() {
+        if (buildfolder == null) {
+            UserReporting.error(iotabname, "Build folder is not present");
+            return;
+        }
         UserReporting.startmessage(iotabname, "Cleaning Build Folder");
         try {
             for (FileObject content : buildfolder.getChildren()) {
@@ -44,8 +48,12 @@ public class PicoCBuildWorkers {
         }
         UserReporting.completedmessage(iotabname);
     }
-    
+
     public final void buildMakeFile() {
+        if (buildfolder == null) {
+            UserReporting.error(iotabname, "Build folder is not present");
+            return;
+        }
         FileObject cmaketxt = buildfolder.getParent().getFileObject("CMakeLists.txt");
         if (cmaketxt != null && cmaketxt.isData()) {
             new NbCliDescriptor(buildfolder, "cmake", "..")
@@ -57,8 +65,12 @@ public class PicoCBuildWorkers {
             UserReporting.error(iotabname, "Cannot create Make File - CMakeLists.txt file is missing");
         }
     }
-    
+
     public final void buildExecutables() {
+        if (buildfolder == null) {
+            UserReporting.error(iotabname, "Build folder is not present");
+            return;
+        }
         FileObject make = buildfolder.getFileObject("Makefile");
         if (make != null && make.isData()) {
             new NbCliDescriptor(buildfolder, "make", "")
@@ -70,8 +82,12 @@ public class PicoCBuildWorkers {
             UserReporting.error(iotabname, "Cannot build executables - Makefile is missing");
         }
     }
-    
+
     public final void downloadViaDebug() {
+        if (buildfolder == null) {
+            UserReporting.error(iotabname, "Build folder is not present");
+            return;
+        }
         String executablepath = getExecutablePath("elf");
         new NbCliDescriptor(buildfolder, "openocd",
                 "-f /home/richard/pico/openocd/tcl/interface/raspberrypi-swd.cfg "
@@ -82,18 +98,22 @@ public class PicoCBuildWorkers {
                 .ioTabName(iotabname)
                 .exec("Downloading via debug port");
     }
-    
+
     public final void downloadViaBootLoader() {
+        if (buildfolder == null) {
+            UserReporting.error(iotabname, "Build folder is not present");
+            return;
+        }
         UserReporting.startmessage(iotabname, "Download via Boot Loader");
         FileObject uf2file = getExecutable("uf2");
-        if ( uf2file != null && uf2file.isData()) {
+        if (uf2file != null && uf2file.isData()) {
             File picobootloaderfs = new File("/media/richard/RPI-RP2");
             FileObject picobootloader = FileUtil.toFileObject(picobootloaderfs);
             if (picobootloader != null && picobootloader.isFolder()) {
                 try {
-                    FileUtil.copyFile(uf2file,picobootloader,uf2file.getName());
+                    FileUtil.copyFile(uf2file, picobootloader, uf2file.getName());
                 } catch (IOException ex) {
-                    UserReporting.exceptionWithMessage(iotabname, "Boot Loader - failure during file copy",ex);
+                    UserReporting.exceptionWithMessage(iotabname, "Boot Loader - failure during file copy", ex);
                     return;
                 }
                 UserReporting.completedmessage(iotabname);
@@ -104,13 +124,13 @@ public class PicoCBuildWorkers {
             UserReporting.error(iotabname, "Cannot download via bootloader - .uf2 is missing");
         }
     }
-    
+
     private String getExecutablePath(String ext) {
         return FileUtil.toFile(getExecutable(ext)).getAbsolutePath();
     }
-    
-    private FileObject getExecutable(String ext){
-        return buildfolder.getFileObject("app",ext);  // needs extension in future - only does app.uf2/app.elf
+
+    private FileObject getExecutable(String ext) {
+        return buildfolder.getFileObject("app", ext);  // needs extension in future - only does app.uf2/app.elf
     }
-    
+
 }

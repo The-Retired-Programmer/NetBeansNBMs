@@ -57,7 +57,9 @@ public class PicoCProject implements Project {
      */
     public PicoCProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
-        //this.state = state;
+        if (projectDir.getFileObject("build") == null) {
+            projectDir.createFolder("build");
+        }
         nodeactions = new NodeActions(dir, "projectactions");
         picocproperties = new PicoCPropertyFile(dir, nodeactions, state);
     }
