@@ -18,6 +18,8 @@ package uk.theretiredprogrammer.picoc;
 import java.awt.Image;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -153,6 +155,7 @@ public class PicoCProject implements Project {
 
         private final class ProjectNode extends FilterNode {
 
+            private final static String IOTABNAME = "Serial Terminal";
             final PicoCProject project;
 
             public ProjectNode(Node node, PicoCProject project)
@@ -174,13 +177,21 @@ public class PicoCProject implements Project {
                         CommonProjectActions.closeProjectAction()
                 );
                 PicoCBuildWorkers workers = new PicoCBuildWorkers(projectDir.getName(), projectDir.getFileObject("build"));
-                nodeactions.setNodeActions(
-                        new DynamicAsyncAction("Clean").onAction(() -> workers.cleanBuildFolder()),
-                        new DynamicAsyncAction("Build Make file").onAction(() -> workers.buildMakeFile()),
-                        new DynamicAsyncAction("Build Executables").onAction(() -> workers.buildExecutables()),
-                        new DynamicAsyncAction("Download using Debug Port").onAction(() -> workers.downloadViaDebug()),
-                        new DynamicAsyncAction("Download using Bootloader").onAction(() -> workers.downloadViaBootLoader())
-                );
+                List<DynamicAsyncAction> mynodeactions = new ArrayList<>();
+                mynodeactions.add(new DynamicAsyncAction("Clean").onAction(() -> workers.cleanBuildFolder()));
+                mynodeactions.add(new DynamicAsyncAction("Build Make file").onAction(() -> workers.buildMakeFile()));
+                mynodeactions.add(new DynamicAsyncAction("Build Executables").onAction(() -> workers.buildExecutables()));
+                for (String exe : picocproperties.getExecutables()) {
+                    if (picocproperties.isDownloadUsingDebugPort()) {
+                        mynodeactions.add(new DynamicAsyncAction("Download " + exe + " using Debug Port").onAction(() -> workers.downloadViaDebug(exe)));
+                    }
+                    if (picocproperties.isDownloadUsingBootLoader()) {
+                        mynodeactions.add(new DynamicAsyncAction("Download " + exe + " using Bootloader").onAction(() -> workers.downloadViaBootLoader(exe)));
+                    }
+                }
+                mynodeactions.add(new DynamicAsyncAction("Serial Terminal").onAction(() -> new SerialTerminal()
+                        .open(IOTABNAME, picocproperties.getDevicename(), picocproperties.getBaudrate())));
+                nodeactions.setNodeActions(mynodeactions.toArray(DynamicAsyncAction[]::new));
             }
 
             @Override

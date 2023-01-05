@@ -29,6 +29,11 @@ import uk.theretiredprogrammer.actionssupport.UserReporting;
 public class PicoCPropertyFile {
 
     private SaveBeforeAction savebeforeaction;
+    private String[] executables;
+    private boolean downloadusingbootloader;
+    private boolean downloadusingdebugport;
+    private int baudrate;
+    private String devicename;
 
     public PicoCPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException {
         loadProperties(projectdir);
@@ -37,6 +42,26 @@ public class PicoCPropertyFile {
 
     public SaveBeforeAction getSaveBeforeAction() {
         return savebeforeaction;
+    }
+
+    public String[] getExecutables() {
+        return executables;
+    }
+
+    public boolean isDownloadUsingBootLoader() {
+        return downloadusingbootloader;
+    }
+
+    public boolean isDownloadUsingDebugPort() {
+        return downloadusingdebugport;
+    }
+
+    public String getDevicename() {
+        return devicename;
+    }
+
+    public int getBaudrate() {
+        return baudrate;
     }
 
     private void loadProperties(FileChangeType ftc, FileObject projectdir, ProjectState state) {
@@ -69,5 +94,10 @@ public class PicoCPropertyFile {
     private void parseProperties(FileObject projectdir, Properties properties) throws IOException {
         savebeforeaction = new SaveBeforeAction(properties, "save_before_building", ALL);
         savebeforeaction.setSourceRoot(projectdir.getFileObject("src"));
+        executables = properties.getProperty("executables", "app").split(",");
+        downloadusingbootloader = "Yes".equalsIgnoreCase(properties.getProperty("enable_download_use_bootpoader", "No"));
+        downloadusingdebugport = "Yes".equalsIgnoreCase(properties.getProperty("enable_download_use_debugport", "Yes"));
+        baudrate = Integer.parseInt(properties.getProperty("serial_baudrate", "115200"));
+        devicename = properties.getProperty("serial_device_name", "/dev/serial0");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-2023 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,12 +83,12 @@ public class PicoCBuildWorkers {
         }
     }
 
-    public final void downloadViaDebug() {
+    public final void downloadViaDebug(String buildname) {
         if (buildfolder == null) {
             UserReporting.error(iotabname, "Build folder is not present");
             return;
         }
-        String executablepath = getExecutablePath("elf");
+        String executablepath = getExecutablePath(buildname, "elf");
         new NbCliDescriptor(buildfolder, "openocd",
                 "-f /home/richard/pico/openocd/tcl/interface/raspberrypi-swd.cfg "
                 + "-f /home/richard/pico/openocd/tcl/target/rp2040.cfg "
@@ -96,16 +96,16 @@ public class PicoCBuildWorkers {
                 .stderrToIO()
                 .stdoutToIO()
                 .ioTabName(iotabname)
-                .exec("Downloading via debug port");
+                .exec("Downloading " + buildname + ".elf via debug port");
     }
 
-    public final void downloadViaBootLoader() {
+    public final void downloadViaBootLoader(String buildname) {
         if (buildfolder == null) {
             UserReporting.error(iotabname, "Build folder is not present");
             return;
         }
-        UserReporting.startmessage(iotabname, "Download via Boot Loader");
-        FileObject uf2file = getExecutable("uf2");
+        UserReporting.startmessage(iotabname, "Downloading " + buildname + ".uf2 via Boot Loader");
+        FileObject uf2file = getExecutable(buildname, "uf2");
         if (uf2file != null && uf2file.isData()) {
             File picobootloaderfs = new File("/media/richard/RPI-RP2");
             FileObject picobootloader = FileUtil.toFileObject(picobootloaderfs);
@@ -125,12 +125,11 @@ public class PicoCBuildWorkers {
         }
     }
 
-    private String getExecutablePath(String ext) {
-        return FileUtil.toFile(getExecutable(ext)).getAbsolutePath();
+    private String getExecutablePath(String buildname, String ext) {
+        return FileUtil.toFile(getExecutable(buildname, ext)).getAbsolutePath();
     }
 
-    private FileObject getExecutable(String ext) {
-        return buildfolder.getFileObject("app", ext);  // needs extension in future - only does app.uf2/app.elf
+    private FileObject getExecutable(String buildname, String ext) {
+        return buildfolder.getFileObject(buildname, ext);
     }
-
 }
