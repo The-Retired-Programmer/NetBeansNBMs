@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.function.Supplier;
 import org.netbeans.api.io.OutputWriter;
@@ -33,7 +34,7 @@ import uk.theretiredprogrammer.actionssupport.UserReporting;
 public class STDIN extends ProcessIO<OutputStream, Writer> {
 
     private static enum InStyle {
-        IGNORE, EMPTY, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEREADER
+        IGNORE, EMPTY, IO, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEREADER
     }
 
     private InStyle mode = InStyle.IGNORE;
@@ -47,7 +48,8 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
     private File file;
     private InputStream instream;
     private BufferedReader reader;
-    
+    private BufferedReader ioreader;
+
     public STDIN() {
     }
 
@@ -69,6 +71,10 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
 
     public void empty() {
         mode = InStyle.EMPTY;
+    }
+
+    public void fromIO() {
+        mode = InStyle.IO;
     }
 
     public void fromFile(FileObject fileobject) {
@@ -94,6 +100,10 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
     public void fromFile(BufferedReader reader) {
         mode = InStyle.FILEREADER;
         this.reader = reader;
+    }
+
+    public void setReader(Reader ioreader) {
+        this.ioreader = new BufferedReader(ioreader);
     }
 
     // active methods called during Process setup and take down
@@ -132,6 +142,9 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
                 case EMPTY:
                     streamSupplier.get().close();
                     break;
+                case IO:
+                    writer = rwSupplier.get();
+                    readerTransfer(ioreader, writer);
                 case FILEOBJECT:
                     out = streamSupplier.get();
                     streamTransfer(fileobject.getInputStream(), out);

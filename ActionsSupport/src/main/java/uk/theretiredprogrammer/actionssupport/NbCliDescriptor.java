@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.function.Consumer;
 import org.netbeans.api.io.IOProvider;
@@ -188,7 +189,7 @@ public class NbCliDescriptor {
         this.iotabclear = true;
         return this;
     }
-    
+
     /**
      * Do not handle STDIN.
      *
@@ -206,6 +207,16 @@ public class NbCliDescriptor {
      */
     public NbCliDescriptor stdinEmpty() {
         stdin.empty();
+        return this;
+    }
+
+    /**
+     * Pass the IO Tab to STDIN.
+     *
+     * @return this object
+     */
+    public NbCliDescriptor stdinFromIO() {
+        stdin.fromIO();
         return this;
     }
 
@@ -454,6 +465,7 @@ public class NbCliDescriptor {
     public void exec(String startmessage) {
         OutputWriter outwtr = null;
         OutputWriter errwtr = null;
+        Reader iordr;
         InputOutput io = null;
         if (tabname != null) {
             io = IOProvider.getDefault().getIO(tabname, false);
@@ -463,11 +475,13 @@ public class NbCliDescriptor {
             }
             outwtr = io.getOut();
             errwtr = io.getErr();
+            iordr = io.getIn();
             if (startmessage != null) {
                 outwtr.println(startmessage);
             }
             stderr.setOutputWriter(errwtr);
             stdout.setOutputWriter(outwtr);
+            stdin.setReader(iordr);
             if (preprocessing != null) {
                 preprocessing.accept(errwtr);
             }
