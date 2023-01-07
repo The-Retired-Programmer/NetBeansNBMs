@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-23 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.openide.execution.NbProcessDescriptor;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
+import org.openide.util.RequestProcessor.Task;
 import uk.theretiredprogrammer.actionssupportimplementation.IOCOMMANDS.CommandPair;
 
 /**
@@ -49,6 +50,10 @@ import uk.theretiredprogrammer.actionssupportimplementation.IOCOMMANDS.CommandPa
 public class NbCliDescriptor {
 
     private Process process;
+    private Task stdintask;
+    private Task stdouttask;
+    private Task iocommandstask;
+
     private Consumer<OutputWriter> postprocessing = null;
     private Consumer<OutputWriter> preprocessing = null;
     private String tabname;
@@ -492,8 +497,9 @@ public class NbCliDescriptor {
     public void exec(String startmessage) {
         OutputWriter outwtr = null;
         OutputWriter errwtr = null;
+        InputOutput io = null;
         if (tabname != null) {
-            InputOutput io = IOProvider.getDefault().getIO(tabname, false);
+            io = IOProvider.getDefault().getIO(tabname, false);
             io.show();
             if (iotabclear) {
                 io.reset();
@@ -514,11 +520,15 @@ public class NbCliDescriptor {
             NbProcessDescriptor processdescriptor = new NbProcessDescriptor(clicommand, substituteNODEPATH(cliargs, dir));
             process = processdescriptor.exec(null, null, FileUtil.toFile(dir));
             // IOCOMMAND handling
-            iocommands.startTransfer(null, null, tabname, errwtr);
+            iocommandstask = iocommands.startTransfer(null, null, tabname, errwtr);
             // STDIN handling
-            stdin.startTransfer(() -> process.getOutputStream(), () -> process.outputWriter(), tabname, errwtr);
+            stdintask = stdin.startTransfer(() -> process.getOutputStream(), () -> process.outputWriter(), tabname, errwtr);
             // STDOUT handling
-            stdout.startTransfer(() -> process.getInputStream(), () -> process.inputReader(), tabname, errwtr);
+            stdouttask = stdout.startTransfer(() -> process.getInputStream(), () -> process.inputReader(), tabname, errwtr);
+            //
+            if (io != null) {
+                IOTabCloseWatch.watch(io, () -> cancelTasksAndProcess());
+            }
             // STDERR handling
             stderr.startTransfer(() -> process.getErrorStream(), () -> process.errorReader(), tabname, errwtr);
             // wait for completion - and tidy up
@@ -546,6 +556,19 @@ public class NbCliDescriptor {
                 outwtr.println("... done");
             }
         }
+    }
+
+    private void cancelTasksAndProcess() {
+        if (stdouttask != null && !stdouttask.isFinished()) {
+            stdouttask.cancel();
+        }
+        if (stdintask != null && !stdintask.isFinished()) {
+            stdintask.cancel();
+        }
+        if (iocommandstask != null && !iocommandstask.isFinished()) {
+            iocommandstask.cancel();
+        }
+        process.destroy();
     }
 
     private String substituteNODEPATH(String source, FileObject node) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-23 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,11 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.util.function.Supplier;
 import org.netbeans.api.io.OutputWriter;
+import org.openide.util.RequestProcessor.Task;
 
 public abstract class ProcessIO<S, RW> {
 
-    public abstract void startTransfer(Supplier<S> streamSupplier, Supplier<RW> rwSupplier, String iotabname, OutputWriter err);
+    public abstract Task startTransfer(Supplier<S> streamSupplier, Supplier<RW> rwSupplier, String iotabname, OutputWriter err);
 
     public abstract void waitFinished(long timeout) throws InterruptedException;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale
+ * Copyright 2022-23 Richard Linsdale
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,8 +106,7 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
     }
 
     // methods called during Process setup and take down
-    @Override
-    public void startTransfer(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier, String iotabname, OutputWriter err) {
+    public void transferOut(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier, String iotabname, OutputWriter err) {
         try {
             switch (mode) {
                 case IGNORE:
@@ -142,7 +141,6 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
                 case OUTPUTWRITER:
                     if (outputwriter == null) {
                         UserReporting.warning(iotabname, err, "Could not read " + name + ": OutputWriter is undefined");
-                        return;
                     }
                     reader = rwSupplier.get();
                     String line;

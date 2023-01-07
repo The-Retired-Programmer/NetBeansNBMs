@@ -225,6 +225,15 @@ public class UserReporting {
         io.getErr().println(message);
         Logger.getLogger(LOGGING).log(Level.SEVERE, message);
     }
+    
+    /**
+     * Write an error message to the IDE log (SEVERE).
+     *
+     * @param message the error message
+     */
+    public static void errorLogOnly(String message) {
+        Logger.getLogger(LOGGING).log(Level.SEVERE, message);
+    }
 
     /**
      * Write an error message to both the default IoTab using STDERR and also
@@ -283,6 +292,15 @@ public class UserReporting {
         InputOutput io = IOProvider.getDefault().getIO(iotabname, false);
         io.show();
         io.getErr().println(message);
+        Logger.getLogger(LOGGING).log(Level.WARNING, message);
+    }
+    
+    /**
+     * Write a warning message to the IDE log (WARNING).
+     *
+     * @param message the warning message
+     */
+    public static void warningLogOnly(String message) {
         Logger.getLogger(LOGGING).log(Level.WARNING, message);
     }
 
@@ -344,6 +362,15 @@ public class UserReporting {
         InputOutput io = IOProvider.getDefault().getIO(iotabname, false);
         io.show();
         io.getOut().println(message);
+        Logger.getLogger(LOGGING).log(Level.INFO, message);
+    }
+    
+    /**
+     * Write an informational message to the IDE log (INFO).
+     *
+     * @param message the warning message
+     */
+    public static void infoLogOnly(String message) {
         Logger.getLogger(LOGGING).log(Level.INFO, message);
     }
 

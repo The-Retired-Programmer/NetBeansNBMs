@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale
+ * Copyright 2022-23 Richard Linsdale
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,11 @@
  */
 package uk.theretiredprogrammer.actionssupportimplementation;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.util.function.Supplier;
 import org.netbeans.api.io.OutputWriter;
+import org.openide.util.RequestProcessor.Task;
 
 public class STDERR extends TransferOUT {
 
@@ -31,9 +35,17 @@ public class STDERR extends TransferOUT {
     public void setOutputWriter(OutputWriter outputwriter) {
         super.setOutputWriter(outputwriter);
     }
+    
+    
+    @Override
+    public Task startTransfer(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier, String iotabname, OutputWriter err) {
+        super.transferOut(streamSupplier, rwSupplier, iotabname, err);
+        return null;
+    }
 
     @Override
     public void waitFinished(long timeout) throws InterruptedException {
         // null action as no task created
     }
+
 }

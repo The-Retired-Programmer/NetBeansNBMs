@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale
+ * Copyright 2022-23 Richard Linsdale
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ public class IOCOMMANDS extends ProcessIO<InputStream, BufferedReader> {
 
     private Reader inputreader = null;
     private final Map<String, CommandPair> commands = new HashMap<>();
-    
-    public IOCOMMANDS(){
+
+    public IOCOMMANDS() {
     }
 
     public IOCOMMANDS(IOCOMMANDS source) {
@@ -58,12 +58,14 @@ public class IOCOMMANDS extends ProcessIO<InputStream, BufferedReader> {
     }
 
     @Override
-    public void startTransfer(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier, String iotabname, OutputWriter err) {
+    public Task startTransfer(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier, String iotabname, OutputWriter err) {
         if (!commands.isEmpty() && inputreader != null) {
             inuse = true;
             RequestProcessor processor = new RequestProcessor("commands");
             task = processor.post(() -> commandsTransfer(iotabname, err));
+            return task;
         }
+        return null;
     }
 
     @Override
@@ -84,7 +86,6 @@ public class IOCOMMANDS extends ProcessIO<InputStream, BufferedReader> {
         }
     }
 
-    @SuppressWarnings("SleepWhileInLoop")
     private void commandsTransfer(String iotabname, OutputWriter err) {
         try {
             BufferedReader inputlinereader = new BufferedReader(inputreader);

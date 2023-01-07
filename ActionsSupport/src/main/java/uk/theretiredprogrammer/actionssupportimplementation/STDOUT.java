@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale
+ * Copyright 2022-23 Richard Linsdale
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,10 @@ public class STDOUT extends TransferOUT {
     }
 
     @Override
-    public void startTransfer(Supplier<InputStream> getStream, Supplier<BufferedReader> getReader, String iotabname, OutputWriter err) {
+    public Task startTransfer(Supplier<InputStream> getStream, Supplier<BufferedReader> getReader, String iotabname, OutputWriter err) {
         RequestProcessor processor = new RequestProcessor("stdout");
-        task = processor.post(() -> super.startTransfer(getStream, getReader, iotabname, err));
+        task = processor.post(() -> super.transferOut(getStream, getReader, iotabname, err));
+        return task;
     }
 
     @Override

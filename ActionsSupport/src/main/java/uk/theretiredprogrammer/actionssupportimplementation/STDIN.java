@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale
+ * Copyright 2022-23 Richard Linsdale
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,9 +98,10 @@ public class STDIN extends ProcessIO<OutputStream, Writer> {
 
     // active methods called during Process setup and take down
     @Override
-    public void startTransfer(Supplier<OutputStream> streamSupplier, Supplier<Writer> rwSupplier, String iotabname, OutputWriter err) {
+    public Task startTransfer(Supplier<OutputStream> streamSupplier, Supplier<Writer> rwSupplier, String iotabname, OutputWriter err) {
         RequestProcessor processor = new RequestProcessor("stdin");
         task = processor.post(() -> stdinTransfer(streamSupplier, rwSupplier, iotabname, err));
+        return task;
     }
 
     @Override
