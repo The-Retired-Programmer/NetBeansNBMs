@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-23 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,10 +84,6 @@ public class ActionsPropertyFile {
         String iotabclear = properties.getProperty(prefix + ".cleartab");
         if (iotabclear != null && iotabclear.equals("every execution")) {
             nbclidescriptor.ioTabClear();
-        }
-        String cancel = properties.getProperty(prefix + ".killcommand");
-        if (cancel != null) {
-            nbclidescriptor.addKillCommand(cancel.toLowerCase());
         }
         return nbclidescriptor;
     }

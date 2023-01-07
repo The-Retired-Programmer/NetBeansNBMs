@@ -18,14 +18,12 @@ package uk.theretiredprogrammer.actionssupport;
 import uk.theretiredprogrammer.actionssupportimplementation.STDIN;
 import uk.theretiredprogrammer.actionssupportimplementation.STDOUT;
 import uk.theretiredprogrammer.actionssupportimplementation.STDERR;
-import uk.theretiredprogrammer.actionssupportimplementation.IOCOMMANDS;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.Map;
 import java.util.function.Consumer;
 import org.netbeans.api.io.IOProvider;
 import org.netbeans.api.io.InputOutput;
@@ -35,7 +33,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.util.RequestProcessor.Task;
-import uk.theretiredprogrammer.actionssupportimplementation.IOCOMMANDS.CommandPair;
 
 /**
  * NbCLIDescriptor implements both configuration of a CLI style command and also
@@ -52,7 +49,6 @@ public class NbCliDescriptor {
     private Process process;
     private Task stdintask;
     private Task stdouttask;
-    private Task iocommandstask;
 
     private Consumer<OutputWriter> postprocessing = null;
     private Consumer<OutputWriter> preprocessing = null;
@@ -64,7 +60,6 @@ public class NbCliDescriptor {
     private final STDIN stdin;
     private final STDOUT stdout;
     private final STDERR stderr;
-    private final IOCOMMANDS iocommands;
     private boolean iotabclear = false;
 
     /**
@@ -83,7 +78,6 @@ public class NbCliDescriptor {
         this.stdin = new STDIN();
         this.stdout = new STDOUT();
         this.stderr = new STDERR();
-        this.iocommands = new IOCOMMANDS();
     }
 
     /**
@@ -106,7 +100,6 @@ public class NbCliDescriptor {
         this.stdin = new STDIN(source.stdin);
         this.stderr = new STDERR(source.stderr);
         this.stdout = new STDOUT(source.stdout);
-        this.iocommands = new IOCOMMANDS(source.iocommands);
         this.preprocessing = source.preprocessing;
         this.postprocessing = source.postprocessing;
         this.tabname = source.tabname;
@@ -195,43 +188,7 @@ public class NbCliDescriptor {
         this.iotabclear = true;
         return this;
     }
-
-    /**
-     * Add a set of commands to the allowed commands.
-     *
-     * @param commands the map containing the command definitions
-     * @return this object
-     */
-    public NbCliDescriptor addCommands(Map<String, CommandPair> commands) {
-        iocommands.addCommands(commands);
-        return this;
-    }
-
-    /**
-     * Add a command to the allowed commands.
-     *
-     * @param command the command word
-     * @param action the command action
-     * @param terminating true if this command is a terminating command - ie
-     * after it is executed it will stop further command processing.
-     * @return this object
-     */
-    public NbCliDescriptor addCommand(String command, Runnable action, boolean terminating) {
-        iocommands.addCommand(command, action, terminating);
-        return this;
-    }
-
-    /**
-     * Add a Kill command to the allowed commands(to KILL the external process).
-     *
-     * @param command the command word
-     * @return this object
-     */
-    public NbCliDescriptor addKillCommand(String command) {
-        iocommands.addCommand(command, () -> process.destroy(), true);
-        return this;
-    }
-
+    
     /**
      * Do not handle STDIN.
      *
@@ -511,7 +468,6 @@ public class NbCliDescriptor {
             }
             stderr.setOutputWriter(errwtr);
             stdout.setOutputWriter(outwtr);
-            iocommands.setInputreader(io.getIn());
             if (preprocessing != null) {
                 preprocessing.accept(errwtr);
             }
@@ -519,31 +475,19 @@ public class NbCliDescriptor {
         try {
             NbProcessDescriptor processdescriptor = new NbProcessDescriptor(clicommand, substituteNODEPATH(cliargs, dir));
             process = processdescriptor.exec(null, null, FileUtil.toFile(dir));
-            // IOCOMMAND handling
-            iocommandstask = iocommands.startTransfer(null, null, tabname, errwtr);
-            // STDIN handling
             stdintask = stdin.startTransfer(() -> process.getOutputStream(), () -> process.outputWriter(), tabname, errwtr);
-            // STDOUT handling
             stdouttask = stdout.startTransfer(() -> process.getInputStream(), () -> process.inputReader(), tabname, errwtr);
             //
             if (io != null) {
                 IOTabCloseWatch.watch(io, () -> cancelTasksAndProcess());
             }
-            // STDERR handling
             stderr.startTransfer(() -> process.getErrorStream(), () -> process.errorReader(), tabname, errwtr);
-            // wait for completion - and tidy up
             process.waitFor();
-            iocommands.waitFinished(1000);
             stdin.waitFinished(10000);
             stdout.waitFinished(10000);
             stderr.waitFinished(10000);
-            // close the process command handler ie IOCOMMAND
-            iocommands.close(process, tabname, errwtr);
-            // close the process input stream ie STDIN
             stdin.close(process, tabname, errwtr);
-            //  close the process output stream ie STDOUT
             stdout.close(process, tabname, errwtr);
-            // close the process error stream ie STDERR
             stderr.close(process, tabname, errwtr);
         } catch (InterruptedException | IOException ex) {
             UserReporting.exception(tabname, errwtr, ex);
@@ -564,9 +508,6 @@ public class NbCliDescriptor {
         }
         if (stdintask != null && !stdintask.isFinished()) {
             stdintask.cancel();
-        }
-        if (iocommandstask != null && !iocommandstask.isFinished()) {
-            iocommandstask.cancel();
         }
         process.destroy();
     }
