@@ -24,15 +24,40 @@ import org.netbeans.api.io.IOProvider;
 import org.netbeans.api.io.InputOutput;
 import org.netbeans.api.io.OutputWriter;
 import org.openide.util.RequestProcessor;
+import org.openide.util.RequestProcessor.Task;
+import uk.theretiredprogrammer.actionssupport.IOTabCloseWatch;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 public class SerialTerminal {
 
+    private Task fromserialtask;
+    private Task toserialtask;
+    SerialPort serialport;
+
     public void open(String iotabname, String serialdevicename, int baudrate) {
-        SerialPort serial = initialiseSerial(serialdevicename, baudrate, iotabname);
-        InputOutput iotab = initialiseIOTab(iotabname);
-        copyfromSerial(serial, iotab, iotabname);
-        copytoSerial(iotab, serial, iotabname);
+        serialport = initialiseSerial(serialdevicename, baudrate, iotabname);
+        if (serialport != null) {
+            InputOutput iotab = initialiseIOTab(iotabname);
+            copyfromSerial(serialport, iotab, iotabname);
+            copytoSerial(iotab, serialport, iotabname);
+            IOTabCloseWatch.watch(iotab, () -> runWhenIoTabClosed());
+        }
+    }
+
+    private void runWhenIoTabClosed() {
+        UserReporting.infoLogOnly("called from IOTabClosedWatch");
+        if (!fromserialtask.isFinished()) {
+            fromserialtask.cancel();
+            UserReporting.infoLogOnly("cancelled fromserialtask (SerialTerminal)");
+        }
+        if (!toserialtask.isFinished()) {
+            toserialtask.cancel();
+            UserReporting.infoLogOnly("cancelled toserialtask (SerialTerminal)");
+        }
+        if (serialport.isOpen()) {
+            serialport.closePort();
+            UserReporting.infoLogOnly("closed serialport (SerialTerminal)");
+        }
     }
 
     private SerialPort initialiseSerial(String serialdevicename, int baudrate, String iotabname) {
@@ -56,18 +81,14 @@ public class SerialTerminal {
         return io;
     }
 
-    //private Task fromserialtask;
     private void copyfromSerial(SerialPort serial, InputOutput iotab, String iotabname) {
         RequestProcessor processor = new RequestProcessor("serialreader");
-        /* fromserialtask = */
-        processor.post(() -> copy(serial, iotab, iotabname));
+        fromserialtask = processor.post(() -> copy(serial, iotab, iotabname));
     }
 
-    //private Task toserialtask;
     private void copytoSerial(InputOutput iotab, SerialPort serial, String iotabname) {
         RequestProcessor processor = new RequestProcessor("serialwriter");
-        /* fromserialtask = */
-        processor.post(() -> copy(iotab, serial, iotabname));
+        toserialtask = processor.post(() -> copy(iotab, serial, iotabname));
     }
 
     private void copy(SerialPort serial, InputOutput iotab, String iotabname) {
@@ -90,6 +111,5 @@ public class SerialTerminal {
         } catch (IOException ex) {
             UserReporting.error(iotabname, "While writing to the Serial Device - " + ex);
         }
-
     }
 }
