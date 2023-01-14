@@ -155,7 +155,6 @@ public class PicoCProject implements Project {
 
         private final class ProjectNode extends FilterNode {
 
-            private final static String IOTABNAME = "Serial Terminal";
             final PicoCProject project;
 
             public ProjectNode(Node node, PicoCProject project)
@@ -189,8 +188,8 @@ public class PicoCProject implements Project {
                         mynodeactions.add(new DynamicAsyncAction("Download " + exe + " using Bootloader").onAction(() -> workers.downloadViaBootLoader(exe)));
                     }
                 }
-                mynodeactions.add(new DynamicAsyncAction("Serial Terminal").onAction(() -> new SerialTerminal()
-                        .open(IOTABNAME, picocproperties.getDevicename(), picocproperties.getBaudrate())));
+                mynodeactions.add(new DynamicAsyncAction("Serial Terminal").onAction(() -> workers.showSerialTerminal("Serial Terminal")));
+                
                 nodeactions.setNodeActions(mynodeactions.toArray(DynamicAsyncAction[]::new));
             }
 

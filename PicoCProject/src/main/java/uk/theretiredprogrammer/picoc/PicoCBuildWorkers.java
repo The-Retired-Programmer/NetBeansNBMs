@@ -19,7 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
+import uk.theretiredprogrammer.activity.Activity;
+import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 public class PicoCBuildWorkers {
@@ -30,6 +31,15 @@ public class PicoCBuildWorkers {
     public PicoCBuildWorkers(String iotabname, FileObject buildfolder) {
         this.iotabname = iotabname;
         this.buildfolder = buildfolder;
+    }
+
+    public final void showSerialTerminal(String iotabname) {
+        Activity.runWithIOTab(new SerialActivity(
+                        "/dev/serial0", 115200,
+                        new ActivityIO()
+                                .stdinFromIO()
+                                .stdoutToIO()
+                                .ioTabName(iotabname)));
     }
 
     public final void cleanBuildFolder() {
@@ -56,11 +66,13 @@ public class PicoCBuildWorkers {
         }
         FileObject cmaketxt = buildfolder.getParent().getFileObject("CMakeLists.txt");
         if (cmaketxt != null && cmaketxt.isData()) {
-            new NbCliDescriptor(buildfolder, "cmake", "..")
-                    .stderrToIO()
-                    .stdoutToIO()
-                    .ioTabName(iotabname)
-                    .exec("Creating Make file");
+            Activity.runExternalProcessWithIOTab("cmake", "..", buildfolder,
+                    new ActivityIO()
+                            .stderrToIO()
+                            .stdoutToIO()
+                            .ioTabName(iotabname),
+                    "Creating Make file"
+            );
         } else {
             UserReporting.error(iotabname, "Cannot create Make File - CMakeLists.txt file is missing");
         }
@@ -73,11 +85,13 @@ public class PicoCBuildWorkers {
         }
         FileObject make = buildfolder.getFileObject("Makefile");
         if (make != null && make.isData()) {
-            new NbCliDescriptor(buildfolder, "make", "")
-                    .stderrToIO()
-                    .stdoutToIO()
-                    .ioTabName(iotabname)
-                    .exec("Building executables");
+            Activity.runExternalProcessWithIOTab("make", "", buildfolder,
+                    new ActivityIO()
+                            .stderrToIO()
+                            .stdoutToIO()
+                            .ioTabName(iotabname),
+                    "Building executables"
+            );
         } else {
             UserReporting.error(iotabname, "Cannot build executables - Makefile is missing");
         }
@@ -89,14 +103,17 @@ public class PicoCBuildWorkers {
             return;
         }
         String executablepath = getExecutablePath(buildname, "elf");
-        new NbCliDescriptor(buildfolder, "openocd",
+        Activity.runExternalProcessWithIOTab("openocd",
                 "-f /home/richard/pico/openocd/tcl/interface/raspberrypi-swd.cfg "
                 + "-f /home/richard/pico/openocd/tcl/target/rp2040.cfg "
-                + "-c \"program " + executablepath + " verify reset exit\"")
-                .stderrToIO()
-                .stdoutToIO()
-                .ioTabName(iotabname)
-                .exec("Downloading " + buildname + ".elf via debug port");
+                + "-c \"program " + executablepath + " verify reset exit\"",
+                buildfolder,
+                new ActivityIO()
+                        .stderrToIO()
+                        .stdoutToIO()
+                        .ioTabName(iotabname),
+                "Downloading " + buildname + ".elf via debug port"
+        );
     }
 
     public final void downloadViaBootLoader(String buildname) {
