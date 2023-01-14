@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-23 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
+import uk.theretiredprogrammer.activity.Activity;
+import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
 
 @ActionID(
@@ -54,7 +55,7 @@ public final class ExecutePGSQLFile implements ActionListener, Runnable {
         RequestProcessor rp = new RequestProcessor("text-x-pgsql_execute");
         rp.post(this);
     }
-    
+
     @Override
     public void run() {
         try {
@@ -64,11 +65,15 @@ public final class ExecutePGSQLFile implements ActionListener, Runnable {
                 if (project != null && project instanceof PostgreSQLProject) {
                     PostgreSQLProject aproject = (PostgreSQLProject) project;
                     aproject.getSaveBeforeAction().saveIfModifiedByMode(dataObject);
-                    new NbCliDescriptor(input.getParent(), "psql", "-f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager")
-                            .stderrToIO()
-                            .stdoutToIO()
-                            .ioTabName("Execute PgSQL")
-                            .exec("Executing " + input.getNameExt());
+                    Activity.runExternalProcessWithIOTab("psql",
+                            "-f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager",
+                            input.getParent(),
+                            new ActivityIO()
+                                    .stderrToIO()
+                                    .stdoutToIO()
+                                    .ioTabName("Execute PgSQL"),
+                            "Executing " + input.getNameExt()
+                    );
                 }
             }
         } catch (IOException ex) {
