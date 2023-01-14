@@ -37,8 +37,9 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
-import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
+import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
 
 public class JBakeProject implements Project {
@@ -159,13 +160,14 @@ public class JBakeProject implements Project {
                         CommonProjectActions.copyProjectAction(),
                         CommonProjectActions.closeProjectAction()
                 );
-                nodeactions.setNodeActions(
-                        new DynamicAsyncAction("Bake")
-                                .onAction(() -> new NbCliDescriptor(projectDir, "jbake", "-b")
-                                .stderrToIO()
-                                .stdoutToIO()
-                                .ioTabName("Bake " + projectDir.getName())
-                                .exec("Baking"))
+                nodeactions.setNodeActions(new DynamicAsyncAction("Bake")
+                                .onAction(() -> Activity.runExternalProcessWithIOTab("jbake", "-b", projectDir,
+                                new ActivityIO()
+                                        .stderrToIO()
+                                        .stdoutToIO()
+                                        .ioTabName("Bake " + projectDir.getName()),
+                                "Baking")
+                                )
                 );
             }
 
