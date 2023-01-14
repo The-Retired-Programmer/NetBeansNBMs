@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-23 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
+import uk.theretiredprogrammer.activity.Activity;
+import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 
@@ -62,17 +63,22 @@ public final class BuildAdoc implements ActionListener, Runnable {
             if (project != null && project instanceof AsciiDocProject) {
                 AsciiDocProject aproject = (AsciiDocProject) project;
                 aproject.getSaveBeforeAction().saveIfModifiedByMode(dataObject);
-                new NbCliDescriptor(aproject.getProjectDirectory(),
-                        "asciidoctor", "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath())
-                        .stderrToIO()
-                        .ioTabName(aproject.getTabname())
-                        .exec("Publishing " + input.getNameExt());
+                Activity.runExternalProcessWithIOTab("asciidoctor",
+                        "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath(),
+                        aproject.getProjectDirectory(),
+                        new ActivityIO()
+                                .stderrToIO()
+                                .ioTabName(aproject.getTabname()),
+                        "Publishing " + input.getNameExt());
             } else {
                 SaveBeforeAction.saveIfModified(dataObject);
-                new NbCliDescriptor(input.getParent(), "asciidoctor", "-r asciidoctor-pdf " + input.getPath())
-                        .stderrToIO()
-                        .ioTabName("Publish AsciiDocs")
-                        .exec("Publishing " + input.getNameExt());
+                Activity.runExternalProcessWithIOTab("asciidoctor",
+                        "-r asciidoctor-pdf " + input.getPath(),
+                        input.getParent(),
+                        new ActivityIO()
+                                .stderrToIO()
+                                .ioTabName("Publish AsciiDocs"),
+                        "Publishing " + input.getNameExt());
             }
         }
     }
