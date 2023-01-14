@@ -78,6 +78,7 @@
                     <brandingToken>actionssupport</brandingToken>
                     <publicPackages>
                         <publicPackage>uk.theretiredprogrammer.actionssupport</publicPackage>
+                        <publicPackage>uk.theretiredprogrammer.activity</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

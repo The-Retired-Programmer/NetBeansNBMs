@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import org.openide.filesystems.FileObject;
+import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
-import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
+import uk.theretiredprogrammer.activity.ActivityIO;
 
 public class ActionsPropertyFile {
 
@@ -58,33 +59,36 @@ public class ActionsPropertyFile {
         int propertycount = Integer.parseInt(pcount);
         // set up the commands
         for (int j = 1; j <= propertycount; j++) {
-            NbCliDescriptor nbclidescriptor = getNbCliDescriptorFromProperties(filefolder, properties, j);
-            if (nbclidescriptor != null) {
+            ActivityIO activitydescriptor = getActivityDescriptorFromProperties(properties, j);
+            String command = properties.getProperty(Integer.toString(j) + ".command");
+            if (activitydescriptor != null && command != null) {
                 String label = properties.getProperty(Integer.toString(j) + ".label");
-                dynamicactions.add(
-                        new DynamicAsyncAction(label)
-                                .onAction(() -> nbclidescriptor.exec(label)));
+                String args = properties.getProperty(Integer.toString(j) + ".commandargs", "");
+                dynamicactions.add(new DynamicAsyncAction(label)
+                        .onAction(() -> Activity.runExternalProcessWithIOTab(
+                                command,
+                                args,
+                                filefolder,
+                                activitydescriptor)));
             }
         }
     }
 
-    private NbCliDescriptor getNbCliDescriptorFromProperties(FileObject dir, Properties properties, int iPrefix) {
+    private ActivityIO getActivityDescriptorFromProperties(Properties properties, int iPrefix) {
         String prefix = Integer.toString(iPrefix);
         String label = properties.getProperty(prefix + ".label");
-        String cmd = properties.getProperty(prefix + ".command");
-        if (cmd == null || label == null) {
+        if (label == null) {
             return null;
         }
         String tabname = properties.getProperty(prefix + ".tabname", label);
-        String commandargs = properties.getProperty(prefix + ".commandargs", "");
-        NbCliDescriptor nbclidescriptor = new NbCliDescriptor(dir, cmd, commandargs)
+        ActivityIO activitydescriptor = new ActivityIO()
                 .stdoutToIO()
                 .stderrToIO()
                 .ioTabName(tabname);
         String iotabclear = properties.getProperty(prefix + ".cleartab");
         if (iotabclear != null && iotabclear.equals("every execution")) {
-            nbclidescriptor.ioTabClear();
+            activitydescriptor.ioTabClear();
         }
-        return nbclidescriptor;
+        return activitydescriptor;
     }
 }

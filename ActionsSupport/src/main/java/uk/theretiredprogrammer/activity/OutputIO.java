@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.actionssupportimplementation;
+package uk.theretiredprogrammer.activity;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.function.Supplier;
 import org.netbeans.api.io.OutputWriter;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.activityimplementation.IO;
 
-public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader> {
+public class OutputIO extends IO {
 
     private static enum OutStyle {
         IGNORE, DISCARD, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEWRITER, OUTPUTWRITER
     }
 
-    private final String name;
     private OutStyle mode = OutStyle.IGNORE;
 
     private OutputWriter outputwriter;
@@ -44,15 +43,12 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
     private File file;
     private DataObject dataobject;
 
-    private InputStream in = null;
-    private BufferedReader reader = null;
-
-    public TransferOUT(String name) {
-        this.name = name;
+    public OutputIO(String name) {
+        super(name);
     }
 
-    public TransferOUT(TransferOUT source) {
-        this.name = source.name;
+    public OutputIO(OutputIO source) {
+        super(source);
         this.mode = source.mode;
         this.outputwriter = source.outputwriter;
         this.writer = source.writer;
@@ -60,8 +56,6 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
         this.fileobject = source.fileobject;
         this.file = source.file;
         this.dataobject = source.dataobject;
-        this.in = source.in;
-        this.reader = source.reader;
     }
 
     public void ignore() {
@@ -105,68 +99,53 @@ public abstract class TransferOUT extends ProcessIO<InputStream, BufferedReader>
         this.outputwriter = outputwriter;
     }
 
-    // methods called during Process setup and take down
-    public void transferOut(Supplier<InputStream> streamSupplier, Supplier<BufferedReader> rwSupplier, String iotabname, OutputWriter err) {
+    public Writer getWriter(String iotabname) {
+        switch (mode) {
+            case IGNORE:
+                return null;
+            case DISCARD:
+                return Writer.nullWriter();
+            case OUTPUTWRITER:
+                return outputwriter;
+            case FILEOBJECT:
+            case DATAOBJECT:
+            case FILE:
+            case FILESTREAM:
+                OutputStream os = getOutputStream(iotabname);
+                return os == null? null :new OutputStreamWriter(os);
+            case FILEWRITER:
+                return writer;
+            default:
+                UserReporting.error(iotabname, "Unknown mode in " + name + ": " + mode);
+        }
+        return null;
+    }
+
+    public OutputStream getOutputStream(String iotabname) {
         try {
             switch (mode) {
                 case IGNORE:
-                    // null action 
-                    break;
+                    return null;
                 case DISCARD:
-                    in = streamSupplier.get();
-                    byte[] buf = new byte[8192];
-                    while (in.read(buf) != -1) {
-                    }
-                    break;
-                case FILEOBJECT:
-                    in = streamSupplier.get();
-                    streamTransfer(in, fileobject.getOutputStream());
-                    break;
-                case DATAOBJECT:
-                    in = streamSupplier.get();
-                    streamTransfer(in, dataobject.getPrimaryFile().getOutputStream());
-                    break;
-                case FILE:
-                    in = streamSupplier.get();
-                    streamTransfer(in, new FileOutputStream(file));
-                    break;
-                case FILESTREAM:
-                    in = streamSupplier.get();
-                    streamTransfer(in, outstream);
-                    break;
-                case FILEWRITER:
-                    reader = rwSupplier.get();
-                    readerTransfer(reader, writer);
-                    break;
+                    return OutputStream.nullOutputStream();
                 case OUTPUTWRITER:
-                    if (outputwriter == null) {
-                        UserReporting.warning(iotabname, err, "Could not read " + name + ": OutputWriter is undefined");
-                    }
-                    reader = rwSupplier.get();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        outputwriter.println(line);
-                    }
-                    break;
+                    return null;
+                case FILEOBJECT:
+                    return fileobject.getOutputStream();
+                case DATAOBJECT:
+                    return dataobject.getPrimaryFile().getOutputStream();
+                case FILE:
+                    return new FileOutputStream(file);
+                case FILESTREAM:
+                    return outstream;
+                case FILEWRITER:
+                    return null;
                 default:
-                    UserReporting.error(iotabname, err, "Unknown mode in " + name + ": " + mode);
+                    UserReporting.error(iotabname, "Unknown mode in " + name + ": " + mode);
             }
         } catch (IOException ex) {
-            UserReporting.warning(iotabname, err, "Could not read " + name + " " + ex);
+            UserReporting.warning(iotabname, "Could not open " + name + " OutputStream " + ex);
         }
-    }
-
-    @Override
-    public void close(Process process, String iotabname, OutputWriter err) {
-        try {
-            if (in != null) {
-                in.close();
-            }
-            if (reader != null) {
-                reader.close();
-            }
-        } catch (IOException ex) {
-            UserReporting.warning(iotabname, err, "Closing " + name + " " + ex);
-        }
+        return null;
     }
 }
