@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-23 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.NbCliDescriptor;
+import uk.theretiredprogrammer.activity.Activity;
+import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.image.ImageManagerImpl;
 import uk.theretiredprogrammer.image.api.ScreenCaptureDescriptor;
 
@@ -52,9 +53,12 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
     public void run() {
         ScreenCaptureDescriptor screencapturedescriptor = ImageManagerImpl.getCurrentScreenCaptureDescriptor();
         String capturefilepath = screencapturedescriptor.getCaptureFilePath();
-        new NbCliDescriptor(screencapturedescriptor.getCaptureFolder(), "scrot", "-s " + capturefilepath)
-                .stderrToIO()
-                .ioTabName(screencapturedescriptor.getIoTabname())
-                .exec("Screen Capture:  " + capturefilepath);
+        Activity.runExternalProcessWithIOTab("scrot",
+                "-s " + capturefilepath,
+                screencapturedescriptor.getCaptureFolder(),
+                new ActivityIO()
+                        .stderrToIO()
+                        .ioTabName(screencapturedescriptor.getIoTabname()),
+                "Screen Capture:  " + capturefilepath);
     }
 }
