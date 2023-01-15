@@ -58,7 +58,7 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
                 "-s " + capturefilepath,
                 screencapturedescriptor.getCaptureFolder(),
                 new ActivityIO()
-                        .outputToIO(STDERR)
+                        .outputToIOSTDERR(STDERR)
                         .ioTabName(screencapturedescriptor.getIoTabname()),
                 "Screen Capture:  " + capturefilepath);
     }
