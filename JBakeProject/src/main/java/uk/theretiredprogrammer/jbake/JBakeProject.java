@@ -163,11 +163,11 @@ public class JBakeProject implements Project {
                         CommonProjectActions.closeProjectAction()
                 );
                 nodeactions.setNodeActions(new DynamicAsyncAction("Bake")
-                        .onAction(() -> Activity.runExternalProcessWithIOTab("jbake", "-b", projectDir,
-                        new ActivityIO()
+                        .onAction(() -> Activity.runExternalProcessWithIOTab(
+                        "jbake", "-b", projectDir,
+                        new ActivityIO("Bake " + projectDir.getName())
                                 .outputToIOSTDERR(STDERR)
-                                .outputToIOSTDOUT(STDOUT)
-                                .ioTabName("Bake " + projectDir.getName()),
+                                .outputToIOSTDOUT(STDOUT),
                         "Baking")
                         )
                 );
