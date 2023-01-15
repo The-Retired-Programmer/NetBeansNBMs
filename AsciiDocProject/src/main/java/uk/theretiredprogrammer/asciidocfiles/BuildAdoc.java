@@ -30,6 +30,7 @@ import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 
 @ActionID(
@@ -67,7 +68,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
                         "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath(),
                         aproject.getProjectDirectory(),
                         new ActivityIO()
-                                .stderrToIO()
+                                .outputToIO(STDERR)
                                 .ioTabName(aproject.getTabname()),
                         "Publishing " + input.getNameExt());
             } else {
@@ -76,7 +77,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
                         "-r asciidoctor-pdf " + input.getPath(),
                         input.getParent(),
                         new ActivityIO()
-                                .stderrToIO()
+                                .outputToIO(STDERR)
                                 .ioTabName("Publish AsciiDocs"),
                         "Publishing " + input.getNameExt());
             }
