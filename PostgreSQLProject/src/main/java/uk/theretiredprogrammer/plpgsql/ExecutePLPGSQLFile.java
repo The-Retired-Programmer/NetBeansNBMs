@@ -31,6 +31,8 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.activity.ActivityIO;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
 import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
 
 @ActionID(
@@ -69,8 +71,8 @@ public final class ExecutePLPGSQLFile implements ActionListener, Runnable {
                             "-f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager",
                             input.getParent(),
                             new ActivityIO()
-                                    .stderrToIO()
-                                    .stdoutToIO()
+                                    .outputToIO(STDOUT)
+                                    .outputToIO(STDERR)
                                     .ioTabName("Execute PgSQL"),
                             "Executing " + input.getNameExt()
                     );
