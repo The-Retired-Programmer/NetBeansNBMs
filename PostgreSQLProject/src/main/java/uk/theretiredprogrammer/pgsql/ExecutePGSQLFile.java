@@ -25,10 +25,10 @@ import org.openide.loaders.DataObject;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
-import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.activity.ActivityIO;
 import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
@@ -70,16 +70,15 @@ public final class ExecutePGSQLFile implements ActionListener, Runnable {
                     Activity.runExternalProcessWithIOTab("psql",
                             "-f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager",
                             input.getParent(),
-                            new ActivityIO()
+                            new ActivityIO("Execute PgSQL")
                                     .outputToIOSTDOUT(STDOUT)
-                                    .outputToIOSTDERR(STDERR)
-                                    .ioTabName("Execute PgSQL"),
+                                    .outputToIOSTDERR(STDERR),
                             "Executing " + input.getNameExt()
                     );
                 }
             }
         } catch (IOException ex) {
-            StatusDisplayer.getDefault().setStatusText("failed to run pgsql: " + ex.getLocalizedMessage());
+            UserReporting.exceptionWithMessage("Execute PgSQL", "failed to run pgsql: ", ex);
         }
     }
 }
