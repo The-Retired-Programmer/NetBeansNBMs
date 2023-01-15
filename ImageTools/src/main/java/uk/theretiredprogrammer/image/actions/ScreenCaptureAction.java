@@ -57,9 +57,8 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
         Activity.runExternalProcessWithIOTab("scrot",
                 "-s " + capturefilepath,
                 screencapturedescriptor.getCaptureFolder(),
-                new ActivityIO()
-                        .outputToIOSTDERR(STDERR)
-                        .ioTabName(screencapturedescriptor.getIoTabname()),
+                new ActivityIO(screencapturedescriptor.getIoTabname())
+                        .outputToIOSTDERR(STDERR),
                 "Screen Capture:  " + capturefilepath);
     }
 }
