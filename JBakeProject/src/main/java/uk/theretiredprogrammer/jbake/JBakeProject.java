@@ -41,6 +41,8 @@ import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
 import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
 
 public class JBakeProject implements Project {
 
@@ -161,13 +163,13 @@ public class JBakeProject implements Project {
                         CommonProjectActions.closeProjectAction()
                 );
                 nodeactions.setNodeActions(new DynamicAsyncAction("Bake")
-                                .onAction(() -> Activity.runExternalProcessWithIOTab("jbake", "-b", projectDir,
-                                new ActivityIO()
-                                        .stderrToIO()
-                                        .stdoutToIO()
-                                        .ioTabName("Bake " + projectDir.getName()),
-                                "Baking")
-                                )
+                        .onAction(() -> Activity.runExternalProcessWithIOTab("jbake", "-b", projectDir,
+                        new ActivityIO()
+                                .outputToIO(STDERR)
+                                .outputToIO(STDOUT)
+                                .ioTabName("Bake " + projectDir.getName()),
+                        "Baking")
+                        )
                 );
             }
 
