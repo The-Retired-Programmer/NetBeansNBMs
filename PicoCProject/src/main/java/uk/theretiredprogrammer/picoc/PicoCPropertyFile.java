@@ -95,7 +95,7 @@ public class PicoCPropertyFile {
         savebeforeaction = new SaveBeforeAction(properties, "save_before_building", ALL);
         savebeforeaction.setSourceRoot(projectdir.getFileObject("src"));
         executables = properties.getProperty("executables", "app").split(",");
-        downloadusingbootloader = "Yes".equalsIgnoreCase(properties.getProperty("enable_download_use_bootpoader", "No"));
+        downloadusingbootloader = "Yes".equalsIgnoreCase(properties.getProperty("enable_download_use_bootloader", "No"));
         downloadusingdebugport = "Yes".equalsIgnoreCase(properties.getProperty("enable_download_use_debugport", "Yes"));
         baudrate = Integer.parseInt(properties.getProperty("serial_baudrate", "115200"));
         devicename = properties.getProperty("serial_device_name", "/dev/serial0");

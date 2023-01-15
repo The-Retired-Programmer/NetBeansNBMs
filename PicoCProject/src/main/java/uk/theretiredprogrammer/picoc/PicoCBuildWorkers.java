@@ -40,9 +40,9 @@ public class PicoCBuildWorkers {
                 "/dev/serial0", 115200,
                 new ActivityIO()
                         .inputs("Tx")
-                        .outputs("RX")
-                        .inputFromIOSTDIN(0)
-                        .outputToIOSTDOUT(0)
+                        .outputs("Rx")
+                        .inputFromIOSTDIN("Tx")
+                        .outputToIOSTDOUT("Rx")
                         .ioTabName(iotabname)));
     }
 
@@ -51,16 +51,9 @@ public class PicoCBuildWorkers {
             UserReporting.error(iotabname, "Build folder is not present");
             return;
         }
-        UserReporting.startmessage(iotabname, "Cleaning Build Folder");
-        try {
-            for (FileObject content : buildfolder.getChildren()) {
-                content.delete();
-            }
-        } catch (IOException ex) {
-            UserReporting.exception(iotabname, ex);
-            return;
-        }
-        UserReporting.completedmessage(iotabname);
+        Activity.runWithIOTab(
+                new CleanBuildFolderActivity(new ActivityIO().ioTabName(iotabname)),
+                "Cleaning Build Folder");
     }
 
     public final void buildMakeFile() {
@@ -125,25 +118,9 @@ public class PicoCBuildWorkers {
             UserReporting.error(iotabname, "Build folder is not present");
             return;
         }
-        UserReporting.startmessage(iotabname, "Downloading " + buildname + ".uf2 via Boot Loader");
-        FileObject uf2file = getExecutable(buildname, "uf2");
-        if (uf2file != null && uf2file.isData()) {
-            File picobootloaderfs = new File("/media/richard/RPI-RP2");
-            FileObject picobootloader = FileUtil.toFileObject(picobootloaderfs);
-            if (picobootloader != null && picobootloader.isFolder()) {
-                try {
-                    FileUtil.copyFile(uf2file, picobootloader, uf2file.getName());
-                } catch (IOException ex) {
-                    UserReporting.exceptionWithMessage(iotabname, "Boot Loader - failure during file copy", ex);
-                    return;
-                }
-                UserReporting.completedmessage(iotabname);
-            } else {
-                UserReporting.error(iotabname, "Bootloader is not enabled - operate BOOTSEL with Reset to mount");
-            }
-        } else {
-            UserReporting.error(iotabname, "Cannot download via bootloader - .uf2 is missing");
-        }
+        Activity.runWithIOTab(
+                new DownloadViaBootLoaderActivity(buildname, new ActivityIO().ioTabName(iotabname)),
+                "Downloading " + buildname + ".uf2 via Boot Loader");
     }
 
     private String getExecutablePath(String buildname, String ext) {
@@ -152,5 +129,53 @@ public class PicoCBuildWorkers {
 
     private FileObject getExecutable(String buildname, String ext) {
         return buildfolder.getFileObject(buildname, ext);
+    }
+
+    private class CleanBuildFolderActivity extends Activity {
+
+        public CleanBuildFolderActivity(ActivityIO activityio) {
+            super(activityio);
+        }
+
+        @Override
+        public void onActivity() {
+            try {
+                for (FileObject content : buildfolder.getChildren()) {
+                    content.delete();
+                }
+            } catch (IOException ex) {
+                UserReporting.exception(iotabname, ex);
+            }
+        }
+    }
+
+    private class DownloadViaBootLoaderActivity extends Activity {
+
+        private final String buildname;
+
+        public DownloadViaBootLoaderActivity(String buildname, ActivityIO activityio) {
+            super(activityio);
+            this.buildname = buildname;
+        }
+
+        @Override
+        public void onActivity() {
+            FileObject uf2file = getExecutable(buildname, "uf2");
+            if (uf2file != null && uf2file.isData()) {
+                File picobootloaderfs = new File("/media/richard/RPI-RP2");
+                FileObject picobootloader = FileUtil.toFileObject(picobootloaderfs);
+                if (picobootloader != null && picobootloader.isFolder()) {
+                    try {
+                        FileUtil.copyFile(uf2file, picobootloader, uf2file.getName());
+                    } catch (IOException ex) {
+                        UserReporting.exceptionWithMessage(iotabname, "Boot Loader - failure during file copy", ex);
+                    }
+                } else {
+                    UserReporting.error(iotabname, "Bootloader is not enabled - operate BOOTSEL with Reset to mount");
+                }
+            } else {
+                UserReporting.error(iotabname, "Cannot download via bootloader - .uf2 is missing");
+            }
+        }
     }
 }

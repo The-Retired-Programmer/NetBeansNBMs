@@ -19,7 +19,6 @@ import com.fazecast.jSerialComm.SerialPort;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activity.DataTask;
 import uk.theretiredprogrammer.activity.InputDataTask;
 import uk.theretiredprogrammer.activity.OutputDataTask;
 
@@ -42,10 +41,16 @@ public class SerialActivity extends Activity {
     }
 
     @Override
-    public DataTask[] createAllDataTasks() {
-        return new DataTask[]{
-            new InputDataTask(activityio.inputs[0].name, activityio.iotab.name).byCharReader(io, activityio.inputs[0], serialport.getOutputStream()),
-            new OutputDataTask(activityio.outputs[0].name, activityio.iotab.name).byCharWriter(io, activityio.outputs[0], serialport.getInputStream())
+    public InputDataTask[] createAllInputDataTasks() {
+        return new InputDataTask[]{
+            new InputDataTask("Tx", activityio.iotab.name).byCharReader(io, activityio.getInputIO("Tx"), serialport.getOutputStream())
+        };
+    }
+    
+    @Override
+    public OutputDataTask[] createAllOutputDataTasks() {
+        return new OutputDataTask[]{
+            new OutputDataTask("Rx", activityio.iotab.name).byCharWriter(io, activityio.getOutputIO("Rx"), serialport.getInputStream())
         };
     }
 
