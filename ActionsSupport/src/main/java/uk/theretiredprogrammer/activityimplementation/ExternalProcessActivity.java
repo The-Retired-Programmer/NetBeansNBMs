@@ -17,7 +17,6 @@ package uk.theretiredprogrammer.activityimplementation;
 
 import uk.theretiredprogrammer.activity.OutputDataTask;
 import uk.theretiredprogrammer.activity.InputDataTask;
-import uk.theretiredprogrammer.activity.DataTask;
 import uk.theretiredprogrammer.activity.OutputIO;
 import uk.theretiredprogrammer.activity.InputIO;
 import uk.theretiredprogrammer.activity.ActivityIO;
@@ -60,7 +59,7 @@ public class ExternalProcessActivity extends Activity {
             process = processdescriptor.exec(null, null, FileUtil.toFile(dir));
             return process;
         } catch (IOException ex) {
-            UserReporting.exceptionWithMessage(activityio.iotab.name, "create Process - failed to find Working Directory", ex);
+            UserReporting.exceptionWithMessage(activityio.iotabname, "create Process - failed to find Working Directory", ex);
             return null;
         }
     }
@@ -73,16 +72,16 @@ public class ExternalProcessActivity extends Activity {
     }
 
     private InputDataTask createInputDataTask(InputIO inputio) {
-        InputStream is = inputio.getInputStream(activityio.iotab.name);
+        InputStream is = inputio.getInputStream(activityio.iotabname);
         if (is == null) {
-            BufferedReader brdr = inputio.getBufferReader(io, activityio.iotab.name);
+            BufferedReader brdr = inputio.getBufferReader(io, activityio.iotabname);
             if (brdr == null) {
                 return null;
             } else {
-                return new InputDataTask(inputio.name, activityio.iotab.name).byLineReader(brdr, process.outputWriter());
+                return new InputDataTask(inputio.name, activityio.iotabname).byLineReader(brdr, process.outputWriter());
             }
         } else {
-            return new InputDataTask(inputio.name, activityio.iotab.name).byStream(is, process.getOutputStream());
+            return new InputDataTask(inputio.name, activityio.iotabname).byStream(is, process.getOutputStream());
         }
     }
     
@@ -95,30 +94,30 @@ public class ExternalProcessActivity extends Activity {
     }
 
     private OutputDataTask createOutputDataTask(OutputIO outputio) {
-        OutputStream os = outputio.getOutputStream(activityio.iotab.name);
+        OutputStream os = outputio.getOutputStream(activityio.iotabname);
         if (os == null) {
-            Writer wtr = outputio.getWriter(io, activityio.iotab.name);
+            Writer wtr = outputio.getWriter(io, activityio.iotabname);
             if (wtr == null) {
                 return null;
             } else {
-                return new OutputDataTask(outputio.name, activityio.iotab.name).byLineWriter(wtr, process.inputReader());
+                return new OutputDataTask(outputio.name, activityio.iotabname).byLineWriter(wtr, process.inputReader());
             }
         } else {
-            return new OutputDataTask(outputio.name, activityio.iotab.name).byStream(os, process.getInputStream());
+            return new OutputDataTask(outputio.name, activityio.iotabname).byStream(os, process.getInputStream());
         }
     }
 
     private OutputDataTask createErrorDataTask(OutputIO outputio) {
-        OutputStream os = outputio.getOutputStream(activityio.iotab.name);
+        OutputStream os = outputio.getOutputStream(activityio.iotabname);
         if (os == null) {
-            Writer wtr = outputio.getWriter(io, activityio.iotab.name);
+            Writer wtr = outputio.getWriter(io, activityio.iotabname);
             if (wtr == null) {
                 return null;
             } else {
-                return new OutputDataTask(outputio.name, activityio.iotab.name).byLineWriter(wtr, process.errorReader());
+                return new OutputDataTask(outputio.name, activityio.iotabname).byLineWriter(wtr, process.errorReader());
             }
         } else {
-            return new OutputDataTask(outputio.name, activityio.iotab.name).byStream(os, process.getErrorStream());
+            return new OutputDataTask(outputio.name, activityio.iotabname).byStream(os, process.getErrorStream());
         }
     }
 }

@@ -36,13 +36,19 @@ public class ActivityIO {
     public static final String STDERR = "STDERR";
     public static final String STDIN = "STDIN";
 
-    public final IOTab iotab;
-
+    // IOTab 
+    public String iotabname;
+    public boolean iotabreset = false;
+    // InputIOs & OutputIOs
     private InputIO[] inputs;
     private OutputIO[] outputs;
-
+    
     public ActivityIO() {
-        iotab = new IOTab();
+        this(null);
+    }
+    
+    public ActivityIO(String iotabname) {
+        this.iotabname = iotabname;
         inputs("STDIN");
         outputs("STDOUT", "STDERR");
     }
@@ -73,7 +79,7 @@ public class ActivityIO {
                 return input;
             }
         }
-        UserReporting.warning(iotab.name,"InputIO "+ name+ " not found");
+        UserReporting.warning(iotabname,"InputIO "+ name+ " not found");
         return null;
     }
     
@@ -83,21 +89,11 @@ public class ActivityIO {
                 return output;
             }
         }
-        UserReporting.warning(iotab.name,"OutputIO "+ name+ " not found");
+        UserReporting.warning(iotabname,"OutputIO "+ name+ " not found");
         return null;
     }
 
     // the IOTab 
-    /**
-     * Define the IOTab to be used.
-     *
-     * @param tabname tabname to be used/reused.
-     * @return this object
-     */
-    public ActivityIO ioTabName(String tabname) {
-        this.iotab.name = tabname;
-        return this;
-    }
 
     /**
      * Clear the IOTab before each usage.
@@ -105,7 +101,7 @@ public class ActivityIO {
      * @return this object
      */
     public ActivityIO ioTabClear() {
-        this.iotab.reset = true;
+        iotabreset = true;
         return this;
     }
 

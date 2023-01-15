@@ -110,7 +110,7 @@ public abstract class Activity {
             allInputDataTasks = createAllInputDataTasks();
             allOutputDataTasks = createAllOutputDataTasks();
             if (io != null) {
-                IOTabCloseWatch.watch(activityio.iotab.name, io, () -> cancelTasksAndProcess());
+                IOTabCloseWatch.watch(activityio.iotabname, io, () -> cancelTasksAndProcess());
             }
             onActivity();
             if (areClosingActionsRequired()) {
@@ -150,7 +150,7 @@ public abstract class Activity {
                 }
             }
         } catch (InterruptedException ex) {
-            UserReporting.exception(activityio.iotab.name, ex);
+            UserReporting.exception(activityio.iotabname, ex);
         }
     }
 

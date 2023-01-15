@@ -68,10 +68,10 @@ public class ActionsPropertyFile {
                 String args = properties.getProperty(Integer.toString(j) + ".commandargs", "");
                 dynamicactions.add(new DynamicAsyncAction(label)
                         .onAction(() -> Activity.runExternalProcessWithIOTab(
-                                command,
-                                args,
-                                filefolder,
-                                activityio)));
+                        command,
+                        args,
+                        filefolder,
+                        activityio)));
             }
         }
     }
@@ -83,10 +83,9 @@ public class ActionsPropertyFile {
             return null;
         }
         String tabname = properties.getProperty(prefix + ".tabname", label);
-        ActivityIO activityio = new ActivityIO()
+        ActivityIO activityio = new ActivityIO(tabname)
                 .outputToIOSTDOUT(STDOUT)
-                .outputToIOSTDERR(STDERR)
-                .ioTabName(tabname);
+                .outputToIOSTDERR(STDERR);
         String iotabclear = properties.getProperty(prefix + ".cleartab");
         if (iotabclear != null && iotabclear.equals("every execution")) {
             activityio.ioTabClear();

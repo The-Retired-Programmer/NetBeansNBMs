@@ -36,11 +36,11 @@ public class RunActivityWithIOTab {
      */
     public RunActivityWithIOTab(Activity activity) {
         this.activity = activity;
-        iotabname = activity.activityio.iotab.name;
+        iotabname = activity.activityio.iotabname;
         io = IOProvider.getDefault().getIO(iotabname, false);
         activity.setIO(io);
         io.show();
-        if (activity.activityio.iotab.reset) {
+        if (activity.activityio.iotabreset) {
             io.reset();
         }
     }

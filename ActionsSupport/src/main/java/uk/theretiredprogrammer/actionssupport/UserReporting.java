@@ -34,30 +34,6 @@ public class UserReporting {
     private static final String LOGGING = "uk.theretiredprogrammer.actionssupport.UserReporting";
 
     /**
-     * Write a "start action" message to the defined IoTab STDOUT
-     *
-     * @param iotabname the IoTab name
-     * @param message The message to be output
-     */
-    public static void startmessage(String iotabname, String message) {
-        InputOutput io = IOProvider.getDefault().getIO(iotabname, false);
-        io.show();
-        io.getOut().println(message);
-    }
-
-    /**
-     * Write the standard "end action" message ("... done") to the defined IoTab
-     * STDOUT.
-     *
-     * @param iotabname the IoTab name
-     */
-    public static void completedmessage(String iotabname) {
-        InputOutput io = IOProvider.getDefault().getIO(iotabname, false);
-        io.show();
-        io.getOut().println("... done");
-    }
-
-    /**
      * Write an exception report to both the IoTab and also the IDE log
      * (SEVERE).
      *

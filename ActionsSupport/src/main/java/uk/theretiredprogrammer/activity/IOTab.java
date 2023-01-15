@@ -23,11 +23,6 @@ public class IOTab {
     public IOTab() {
     }
     
-    public IOTab(IOTab source) {
-        this.name = source.name;
-        this.reset = source.reset;
-    }
-
     public IOTab name(String name) {
         this.name = name;
         return this;
