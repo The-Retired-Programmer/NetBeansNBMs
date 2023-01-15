@@ -47,9 +47,7 @@ public class RunActivityWithIOTab {
             io.reset();
         }
         outwtr = io.getOut();
-        activity.activityio.stderr.setOutputWriter(io.getErr());
-        activity.activityio.stdout.setOutputWriter(outwtr);
-        activity.activityio.stdin.setReader(io.getIn());
+        activity.activityio.setIOReaderAndWriters(io.getIn(), outwtr, io.getErr());
     }
 
     /**

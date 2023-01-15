@@ -31,6 +31,9 @@ import org.openide.execution.NbProcessDescriptor;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDIN;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
 
 /**
  * External Process Activity
@@ -65,9 +68,9 @@ public class ExternalProcessActivity extends Activity {
     @Override
     public DataTask[] createAllDataTasks() {
         return new DataTask[]{
-            createInputDataTask(activityio.stdin),
-            createOutputDataTask(activityio.stdout),
-            createErrorDataTask(activityio.stderr)
+            createInputDataTask(activityio.inputs[STDIN]),
+            createOutputDataTask(activityio.outputs[STDOUT]),
+            createErrorDataTask(activityio.outputs[STDERR])
         };
     }
 

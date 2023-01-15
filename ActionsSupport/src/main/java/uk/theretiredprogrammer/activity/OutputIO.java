@@ -25,14 +25,14 @@ import org.netbeans.api.io.OutputWriter;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activityimplementation.IO;
 
-public class OutputIO extends IO {
+public class OutputIO {
 
     private static enum OutStyle {
         IGNORE, DISCARD, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEWRITER, OUTPUTWRITER
     }
+
+    public final String name;
 
     private OutStyle mode = OutStyle.IGNORE;
 
@@ -44,18 +44,7 @@ public class OutputIO extends IO {
     private DataObject dataobject;
 
     public OutputIO(String name) {
-        super(name);
-    }
-
-    public OutputIO(OutputIO source) {
-        super(source);
-        this.mode = source.mode;
-        this.outputwriter = source.outputwriter;
-        this.writer = source.writer;
-        this.outstream = source.outstream;
-        this.fileobject = source.fileobject;
-        this.file = source.file;
-        this.dataobject = source.dataobject;
+        this.name = name;
     }
 
     public void ignore() {
@@ -112,7 +101,7 @@ public class OutputIO extends IO {
             case FILE:
             case FILESTREAM:
                 OutputStream os = getOutputStream(iotabname);
-                return os == null? null :new OutputStreamWriter(os);
+                return os == null ? null : new OutputStreamWriter(os);
             case FILEWRITER:
                 return writer;
             default:

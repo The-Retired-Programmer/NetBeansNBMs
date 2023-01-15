@@ -24,6 +24,8 @@ import org.openide.filesystems.FileObject;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
 import uk.theretiredprogrammer.activity.ActivityIO;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
 
 public class ActionsPropertyFile {
 
@@ -59,9 +61,9 @@ public class ActionsPropertyFile {
         int propertycount = Integer.parseInt(pcount);
         // set up the commands
         for (int j = 1; j <= propertycount; j++) {
-            ActivityIO activitydescriptor = getActivityDescriptorFromProperties(properties, j);
+            ActivityIO activityio = getActivityIOFromProperties(properties, j);
             String command = properties.getProperty(Integer.toString(j) + ".command");
-            if (activitydescriptor != null && command != null) {
+            if (activityio != null && command != null) {
                 String label = properties.getProperty(Integer.toString(j) + ".label");
                 String args = properties.getProperty(Integer.toString(j) + ".commandargs", "");
                 dynamicactions.add(new DynamicAsyncAction(label)
@@ -69,26 +71,26 @@ public class ActionsPropertyFile {
                                 command,
                                 args,
                                 filefolder,
-                                activitydescriptor)));
+                                activityio)));
             }
         }
     }
 
-    private ActivityIO getActivityDescriptorFromProperties(Properties properties, int iPrefix) {
+    private ActivityIO getActivityIOFromProperties(Properties properties, int iPrefix) {
         String prefix = Integer.toString(iPrefix);
         String label = properties.getProperty(prefix + ".label");
         if (label == null) {
             return null;
         }
         String tabname = properties.getProperty(prefix + ".tabname", label);
-        ActivityIO activitydescriptor = new ActivityIO()
-                .stdoutToIO()
-                .stderrToIO()
+        ActivityIO activityio = new ActivityIO()
+                .outputToIO(STDOUT)
+                .outputToIO(STDERR)
                 .ioTabName(tabname);
         String iotabclear = properties.getProperty(prefix + ".cleartab");
         if (iotabclear != null && iotabclear.equals("every execution")) {
-            activitydescriptor.ioTabClear();
+            activityio.ioTabClear();
         }
-        return activitydescriptor;
+        return activityio;
     }
 }

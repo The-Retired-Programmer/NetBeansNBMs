@@ -27,13 +27,14 @@ import java.io.StringReader;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activityimplementation.IO;
 
-public class InputIO extends IO {
+public class InputIO {
 
     private static enum InStyle {
         IGNORE, EMPTY, IO, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEREADER
     }
+
+    public final String name;
 
     private InStyle mode = InStyle.IGNORE;
 
@@ -45,18 +46,7 @@ public class InputIO extends IO {
     private Reader ioreader;
 
     public InputIO(String name) {
-        super(name);
-    }
-
-    public InputIO(InputIO source) {
-        super(source);
-        this.mode = source.mode;
-        this.fileobject = source.fileobject;
-        this.dataobject = source.dataobject;
-        this.file = source.file;
-        this.instream = source.instream;
-        this.reader = source.reader;
-        this.ioreader = source.ioreader;
+        this.name = name;
     }
 
     public void ignore() {
@@ -97,7 +87,7 @@ public class InputIO extends IO {
     }
 
     public void setReader(Reader ioreader) {
-        this.ioreader = new BufferedReader(ioreader);
+        this.ioreader = ioreader;
     }
 
     public Reader getReader(String iotabname) {

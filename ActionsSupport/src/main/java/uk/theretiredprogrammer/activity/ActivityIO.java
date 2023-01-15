@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import org.netbeans.api.io.OutputWriter;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 
@@ -31,34 +32,66 @@ import org.openide.loaders.DataObject;
  */
 public class ActivityIO {
 
-    public final InputIO stdin;
-    public final OutputIO stdout;
-    public final OutputIO stderr;
+    public static final int STDOUT =0;
+    public static final int STDERR =1;
+    public static final int STDIN =0;
+    
     public final IOTab iotab;
+    
+    public final InputIO[] inputs;
+    public final OutputIO[] outputs;
+    private final int stdinIOmap;
+    private final int stdoutIOmap;
+    private final int stderrIOmap;
+    
+    public ActivityIO() {
+        this(1,new String[] {"STDIN"}, 2, new String[]{"STDOUT", "STDERR"}, 0, 0, 1);
+    }
 
     /**
      * Constructor
+     * @param maxinputs 
+     * @param inputnames 
+     * @param maxoutputs
+     * @param outputnames
+     * @param stdinIOmap
+     * @param stdoutIOmap
+     * @param stderrIOmap
      */
-    public ActivityIO() {
-        this.stdin = new InputIO("STDIN");
-        this.stdout = new OutputIO("STDOUT");
-        this.stderr = new OutputIO("STDERR");
+    public ActivityIO(int maxinputs, String[] inputnames, int maxoutputs, String[] outputnames,
+            int stdinIOmap, int stdoutIOmap, int stderrIOmap) {
+        inputs = new InputIO[maxinputs];
+        if (maxinputs > 0) {
+            for(int i=0; i<maxinputs; i++){
+                inputs[i] = new InputIO(inputnames[i]);
+            }
+        }
+        outputs = new OutputIO[maxoutputs];
+        if (maxoutputs > 0) {
+            for(int i=0; i<maxoutputs; i++){
+                outputs[i] = new OutputIO(outputnames[i]);
+            }
+        }
+        this.stdinIOmap = stdinIOmap;
+        this.stdoutIOmap = stdoutIOmap;
+        this.stderrIOmap = stderrIOmap;
         this.iotab = new IOTab();
     }
-
-    /**
-     * Clone a NbCLIDescriptor object.
-     *
-     * @param source the object to clone from.
-     */
-    public ActivityIO(ActivityIO source) {
-        this.stderr = new OutputIO(source.stderr);
-        this.stdout = new OutputIO(source.stdout);
-        this.stdin = new InputIO(source.stdin);
-        this.iotab = new IOTab(source.iotab);
+    
+    public void setIOReaderAndWriters(Reader stdin, OutputWriter stdout,OutputWriter stderr) {
+        if (stdinIOmap != -1) {
+            inputs[stdinIOmap].setReader(stdin);
+        }
+        if (stdoutIOmap != -1) {
+            outputs[stdoutIOmap].setOutputWriter(stdout);
+        }
+        if (stderrIOmap != -1) {
+            outputs[stderrIOmap].setOutputWriter(stderr);
+        }
     }
 
-    // the IOTab Descriptor 
+    // the IOTab 
+    
     /**
      * Define the IOTab to be used.
      *
@@ -80,262 +113,193 @@ public class ActivityIO {
         return this;
     }
 
-    // the InputIO Descriptor
+    // InputIO configuration
+
     /**
-     * Ignore InputIO.
+     * Input is ignored.
      *
+     * @param i the input number (0 .. maxinputs-1)
      * @return this object
      */
-    public ActivityIO stdinIgnore() {
-        stdin.ignore();
+    public ActivityIO inputIgnore(int i) {
+        inputs[i].ignore();
         return this;
     }
 
     /**
-     * Pass an empty file to InputIO;
+     * Input is an empty file;
      *
+     * @param i the input number (0 .. maxinputs-1)
      * @return this object
      */
-    public ActivityIO stdinEmpty() {
-        stdin.empty();
+    public ActivityIO inputEmpty(int i) {
+        inputs[i].empty();
         return this;
     }
 
     /**
-     * Pass the IO Tab to InputIO.
+     * Input from the IOTab.
      *
+     * @param i the input number (0 .. maxinputs-1)
      * @return this object
      */
-    public ActivityIO stdinFromIO() {
-        stdin.fromIO();
+    public ActivityIO inputFromIO(int i) {
+        inputs[i].fromIO();
         return this;
     }
 
     /**
-     * Pass a FileObject to InputIO.
+     * Input from a FileObject.
      *
+     * @param i the input number (0 .. maxinputs-1)
      * @param fileobject the source
      * @return this object
      */
-    public ActivityIO stdinFromFile(FileObject fileobject) {
-        stdin.fromFile(fileobject);
+    public ActivityIO inputFromFile(int i, FileObject fileobject) {
+        inputs[i].fromFile(fileobject);
         return this;
     }
 
     /**
-     * Pass a File to InputIO.
+     * Input from a File.
      *
+     * @param i the input number (0 .. maxinputs-1)
      * @param file the source
      * @return this object
      */
-    public ActivityIO stdinFromFile(File file) {
-        stdin.fromFile(file);
+    public ActivityIO inputFromFile(int i, File file) {
+        inputs[i].fromFile(file);
         return this;
     }
 
     /**
-     * Pass a DataObject to InputIO.
+     * Input from a DataObject.
      *
+     * @param i the input number (0 .. maxinputs-1)
      * @param dataobject the source
      * @return this object
      */
-    public ActivityIO stdinFromFile(DataObject dataobject) {
-        stdin.fromFile(dataobject);
+    public ActivityIO inputFromFile(int i, DataObject dataobject) {
+        inputs[i].fromFile(dataobject);
         return this;
     }
 
     /**
-     * Pass an InputStream to InputIO.
+     * Input from a InputStream.
      *
+     * @param i the input number (0 .. maxinputs-1)
      * @param instream the source
      * @return this object
      */
-    public ActivityIO stdinFromFile(InputStream instream) {
-        stdin.fromFile(instream);
+    public ActivityIO inputFromFile(int i, InputStream instream) {
+        inputs[i].fromFile(instream);
         return this;
     }
 
     /**
-     * Pass a Reader to InputIO.
+     * Input from a Reader.
      *
+     * @param i the input number (0 .. maxinputs-1)
      * @param reader the source
      * @return this object
      */
-    public ActivityIO stdinFromFile(Reader reader) {
-        stdin.fromFile(reader);
+    public ActivityIO inputFromFile(int i, Reader reader) {
+        inputs[i].fromFile(reader);
         return this;
     }
 
-    // the STDOUT Descriptor
+    // OutputIO configuration 
+    
     /**
-     * Do not handle STDOUT.
+     * Output is ignored.
      *
+     * @param i the output number (0 .. maxoutputs-1)
      * @return this object
      */
-    public ActivityIO stdoutIgnore() {
-        stdout.ignore();
+    public ActivityIO outputIgnore(int i) {
+        outputs[i].ignore();
         return this;
     }
 
     /**
-     * Discard the STDOUT generated.
+     * Output is discarded.
      *
+     * @param i the output number (0 .. maxoutputs-1)
      * @return this object
      */
-    public ActivityIO stdoutDiscard() {
-        stdout.discard();
+    public ActivityIO outputDiscard(int i) {
+        outputs[i].discard();
         return this;
     }
 
     /**
-     * Pass the STDOUT to the IOTab.
+     * Output to the IOTab.
      *
+     * @param i the output number (0 .. maxoutputs-1)
      * @return this object
      */
-    public ActivityIO stdoutToIO() {
-        stdout.toOutputWriter();
+    public ActivityIO outputToIO(int i) {
+        outputs[i].toOutputWriter();
         return this;
     }
 
     /**
-     * Pass the STDOUT to a FileObject.
+     * Output to a FileObject.
      *
+     * @param i the output number (0 .. maxoutputs-1)
      * @param fileobject the target
      * @return this object
      */
-    public ActivityIO stdoutToFile(FileObject fileobject) {
-        stdout.toFile(fileobject);
+    public ActivityIO outputToFile(int i, FileObject fileobject) {
+        outputs[i].toFile(fileobject);
         return this;
     }
 
     /**
-     * Pass the STDOUT to a File.
+     * Output to a File.
      *
+     * @param i the output number (0 .. maxoutputs-1)
      * @param file the target
      * @return this object
      */
-    public ActivityIO stdoutToFile(File file) {
-        stdout.toFile(file);
+    public ActivityIO outputToFile(int i, File file) {
+        outputs[i].toFile(file);
         return this;
     }
 
     /**
-     * Pass the STDOUT to a DataObject.
+     * Output to a DataObject.
      *
+     * @param i the output number (0 .. maxoutputs-1)
      * @param dataobject the target
      * @return this object
      */
-    public ActivityIO stdoutToFile(DataObject dataobject) {
-        stdout.toFile(dataobject);
+    public ActivityIO outputToFile(int i, DataObject dataobject) {
+        outputs[i].toFile(dataobject);
         return this;
     }
 
     /**
-     * Pass the STDOUT to an OutputStream.
+     * Output to an OutputStream.
      *
+     * @param i the output number (0 .. maxoutputs-1)
      * @param outstream the target
      * @return this object
      */
-    public ActivityIO stdoutToFile(OutputStream outstream) {
-        stdout.toFile(outstream);
+    public ActivityIO outputToFile(int i, OutputStream outstream) {
+        outputs[i].toFile(outstream);
         return this;
     }
 
     /**
-     * Pass the STDOUT to a Writer.
+     * Output to a Writer.
      *
+     * @param i the output number (0 .. maxoutputs-1)
      * @param writer the target
      * @return this object
      */
-    public ActivityIO stdoutToFile(Writer writer) {
-        stdout.toFile(writer);
+    public ActivityIO outputToFile(int i, Writer writer) {
+        outputs[i].toFile(writer);
         return this;
     }
-
-    // the STDERR Descriptor
-    /**
-     * Do not handle STDERR.
-     *
-     * @return this object
-     */
-    public ActivityIO stderrIgnore() {
-        stderr.ignore();
-        return this;
-    }
-
-    /**
-     * Discard the STDERR generated.
-     *
-     * @return this object
-     */
-    public ActivityIO stderrDiscard() {
-        stderr.discard();
-        return this;
-    }
-
-    /**
-     * Pass the STDERR to the IOTab.
-     *
-     * @return this object
-     */
-    public ActivityIO stderrToIO() {
-        stderr.toOutputWriter();
-        return this;
-    }
-
-    /**
-     * Pass the STDERR to a FileObject.
-     *
-     * @param fileobject the target
-     * @return this object
-     */
-    public ActivityIO stderrToFile(FileObject fileobject) {
-        stderr.toFile(fileobject);
-        return this;
-    }
-
-    /**
-     * Pass the STDERR to a File.
-     *
-     * @param file the target
-     * @return this object
-     */
-    public ActivityIO stderrToFile(File file) {
-        stderr.toFile(file);
-        return this;
-    }
-
-    /**
-     * Pass the STDERR to a DataObject.
-     *
-     * @param dataobject the target
-     * @return this object
-     */
-    public ActivityIO stderrToFile(DataObject dataobject) {
-        stderr.toFile(dataobject);
-        return this;
-    }
-
-    /**
-     * Pass the STDERR to an OutputStream.
-     *
-     * @param outstream the target
-     * @return this object
-     */
-    public ActivityIO stderrToFile(OutputStream outstream) {
-        stderr.toFile(outstream);
-        return this;
-    }
-
-    /**
-     * Pass the STDERR to a Writer.
-     *
-     * @param writer the target
-     * @return this object
-     */
-    public ActivityIO stderrToFile(Writer writer) {
-        stderr.toFile(writer);
-        return this;
-    }
-
 }
