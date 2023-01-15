@@ -22,6 +22,7 @@ import java.io.Reader;
 import java.io.Writer;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 /**
  * ActivityIO
@@ -31,14 +32,14 @@ import org.openide.loaders.DataObject;
  */
 public class ActivityIO {
 
-    public static final int STDOUT = 0;
-    public static final int STDERR = 1;
-    public static final int STDIN = 0;
+    public static final String STDOUT = "STDOUT";
+    public static final String STDERR = "STDERR";
+    public static final String STDIN = "STDIN";
 
     public final IOTab iotab;
 
-    public InputIO[] inputs;
-    public OutputIO[] outputs;
+    private InputIO[] inputs;
+    private OutputIO[] outputs;
 
     public ActivityIO() {
         iotab = new IOTab();
@@ -64,6 +65,26 @@ public class ActivityIO {
             }
         }
         return this;
+    }
+    
+    public InputIO getInputIO(String name) {
+        for (InputIO input : inputs) {
+            if (name.equals(input.name)) {
+                return input;
+            }
+        }
+        UserReporting.warning(iotab.name,"InputIO "+ name+ " not found");
+        return null;
+    }
+    
+    public OutputIO getOutputIO(String name) {
+        for (OutputIO output : outputs) {
+            if (name.equals(output.name)) {
+                return output;
+            }
+        }
+        UserReporting.warning(iotab.name,"OutputIO "+ name+ " not found");
+        return null;
     }
 
     // the IOTab 
@@ -92,93 +113,93 @@ public class ActivityIO {
     /**
      * Input is ignored.
      *
-     * @param i the input number (0 .. maxinputs-1)
+     * @param name the inputIO name
      * @return this object
      */
-    public ActivityIO inputIgnore(int i) {
-        inputs[i].ignore();
+    public ActivityIO inputIgnore(String name) {
+        getInputIO(name).ignore();
         return this;
     }
 
     /**
      * Input is an empty file;
      *
-     * @param i the input number (0 .. maxinputs-1)
+     * @param name the inputIO name
      * @return this object
      */
-    public ActivityIO inputEmpty(int i) {
-        inputs[i].empty();
+    public ActivityIO inputEmpty(String name) {
+         getInputIO(name).empty();
         return this;
     }
 
     /**
      * Input from the IOTab STDIN.
      *
-     * @param i the input number (0 .. maxinputs-1)
+     * @param name the inputIO name
      * @return this object
      */
-    public ActivityIO inputFromIOSTDIN(int i) {
-        inputs[i].fromIOSTDIN();
+    public ActivityIO inputFromIOSTDIN(String name) {
+         getInputIO(name).fromIOSTDIN();
         return this;
     }
 
     /**
      * Input from a FileObject.
      *
-     * @param i the input number (0 .. maxinputs-1)
+     * @param name the inputIO name
      * @param fileobject the source
      * @return this object
      */
-    public ActivityIO inputFromFile(int i, FileObject fileobject) {
-        inputs[i].fromFile(fileobject);
+    public ActivityIO inputFromFile(String name, FileObject fileobject) {
+         getInputIO(name).fromFile(fileobject);
         return this;
     }
 
     /**
      * Input from a File.
      *
-     * @param i the input number (0 .. maxinputs-1)
+     * @param name the inputIO name
      * @param file the source
      * @return this object
      */
-    public ActivityIO inputFromFile(int i, File file) {
-        inputs[i].fromFile(file);
+    public ActivityIO inputFromFile(String name, File file) {
+         getInputIO(name).fromFile(file);
         return this;
     }
 
     /**
      * Input from a DataObject.
      *
-     * @param i the input number (0 .. maxinputs-1)
+     * @param name the inputIO name
      * @param dataobject the source
      * @return this object
      */
-    public ActivityIO inputFromFile(int i, DataObject dataobject) {
-        inputs[i].fromFile(dataobject);
+    public ActivityIO inputFromFile(String name, DataObject dataobject) {
+         getInputIO(name).fromFile(dataobject);
         return this;
     }
 
     /**
      * Input from a InputStream.
      *
-     * @param i the input number (0 .. maxinputs-1)
+     * @param name the inputIO name
      * @param instream the source
      * @return this object
      */
-    public ActivityIO inputFromFile(int i, InputStream instream) {
-        inputs[i].fromFile(instream);
+    public ActivityIO inputFromFile(String name, InputStream instream) {
+         getInputIO(name).fromFile(instream);
         return this;
     }
 
     /**
      * Input from a Reader.
      *
-     * @param i the input number (0 .. maxinputs-1)
+     * @param name the inputIO name
      * @param reader the source
      * @return this object
      */
-    public ActivityIO inputFromFile(int i, Reader reader) {
-        inputs[i].fromFile(reader);
+    public ActivityIO inputFromFile(String name, Reader reader) {
+         getInputIO(name).fromFile(reader);
         return this;
     }
 
@@ -186,104 +207,104 @@ public class ActivityIO {
     /**
      * Output is ignored.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @return this object
      */
-    public ActivityIO outputIgnore(int i) {
-        outputs[i].ignore();
+    public ActivityIO outputIgnore(String name) {
+         getOutputIO(name).ignore();
         return this;
     }
 
     /**
      * Output is discarded.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @return this object
      */
-    public ActivityIO outputDiscard(int i) {
-        outputs[i].discard();
+    public ActivityIO outputDiscard(String name) {
+         getOutputIO(name).discard();
         return this;
     }
 
     /**
      * Output to the IOTab STDOUT.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @return this object
      */
-    public ActivityIO outputToIOSTDOUT(int i) {
-        outputs[i].toIOSTDOUT();
+    public ActivityIO outputToIOSTDOUT(String name) {
+        getOutputIO(name).toIOSTDOUT();
         return this;
     }
 
     /**
      * Output to the IOTab STDERR.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @return this object
      */
-    public ActivityIO outputToIOSTDERR(int i) {
-        outputs[i].toIOSTDERR();
+    public ActivityIO outputToIOSTDERR(String name) {
+        getOutputIO(name).toIOSTDERR();
         return this;
     }
 
     /**
      * Output to a FileObject.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @param fileobject the target
      * @return this object
      */
-    public ActivityIO outputToFile(int i, FileObject fileobject) {
-        outputs[i].toFile(fileobject);
+    public ActivityIO outputToFile(String name, FileObject fileobject) {
+        getOutputIO(name).toFile(fileobject);
         return this;
     }
 
     /**
      * Output to a File.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @param file the target
      * @return this object
      */
-    public ActivityIO outputToFile(int i, File file) {
-        outputs[i].toFile(file);
+    public ActivityIO outputToFile(String name, File file) {
+        getOutputIO(name).toFile(file);
         return this;
     }
 
     /**
      * Output to a DataObject.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @param dataobject the target
      * @return this object
      */
-    public ActivityIO outputToFile(int i, DataObject dataobject) {
-        outputs[i].toFile(dataobject);
+    public ActivityIO outputToFile(String name, DataObject dataobject) {
+        getOutputIO(name).toFile(dataobject);
         return this;
     }
 
     /**
      * Output to an OutputStream.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @param outstream the target
      * @return this object
      */
-    public ActivityIO outputToFile(int i, OutputStream outstream) {
-        outputs[i].toFile(outstream);
+    public ActivityIO outputToFile(String name, OutputStream outstream) {
+        getOutputIO(name).toFile(outstream);
         return this;
     }
 
     /**
      * Output to a Writer.
      *
-     * @param i the output number (0 .. maxoutputs-1)
+     * @param name the outputIO name
      * @param writer the target
      * @return this object
      */
-    public ActivityIO outputToFile(int i, Writer writer) {
-        outputs[i].toFile(writer);
+    public ActivityIO outputToFile(String name, Writer writer) {
+        getOutputIO(name).toFile(writer);
         return this;
     }
 }

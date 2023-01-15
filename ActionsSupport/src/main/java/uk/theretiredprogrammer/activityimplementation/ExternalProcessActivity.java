@@ -66,11 +66,9 @@ public class ExternalProcessActivity extends Activity {
     }
 
     @Override
-    public DataTask[] createAllDataTasks() {
-        return new DataTask[]{
-            createInputDataTask(activityio.inputs[STDIN]),
-            createOutputDataTask(activityio.outputs[STDOUT]),
-            createErrorDataTask(activityio.outputs[STDERR])
+    public InputDataTask[] createAllInputDataTasks() {
+        return new InputDataTask[]{
+            createInputDataTask(activityio.getInputIO(STDIN))
         };
     }
 
@@ -86,6 +84,14 @@ public class ExternalProcessActivity extends Activity {
         } else {
             return new InputDataTask(inputio.name, activityio.iotab.name).byStream(is, process.getOutputStream());
         }
+    }
+    
+    @Override
+    public OutputDataTask[] createAllOutputDataTasks() {
+        return new OutputDataTask[]{
+            createOutputDataTask(activityio.getOutputIO(STDOUT)),
+            createErrorDataTask(activityio.getOutputIO(STDERR))
+        };
     }
 
     private OutputDataTask createOutputDataTask(OutputIO outputio) {

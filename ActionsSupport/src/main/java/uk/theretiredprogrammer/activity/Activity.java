@@ -72,8 +72,12 @@ public abstract class Activity {
         return null;
     }
 
-    public DataTask[] createAllDataTasks() {
-        return new DataTask[0];
+    public InputDataTask[] createAllInputDataTasks() {
+        return new InputDataTask[0];
+    }
+    
+    public OutputDataTask[] createAllOutputDataTasks() {
+        return new OutputDataTask[0];
     }
 
     public void onActivity() {
@@ -90,7 +94,8 @@ public abstract class Activity {
     }
 
     private Process process;
-    private DataTask[] allDataTasks;
+    private InputDataTask[] allInputDataTasks;
+    private OutputDataTask[] allOutputDataTasks;
     private boolean cancelled;
 
     @SuppressWarnings("SleepWhileInLoop")
@@ -102,7 +107,8 @@ public abstract class Activity {
                 return;
             }
             process = createProcess();
-            allDataTasks = createAllDataTasks();
+            allInputDataTasks = createAllInputDataTasks();
+            allOutputDataTasks = createAllOutputDataTasks();
             if (io != null) {
                 IOTabCloseWatch.watch(activityio.iotab.name, io, () -> cancelTasksAndProcess());
             }
@@ -111,7 +117,7 @@ public abstract class Activity {
                 if (process != null) {
                     process.waitFor();
                 }
-                for (var ioitem : allDataTasks) {
+                for (var ioitem : allOutputDataTasks) {
                     if (ioitem != null) {
                         RequestProcessor.Task task = ioitem.getTask();
                         if (task != null) {
@@ -119,7 +125,20 @@ public abstract class Activity {
                         }
                     }
                 }
-                for (var ioitem : allDataTasks) {
+                for (var ioitem : allInputDataTasks) {
+                    if (ioitem != null) {
+                        RequestProcessor.Task task = ioitem.getTask();
+                        if (task != null) {
+                            task.waitFinished(10000);
+                        }
+                    }
+                }
+                for (var ioitem : allOutputDataTasks) {
+                    if (ioitem != null) {
+                        ioitem.close();
+                    }
+                }
+                for (var ioitem : allInputDataTasks) {
                     if (ioitem != null) {
                         ioitem.close();
                     }
@@ -136,7 +155,14 @@ public abstract class Activity {
     }
 
     private void cancelTasksAndProcess() {
-        for (var ioitem : allDataTasks) {
+        for (var ioitem : allOutputDataTasks) {
+            if (ioitem != null) {
+                if (ioitem.getTask() != null && !ioitem.getTask().isFinished()) {
+                    ioitem.getTask().cancel();
+                }
+            }
+        }
+        for (var ioitem : allInputDataTasks) {
             if (ioitem != null) {
                 if (ioitem.getTask() != null && !ioitem.getTask().isFinished()) {
                     ioitem.getTask().cancel();
