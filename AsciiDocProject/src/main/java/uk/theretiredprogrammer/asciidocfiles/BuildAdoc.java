@@ -68,7 +68,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
                         "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath(),
                         aproject.getProjectDirectory(),
                         new ActivityIO()
-                                .outputToIO(STDERR)
+                                .outputToIOSTDERR(STDERR)
                                 .ioTabName(aproject.getTabname()),
                         "Publishing " + input.getNameExt());
             } else {
@@ -77,7 +77,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
                         "-r asciidoctor-pdf " + input.getPath(),
                         input.getParent(),
                         new ActivityIO()
-                                .outputToIO(STDERR)
+                                .outputToIOSTDERR(STDERR)
                                 .ioTabName("Publish AsciiDocs"),
                         "Publishing " + input.getNameExt());
             }
