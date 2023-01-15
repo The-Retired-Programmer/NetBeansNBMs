@@ -44,8 +44,8 @@ public class SerialActivity extends Activity {
     @Override
     public DataTask[] createAllDataTasks() {
         return new DataTask[]{
-            new InputDataTask(activityio.inputs[0].name, activityio.iotab.name).byCharReader(activityio.inputs[0], serialport.getOutputStream()),
-            new OutputDataTask(activityio.outputs[0].name, activityio.iotab.name).byCharWriter(activityio.outputs[0], serialport.getInputStream())
+            new InputDataTask(activityio.inputs[0].name, activityio.iotab.name).byCharReader(io, activityio.inputs[0], serialport.getOutputStream()),
+            new OutputDataTask(activityio.outputs[0].name, activityio.iotab.name).byCharWriter(io, activityio.outputs[0], serialport.getInputStream())
         };
     }
 

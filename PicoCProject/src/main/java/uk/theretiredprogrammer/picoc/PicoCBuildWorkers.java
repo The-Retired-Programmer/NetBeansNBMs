@@ -38,9 +38,11 @@ public class PicoCBuildWorkers {
     public final void showSerialTerminal(String iotabname) {
         Activity.runWithIOTab(new SerialActivity(
                 "/dev/serial0", 115200,
-                new ActivityIO(1, new String[]{"Tx"}, 1, new String[]{"Rx"}, 0, 0, -1)
-                        .inputFromIO(0)
-                        .outputToIO(0)
+                new ActivityIO()
+                        .inputs("Tx")
+                        .outputs("RX")
+                        .inputFromIOSTDIN(0)
+                        .outputToIOSTDOUT(0)
                         .ioTabName(iotabname)));
     }
 
@@ -70,8 +72,8 @@ public class PicoCBuildWorkers {
         if (cmaketxt != null && cmaketxt.isData()) {
             Activity.runExternalProcessWithIOTab("cmake", "..", buildfolder,
                     new ActivityIO()
-                            .outputToIO(STDERR)
-                            .outputToIO(STDOUT)
+                            .outputToIOSTDERR(STDERR)
+                            .outputToIOSTDOUT(STDOUT)
                             .ioTabName(iotabname),
                     "Creating Make file"
             );
@@ -89,8 +91,8 @@ public class PicoCBuildWorkers {
         if (make != null && make.isData()) {
             Activity.runExternalProcessWithIOTab("make", "", buildfolder,
                     new ActivityIO()
-                            .outputToIO(STDERR)
-                            .outputToIO(STDOUT)
+                            .outputToIOSTDERR(STDERR)
+                            .outputToIOSTDOUT(STDOUT)
                             .ioTabName(iotabname),
                     "Building executables"
             );
@@ -111,8 +113,8 @@ public class PicoCBuildWorkers {
                 + "-c \"program " + executablepath + " verify reset exit\"",
                 buildfolder,
                 new ActivityIO()
-                        .outputToIO(STDERR)
-                        .outputToIO(STDOUT)
+                        .outputToIOSTDERR(STDERR)
+                        .outputToIOSTDOUT(STDOUT)
                         .ioTabName(iotabname),
                 "Downloading " + buildname + ".elf via debug port"
         );
