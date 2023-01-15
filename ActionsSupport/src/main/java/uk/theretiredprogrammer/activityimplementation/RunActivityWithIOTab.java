@@ -17,19 +17,16 @@ package uk.theretiredprogrammer.activityimplementation;
 
 import org.netbeans.api.io.IOProvider;
 import org.netbeans.api.io.InputOutput;
-import org.netbeans.api.io.OutputWriter;
 import uk.theretiredprogrammer.activity.Activity;
 
 /**
- * RunWithIOTab executes an AbstractRunnable instance involving an IoTab.
+ * RunWithIOTab creates an IOTab in order to execute an Activity.
  *
- * Uses a NbCliDescriptor to define the IO configuration.
  */
 public class RunActivityWithIOTab {
 
     private final InputOutput io;
     private final String iotabname;
-    private final OutputWriter outwtr;
     private final Activity activity;
 
     /**
@@ -46,8 +43,6 @@ public class RunActivityWithIOTab {
         if (activity.activityio.iotab.reset) {
             io.reset();
         }
-        outwtr = io.getOut();
-        activity.activityio.setIOReaderAndWriters(io.getIn(), outwtr, io.getErr());
     }
 
     /**
@@ -57,9 +52,9 @@ public class RunActivityWithIOTab {
      * starting the worker and "... done" is written at the end))
      */
     public void process(String startmessage) {
-        outwtr.println(startmessage);
+        io.getOut().println(startmessage);
         process();
-        outwtr.println("... done");
+        io.getOut().println("... done");
     }
 
     /**

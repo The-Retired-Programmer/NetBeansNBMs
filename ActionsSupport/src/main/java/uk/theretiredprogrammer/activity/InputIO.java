@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import org.netbeans.api.io.InputOutput;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
@@ -31,7 +32,7 @@ import uk.theretiredprogrammer.actionssupport.UserReporting;
 public class InputIO {
 
     private static enum InStyle {
-        IGNORE, EMPTY, IO, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEREADER
+        IGNORE, EMPTY, IOSTDIN, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEREADER
     }
 
     public final String name;
@@ -43,7 +44,6 @@ public class InputIO {
     private File file;
     private InputStream instream;
     private Reader reader;
-    private Reader ioreader;
 
     public InputIO(String name) {
         this.name = name;
@@ -57,8 +57,8 @@ public class InputIO {
         mode = InStyle.EMPTY;
     }
 
-    public void fromIO() {
-        mode = InStyle.IO;
+    public void fromIOSTDIN() {
+        mode = InStyle.IOSTDIN;
     }
 
     public void fromFile(FileObject fileobject) {
@@ -86,18 +86,15 @@ public class InputIO {
         this.reader = reader;
     }
 
-    public void setReader(Reader ioreader) {
-        this.ioreader = ioreader;
-    }
 
-    public Reader getReader(String iotabname) {
+    public Reader getReader(InputOutput io, String iotabname) {
         switch (mode) {
             case IGNORE:
                 return null;
             case EMPTY:
                 return new StringReader("");
-            case IO:
-                return ioreader;
+            case IOSTDIN:
+                return io.getIn();
             case FILEOBJECT:
             case DATAOBJECT:
             case FILE:
@@ -112,8 +109,8 @@ public class InputIO {
         return null;
     }
 
-    public BufferedReader getBufferReader(String iotabname) {
-        Reader rdr = getReader(iotabname);
+    public BufferedReader getBufferReader(InputOutput io, String iotabname) {
+        Reader rdr = getReader(io, iotabname);
         return rdr == null ? null : new BufferedReader(rdr);
     }
 
@@ -124,7 +121,7 @@ public class InputIO {
                     return null;
                 case EMPTY:
                     return new ByteArrayInputStream(new byte[0]);
-                case IO:
+                case IOSTDIN:
                     return null;
                 case FILEOBJECT:
                     return fileobject.getInputStream();

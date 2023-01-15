@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import org.netbeans.api.io.OutputWriter;
+import org.netbeans.api.io.InputOutput;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
@@ -29,14 +29,13 @@ import uk.theretiredprogrammer.actionssupport.UserReporting;
 public class OutputIO {
 
     private static enum OutStyle {
-        IGNORE, DISCARD, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEWRITER, OUTPUTWRITER
+        IGNORE, DISCARD, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEWRITER, IOSTDOUT, IOSTDERR
     }
 
     public final String name;
 
     private OutStyle mode = OutStyle.IGNORE;
 
-    private OutputWriter outputwriter;
     private Writer writer;
     private OutputStream outstream;
     private FileObject fileobject;
@@ -55,8 +54,12 @@ public class OutputIO {
         mode = OutStyle.DISCARD;
     }
 
-    public void toOutputWriter() {
-        mode = OutStyle.OUTPUTWRITER;
+    public void toIOSTDOUT() {
+        mode = OutStyle.IOSTDOUT;
+    }
+    
+    public void toIOSTDERR() {
+        mode = OutStyle.IOSTDERR;
     }
 
     public void toFile(FileObject fileobject) {
@@ -84,19 +87,16 @@ public class OutputIO {
         this.writer = writer;
     }
 
-    public void setOutputWriter(OutputWriter outputwriter) {
-        this.outputwriter = outputwriter;
-    }
-
-    public Writer getWriter(String iotabname) {
+    public Writer getWriter(InputOutput io, String iotabname) {
         switch (mode) {
             case IGNORE:
                 return null;
             case DISCARD:
                 return Writer.nullWriter();
-            case OUTPUTWRITER:
-                return outputwriter;
-            case FILEOBJECT:
+            case IOSTDOUT:
+                return io.getOut();
+            case IOSTDERR:
+                return io.getErr();
             case DATAOBJECT:
             case FILE:
             case FILESTREAM:
@@ -117,7 +117,9 @@ public class OutputIO {
                     return null;
                 case DISCARD:
                     return OutputStream.nullOutputStream();
-                case OUTPUTWRITER:
+                case IOSTDOUT:
+                    return null;
+                case IOSTDERR:
                     return null;
                 case FILEOBJECT:
                     return fileobject.getOutputStream();

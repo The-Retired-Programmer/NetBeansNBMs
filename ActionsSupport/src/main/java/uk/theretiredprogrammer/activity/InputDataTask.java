@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import org.netbeans.api.io.InputOutput;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
 import static uk.theretiredprogrammer.activity.DataTask.NEWLINE;
@@ -38,9 +39,9 @@ public class InputDataTask extends DataTask {
         super(name, iotabname);
     }
 
-    public InputDataTask byCharReader(InputIO io, OutputStream out) {
+    public InputDataTask byCharReader(InputOutput io, InputIO inIO, OutputStream out) {
         this.out = out;
-        rdr = io.getReader(iotabname);
+        rdr = inIO.getReader(io, iotabname);
         if (rdr == null) {
             UserReporting.warning(iotabname, name + " does not have a suitable Reader defined");
             return null;
@@ -84,9 +85,9 @@ public class InputDataTask extends DataTask {
         }
     }
 
-    public InputDataTask byStream(InputIO io, OutputStream out) {
+    public InputDataTask byStream(InputIO inIO, OutputStream out) {
         this.out = out;
-        in = io.getInputStream(iotabname);
+        in = inIO.getInputStream(iotabname);
         if (in == null) {
             UserReporting.warning(iotabname, name + "does not have a suitable Stream defined");
             return null;
@@ -131,9 +132,9 @@ public class InputDataTask extends DataTask {
         }
     }
 
-    public InputDataTask byLineReader(InputIO io, Writer wtr) {
+    public InputDataTask byLineReader(InputOutput io, InputIO inIO, Writer wtr) {
         this.wtr = wtr;
-        brdr = io.getBufferReader(iotabname);
+        brdr = inIO.getBufferReader(io, iotabname);
         if (brdr == null) {
             UserReporting.warning(iotabname, name + " does not have a suitable BufferedWriter defined");
             return null;

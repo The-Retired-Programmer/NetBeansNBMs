@@ -77,7 +77,7 @@ public class ExternalProcessActivity extends Activity {
     private InputDataTask createInputDataTask(InputIO inputio) {
         InputStream is = inputio.getInputStream(activityio.iotab.name);
         if (is == null) {
-            BufferedReader brdr = inputio.getBufferReader(activityio.iotab.name);
+            BufferedReader brdr = inputio.getBufferReader(io, activityio.iotab.name);
             if (brdr == null) {
                 return null;
             } else {
@@ -91,7 +91,7 @@ public class ExternalProcessActivity extends Activity {
     private OutputDataTask createOutputDataTask(OutputIO outputio) {
         OutputStream os = outputio.getOutputStream(activityio.iotab.name);
         if (os == null) {
-            Writer wtr = outputio.getWriter(activityio.iotab.name);
+            Writer wtr = outputio.getWriter(io, activityio.iotab.name);
             if (wtr == null) {
                 return null;
             } else {
@@ -105,7 +105,7 @@ public class ExternalProcessActivity extends Activity {
     private OutputDataTask createErrorDataTask(OutputIO outputio) {
         OutputStream os = outputio.getOutputStream(activityio.iotab.name);
         if (os == null) {
-            Writer wtr = outputio.getWriter(activityio.iotab.name);
+            Writer wtr = outputio.getWriter(io, activityio.iotab.name);
             if (wtr == null) {
                 return null;
             } else {

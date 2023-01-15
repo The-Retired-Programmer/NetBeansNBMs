@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import org.netbeans.api.io.InputOutput;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
 import static uk.theretiredprogrammer.activity.DataTask.NEWLINE;
@@ -37,9 +38,9 @@ public class OutputDataTask extends DataTask {
         super(name, iotabname);
     }
 
-    public OutputDataTask byCharWriter(OutputIO io, InputStream in) {
+    public OutputDataTask byCharWriter(InputOutput io, OutputIO outIO, InputStream in) {
         this.in = in;
-        wtr = io.getWriter(iotabname);
+        wtr = outIO.getWriter(io, iotabname);
         if (wtr == null) {
             UserReporting.warning(iotabname, name + " does not have a suitable Writer defined");
             return null;
@@ -83,9 +84,9 @@ public class OutputDataTask extends DataTask {
         }
     }
 
-    public OutputDataTask byStream(OutputIO io, InputStream in) {
+    public OutputDataTask byStream(OutputIO outIO, InputStream in) {
         this.in = in;
-        out = io.getOutputStream(iotabname);
+        out = outIO.getOutputStream(iotabname);
         if (out == null) {
             UserReporting.warning(iotabname, name + " does not have a suitable Stream defined");
             return null;
@@ -130,8 +131,8 @@ public class OutputDataTask extends DataTask {
         }
     }
 
-    public OutputDataTask byLineWriter(OutputIO io, Reader rdr) {
-        wtr = io.getWriter(iotabname);
+    public OutputDataTask byLineWriter(InputOutput io, OutputIO outIO, Reader rdr) {
+        wtr = outIO.getWriter(io, iotabname);
         brdr = new BufferedReader(rdr);
         if (wtr == null) {
             UserReporting.warning(iotabname, name + " does not have a suitable Writer defined");

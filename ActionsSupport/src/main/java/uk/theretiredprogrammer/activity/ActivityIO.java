@@ -20,78 +20,53 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import org.netbeans.api.io.OutputWriter;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 
 /**
  * ActivityIO
- * 
+ *
  * manages the collection and presentation of all IO - used by Activity.
- * 
+ *
  */
 public class ActivityIO {
 
-    public static final int STDOUT =0;
-    public static final int STDERR =1;
-    public static final int STDIN =0;
-    
+    public static final int STDOUT = 0;
+    public static final int STDERR = 1;
+    public static final int STDIN = 0;
+
     public final IOTab iotab;
-    
-    public final InputIO[] inputs;
-    public final OutputIO[] outputs;
-    private final int stdinIOmap;
-    private final int stdoutIOmap;
-    private final int stderrIOmap;
-    
+
+    public InputIO[] inputs;
+    public OutputIO[] outputs;
+
     public ActivityIO() {
-        this(1,new String[] {"STDIN"}, 2, new String[]{"STDOUT", "STDERR"}, 0, 0, 1);
+        iotab = new IOTab();
+        inputs("STDIN");
+        outputs("STDOUT", "STDERR");
     }
 
-    /**
-     * Constructor
-     * @param maxinputs 
-     * @param inputnames 
-     * @param maxoutputs
-     * @param outputnames
-     * @param stdinIOmap
-     * @param stdoutIOmap
-     * @param stderrIOmap
-     */
-    public ActivityIO(int maxinputs, String[] inputnames, int maxoutputs, String[] outputnames,
-            int stdinIOmap, int stdoutIOmap, int stderrIOmap) {
-        inputs = new InputIO[maxinputs];
-        if (maxinputs > 0) {
-            for(int i=0; i<maxinputs; i++){
-                inputs[i] = new InputIO(inputnames[i]);
+    public final ActivityIO inputs(String... names) {
+        inputs = new InputIO[names.length];
+        if (names.length > 0) {
+            for (int i = 0; i < names.length; i++) {
+                inputs[i] = new InputIO(names[i]);
             }
         }
-        outputs = new OutputIO[maxoutputs];
-        if (maxoutputs > 0) {
-            for(int i=0; i<maxoutputs; i++){
-                outputs[i] = new OutputIO(outputnames[i]);
-            }
-        }
-        this.stdinIOmap = stdinIOmap;
-        this.stdoutIOmap = stdoutIOmap;
-        this.stderrIOmap = stderrIOmap;
-        this.iotab = new IOTab();
+        return this;
     }
-    
-    public void setIOReaderAndWriters(Reader stdin, OutputWriter stdout,OutputWriter stderr) {
-        if (stdinIOmap != -1) {
-            inputs[stdinIOmap].setReader(stdin);
+
+    public final ActivityIO outputs(String... names) {
+        outputs = new OutputIO[names.length];
+        if (names.length > 0) {
+            for (int i = 0; i < names.length; i++) {
+                outputs[i] = new OutputIO(names[i]);
+            }
         }
-        if (stdoutIOmap != -1) {
-            outputs[stdoutIOmap].setOutputWriter(stdout);
-        }
-        if (stderrIOmap != -1) {
-            outputs[stderrIOmap].setOutputWriter(stderr);
-        }
+        return this;
     }
 
     // the IOTab 
-    
     /**
      * Define the IOTab to be used.
      *
@@ -114,7 +89,6 @@ public class ActivityIO {
     }
 
     // InputIO configuration
-
     /**
      * Input is ignored.
      *
@@ -138,13 +112,13 @@ public class ActivityIO {
     }
 
     /**
-     * Input from the IOTab.
+     * Input from the IOTab STDIN.
      *
      * @param i the input number (0 .. maxinputs-1)
      * @return this object
      */
-    public ActivityIO inputFromIO(int i) {
-        inputs[i].fromIO();
+    public ActivityIO inputFromIOSTDIN(int i) {
+        inputs[i].fromIOSTDIN();
         return this;
     }
 
@@ -209,7 +183,6 @@ public class ActivityIO {
     }
 
     // OutputIO configuration 
-    
     /**
      * Output is ignored.
      *
@@ -233,13 +206,24 @@ public class ActivityIO {
     }
 
     /**
-     * Output to the IOTab.
+     * Output to the IOTab STDOUT.
      *
      * @param i the output number (0 .. maxoutputs-1)
      * @return this object
      */
-    public ActivityIO outputToIO(int i) {
-        outputs[i].toOutputWriter();
+    public ActivityIO outputToIOSTDOUT(int i) {
+        outputs[i].toIOSTDOUT();
+        return this;
+    }
+
+    /**
+     * Output to the IOTab STDERR.
+     *
+     * @param i the output number (0 .. maxoutputs-1)
+     * @return this object
+     */
+    public ActivityIO outputToIOSTDERR(int i) {
+        outputs[i].toIOSTDERR();
         return this;
     }
 

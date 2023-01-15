@@ -84,8 +84,8 @@ public class ActionsPropertyFile {
         }
         String tabname = properties.getProperty(prefix + ".tabname", label);
         ActivityIO activityio = new ActivityIO()
-                .outputToIO(STDOUT)
-                .outputToIO(STDERR)
+                .outputToIOSTDOUT(STDOUT)
+                .outputToIOSTDERR(STDERR)
                 .ioTabName(tabname);
         String iotabclear = properties.getProperty(prefix + ".cleartab");
         if (iotabclear != null && iotabclear.equals("every execution")) {
