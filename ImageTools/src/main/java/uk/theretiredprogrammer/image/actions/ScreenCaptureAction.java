@@ -25,6 +25,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.activity.ActivityIO;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
 import uk.theretiredprogrammer.image.ImageManagerImpl;
 import uk.theretiredprogrammer.image.api.ScreenCaptureDescriptor;
 
@@ -57,7 +58,7 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
                 "-s " + capturefilepath,
                 screencapturedescriptor.getCaptureFolder(),
                 new ActivityIO()
-                        .stderrToIO()
+                        .outputToIO(STDERR)
                         .ioTabName(screencapturedescriptor.getIoTabname()),
                 "Screen Capture:  " + capturefilepath);
     }
