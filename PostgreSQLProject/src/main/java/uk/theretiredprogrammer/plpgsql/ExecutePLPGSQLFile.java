@@ -71,8 +71,8 @@ public final class ExecutePLPGSQLFile implements ActionListener, Runnable {
                             "-f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager",
                             input.getParent(),
                             new ActivityIO()
-                                    .outputToIO(STDOUT)
-                                    .outputToIO(STDERR)
+                                    .outputToIOSTDOUT(STDOUT)
+                                    .outputToIOSTDERR(STDERR)
                                     .ioTabName("Execute PgSQL"),
                             "Executing " + input.getNameExt()
                     );
