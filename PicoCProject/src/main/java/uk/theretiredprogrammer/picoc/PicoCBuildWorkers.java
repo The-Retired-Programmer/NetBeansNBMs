@@ -22,6 +22,8 @@ import org.openide.filesystems.FileUtil;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
 
 public class PicoCBuildWorkers {
 
@@ -35,11 +37,11 @@ public class PicoCBuildWorkers {
 
     public final void showSerialTerminal(String iotabname) {
         Activity.runWithIOTab(new SerialActivity(
-                        "/dev/serial0", 115200,
-                        new ActivityIO()
-                                .stdinFromIO()
-                                .stdoutToIO()
-                                .ioTabName(iotabname)));
+                "/dev/serial0", 115200,
+                new ActivityIO(1, new String[]{"Tx"}, 1, new String[]{"Rx"}, 0, 0, -1)
+                        .inputFromIO(0)
+                        .outputToIO(0)
+                        .ioTabName(iotabname)));
     }
 
     public final void cleanBuildFolder() {
@@ -68,8 +70,8 @@ public class PicoCBuildWorkers {
         if (cmaketxt != null && cmaketxt.isData()) {
             Activity.runExternalProcessWithIOTab("cmake", "..", buildfolder,
                     new ActivityIO()
-                            .stderrToIO()
-                            .stdoutToIO()
+                            .outputToIO(STDERR)
+                            .outputToIO(STDOUT)
                             .ioTabName(iotabname),
                     "Creating Make file"
             );
@@ -87,8 +89,8 @@ public class PicoCBuildWorkers {
         if (make != null && make.isData()) {
             Activity.runExternalProcessWithIOTab("make", "", buildfolder,
                     new ActivityIO()
-                            .stderrToIO()
-                            .stdoutToIO()
+                            .outputToIO(STDERR)
+                            .outputToIO(STDOUT)
                             .ioTabName(iotabname),
                     "Building executables"
             );
@@ -109,8 +111,8 @@ public class PicoCBuildWorkers {
                 + "-c \"program " + executablepath + " verify reset exit\"",
                 buildfolder,
                 new ActivityIO()
-                        .stderrToIO()
-                        .stdoutToIO()
+                        .outputToIO(STDERR)
+                        .outputToIO(STDOUT)
                         .ioTabName(iotabname),
                 "Downloading " + buildname + ".elf via debug port"
         );

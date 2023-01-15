@@ -29,8 +29,8 @@ public class SerialActivity extends Activity {
     private final String devicename;
     private final int baudrate;
 
-    public SerialActivity(String devicename, int baudrate, ActivityIO descriptor) {
-        super(descriptor);
+    public SerialActivity(String devicename, int baudrate, ActivityIO activityio) {
+        super(activityio);
         this.devicename = devicename;
         this.baudrate = baudrate;
     }
@@ -44,8 +44,8 @@ public class SerialActivity extends Activity {
     @Override
     public DataTask[] createAllDataTasks() {
         return new DataTask[]{
-            new InputDataTask(activityio.stdin.name, activityio.iotab.name).byCharReader(activityio.stdin, serialport.getOutputStream()),
-            new OutputDataTask(activityio.stdout.name, activityio.iotab.name).byCharWriter(activityio.stdout, serialport.getInputStream())
+            new InputDataTask(activityio.inputs[0].name, activityio.iotab.name).byCharReader(activityio.inputs[0], serialport.getOutputStream()),
+            new OutputDataTask(activityio.outputs[0].name, activityio.iotab.name).byCharWriter(activityio.outputs[0], serialport.getInputStream())
         };
     }
 
