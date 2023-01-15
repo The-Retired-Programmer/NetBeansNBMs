@@ -165,8 +165,8 @@ public class JBakeProject implements Project {
                 nodeactions.setNodeActions(new DynamicAsyncAction("Bake")
                         .onAction(() -> Activity.runExternalProcessWithIOTab("jbake", "-b", projectDir,
                         new ActivityIO()
-                                .outputToIO(STDERR)
-                                .outputToIO(STDOUT)
+                                .outputToIOSTDERR(STDERR)
+                                .outputToIOSTDOUT(STDOUT)
                                 .ioTabName("Bake " + projectDir.getName()),
                         "Baking")
                         )
