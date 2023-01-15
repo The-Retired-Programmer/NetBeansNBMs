@@ -67,18 +67,16 @@ public final class BuildAdoc implements ActionListener, Runnable {
                 Activity.runExternalProcessWithIOTab("asciidoctor",
                         "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath(),
                         aproject.getProjectDirectory(),
-                        new ActivityIO()
-                                .outputToIOSTDERR(STDERR)
-                                .ioTabName(aproject.getTabname()),
+                        new ActivityIO(aproject.getTabname())
+                                .outputToIOSTDERR(STDERR),
                         "Publishing " + input.getNameExt());
             } else {
                 SaveBeforeAction.saveIfModified(dataObject);
                 Activity.runExternalProcessWithIOTab("asciidoctor",
                         "-r asciidoctor-pdf " + input.getPath(),
                         input.getParent(),
-                        new ActivityIO()
-                                .outputToIOSTDERR(STDERR)
-                                .ioTabName("Publish AsciiDocs"),
+                        new ActivityIO("Publish AsciiDocs")
+                                .outputToIOSTDERR(STDERR),
                         "Publishing " + input.getNameExt());
             }
         }
