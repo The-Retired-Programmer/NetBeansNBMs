@@ -24,6 +24,9 @@ import uk.theretiredprogrammer.activity.OutputDataTask;
 
 public class SerialActivity extends Activity {
 
+    public static final String TX = "Tx";
+    public static final String RX = "Rx";
+
     private SerialPort serialport;
     private final String devicename;
     private final int baudrate;
@@ -43,14 +46,14 @@ public class SerialActivity extends Activity {
     @Override
     public InputDataTask[] createAllInputDataTasks() {
         return new InputDataTask[]{
-            new InputDataTask("Tx", activityio.iotab.name).byCharReader(io, activityio.getInputIO("Tx"), serialport.getOutputStream())
+            new InputDataTask(TX, activityio.iotabname).byCharReader(io, activityio.getInputIO(TX), serialport.getOutputStream())
         };
     }
-    
+
     @Override
     public OutputDataTask[] createAllOutputDataTasks() {
         return new OutputDataTask[]{
-            new OutputDataTask("Rx", activityio.iotab.name).byCharWriter(io, activityio.getOutputIO("Rx"), serialport.getInputStream())
+            new OutputDataTask(RX, activityio.iotabname).byCharWriter(io, activityio.getOutputIO(RX), serialport.getInputStream())
         };
     }
 
@@ -70,11 +73,11 @@ public class SerialActivity extends Activity {
     private SerialPort initialiseSerial(String devicename, int baudrate) {
         SerialPort serial = SerialPort.getCommPort(devicename);
         if (!serial.openPort()) {
-            UserReporting.error(activityio.iotab.name, "Could not open the serial device for I/O");
+            UserReporting.error(activityio.iotabname, "Could not open the serial device for I/O");
             return null;
         }
         if (!serial.setBaudRate(baudrate)) {
-            UserReporting.error(activityio.iotab.name, "Could not set the baud rate for serial device");
+            UserReporting.error(activityio.iotabname, "Could not set the baud rate for serial device");
             return null;
         }
         serial.flushIOBuffers();

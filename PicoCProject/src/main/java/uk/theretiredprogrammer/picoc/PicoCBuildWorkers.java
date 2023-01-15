@@ -24,6 +24,8 @@ import uk.theretiredprogrammer.activity.ActivityIO;
 import uk.theretiredprogrammer.actionssupport.UserReporting;
 import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
 import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
+import static uk.theretiredprogrammer.picoc.SerialActivity.RX;
+import static uk.theretiredprogrammer.picoc.SerialActivity.TX;
 
 public class PicoCBuildWorkers {
 
@@ -38,12 +40,11 @@ public class PicoCBuildWorkers {
     public final void showSerialTerminal(String iotabname) {
         Activity.runWithIOTab(new SerialActivity(
                 "/dev/serial0", 115200,
-                new ActivityIO()
-                        .inputs("Tx")
-                        .outputs("Rx")
-                        .inputFromIOSTDIN("Tx")
-                        .outputToIOSTDOUT("Rx")
-                        .ioTabName(iotabname)));
+                new ActivityIO(iotabname)
+                        .inputs(TX)
+                        .outputs(RX)
+                        .inputFromIOSTDIN(TX)
+                        .outputToIOSTDOUT(RX)));
     }
 
     public final void cleanBuildFolder() {
@@ -52,7 +53,7 @@ public class PicoCBuildWorkers {
             return;
         }
         Activity.runWithIOTab(
-                new CleanBuildFolderActivity(new ActivityIO().ioTabName(iotabname)),
+                new CleanBuildFolderActivity(new ActivityIO(iotabname)),
                 "Cleaning Build Folder");
     }
 
@@ -64,10 +65,9 @@ public class PicoCBuildWorkers {
         FileObject cmaketxt = buildfolder.getParent().getFileObject("CMakeLists.txt");
         if (cmaketxt != null && cmaketxt.isData()) {
             Activity.runExternalProcessWithIOTab("cmake", "..", buildfolder,
-                    new ActivityIO()
+                    new ActivityIO(iotabname)
                             .outputToIOSTDERR(STDERR)
-                            .outputToIOSTDOUT(STDOUT)
-                            .ioTabName(iotabname),
+                            .outputToIOSTDOUT(STDOUT),
                     "Creating Make file"
             );
         } else {
@@ -83,10 +83,9 @@ public class PicoCBuildWorkers {
         FileObject make = buildfolder.getFileObject("Makefile");
         if (make != null && make.isData()) {
             Activity.runExternalProcessWithIOTab("make", "", buildfolder,
-                    new ActivityIO()
+                    new ActivityIO(iotabname)
                             .outputToIOSTDERR(STDERR)
-                            .outputToIOSTDOUT(STDOUT)
-                            .ioTabName(iotabname),
+                            .outputToIOSTDOUT(STDOUT),
                     "Building executables"
             );
         } else {
@@ -105,10 +104,9 @@ public class PicoCBuildWorkers {
                 + "-f /home/richard/pico/openocd/tcl/target/rp2040.cfg "
                 + "-c \"program " + executablepath + " verify reset exit\"",
                 buildfolder,
-                new ActivityIO()
+                new ActivityIO(iotabname)
                         .outputToIOSTDERR(STDERR)
-                        .outputToIOSTDOUT(STDOUT)
-                        .ioTabName(iotabname),
+                        .outputToIOSTDOUT(STDOUT),
                 "Downloading " + buildname + ".elf via debug port"
         );
     }
@@ -119,7 +117,7 @@ public class PicoCBuildWorkers {
             return;
         }
         Activity.runWithIOTab(
-                new DownloadViaBootLoaderActivity(buildname, new ActivityIO().ioTabName(iotabname)),
+                new DownloadViaBootLoaderActivity(buildname, new ActivityIO(iotabname)),
                 "Downloading " + buildname + ".uf2 via Boot Loader");
     }
 
