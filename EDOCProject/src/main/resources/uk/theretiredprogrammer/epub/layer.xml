@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Editors">
+        <folder name="text">
+            <folder name="x-epub">
+                <folder name="Popup">
+                    <file name="uk-theretiredprogrammer-epubconversion-ConvertEPUBFile.shadow">
+                        <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-epubconversion-ConvertEPUBFile.instance"/>
+                        <attr intvalue="400" name="position"/>
+                    </file>
+                </folder>
+            </folder>
+            <folder name="x-epub">
+                <folder name="Popup">
+                    <file name="uk-theretiredprogrammer-epubconversion-ExtractEPUBFile.shadow">
+                        <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-epubconversion-ExtractEPUBFile.instance"/>
+                        <attr intvalue="410" name="position"/>
+                    </file>
+                </folder>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>

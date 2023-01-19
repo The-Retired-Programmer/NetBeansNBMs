@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Localizing-Bundle: uk/theretiredprogrammer/epub/Bundle.properties
+OpenIDE-Module-Layer: uk/theretiredprogrammer/epub/layer.xml
+OpenIDE-Module-Display-Category: Tools - TheRetiredProgrammer
+
