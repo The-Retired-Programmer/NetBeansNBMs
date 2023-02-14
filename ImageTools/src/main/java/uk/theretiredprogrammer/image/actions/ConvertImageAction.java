@@ -150,7 +150,7 @@ public final class ConvertImageAction implements ActionListener {
         @Override
         public void run() {
             Activity.runExternalProcessWithIOTab("convert-im6",
-                    input.getNameExt() + " " + input.getName() + outputext,
+                    "\""+input.getNameExt() + "\" \"" + input.getName() + outputext+"\"",
                     input.getParent(),
                     new ActivityIO("Image Manipulation")
                             .outputToIOSTDERR(STDERR),

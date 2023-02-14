@@ -167,7 +167,7 @@ public final class ResizeImageAction implements ActionListener {
             String outputfilename = FileUtil.findFreeFileName(input.getParent(), input.getName(), input.getExt())
                     + "." + input.getExt();
             Activity.runExternalProcessWithIOTab("convert-im6",
-                    input.getNameExt() + " -resize " + resize + " " + outputfilename,
+                    "\""+input.getNameExt() + "\" -resize " + resize + " \"" + outputfilename+ "\"",
                     input.getParent(),
                     new ActivityIO("Image Manipulation")
                             .outputToIOSTDERR(STDERR),

@@ -180,7 +180,7 @@ public final class CropImageAction implements ActionListener {
             String outputfilename = FileUtil.findFreeFileName(input.getParent(), input.getName(), input.getExt())
                     + "." + input.getExt();
             Activity.runExternalProcessWithIOTab("convert-im6",
-                    input.getNameExt() + " -crop '" + crop + "' " + outputfilename,
+                    "\""+input.getNameExt() + "\" -crop '" + crop + "' \"" + outputfilename+ "\"",
                     input.getParent(),
                     new ActivityIO("Image Manipulation")
                             .outputToIOSTDERR(STDERR),
