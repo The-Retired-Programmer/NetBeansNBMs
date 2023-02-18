@@ -32,63 +32,57 @@ import org.openide.util.NbBundle.Messages;
 })
 @MIMEResolver.ExtensionRegistration(
         displayName = "#LBL_EPUB_LOADER",
-        mimeType = "text/x-epub",
+        mimeType = "application/epub+zip",
         extension = {"epub"}
 )
 @DataObject.Registration(
-        mimeType = "text/x-epub",
+        mimeType = "application/epub+zip",
         iconBase = "uk/theretiredprogrammer/epub/book.png",
         displayName = "#LBL_EPUB_LOADER",
         position = 300
 )
 @ActionReferences({
     @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
-            id = @ActionID(category = "System", id = "org.openide.actions.OpenAction"),
-            position = 100,
-            separatorAfter = 200
-    ),
-    @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
+            path = "Loaders/application/epub+zip/Actions",
             id = @ActionID(category = "Edit", id = "org.openide.actions.CutAction"),
             position = 300
     ),
     @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
+            path = "Loaders/application/epub+zip/Actions",
             id = @ActionID(category = "Edit", id = "org.openide.actions.CopyAction"),
             position = 400,
             separatorAfter = 500
     ),
     @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
+            path = "Loaders/application/epub+zip/Actions",
             id = @ActionID(category = "Edit", id = "org.openide.actions.DeleteAction"),
             position = 600
     ),
     @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
+            path = "Loaders/application/epub+zip/Actions",
             id = @ActionID(category = "System", id = "org.openide.actions.RenameAction"),
             position = 700,
             separatorAfter = 800
     ),
     @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
+            path = "Loaders/application/epub+zip/Actions",
             id = @ActionID(category = "System", id = "org.openide.actions.SaveAsTemplateAction"),
             position = 900,
             separatorAfter = 1000
     ),
     @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
+            path = "Loaders/application/epub+zip/Actions",
             id = @ActionID(category = "System", id = "org.openide.actions.FileSystemAction"),
             position = 1100,
             separatorAfter = 1200
     ),
     @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
+            path = "Loaders/application/epub+zip/Actions",
             id = @ActionID(category = "System", id = "org.openide.actions.ToolsAction"),
             position = 1300
     ),
     @ActionReference(
-            path = "Loaders/text/x-epub/Actions",
+            path = "Loaders/application/epub+zip/Actions",
             id = @ActionID(category = "System", id = "org.openide.actions.PropertiesAction"),
             position = 1400
     )
@@ -97,7 +91,7 @@ public class EPUBDataObject extends MultiDataObject {
 
     public EPUBDataObject(FileObject pf, MultiFileLoader loader) throws DataObjectExistsException, IOException {
         super(pf, loader);
-        registerEditor("text/x-epub", false);
+        registerEditor("application/epub+zip", false);
     }
 
     @Override

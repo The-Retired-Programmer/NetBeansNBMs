@@ -29,42 +29,33 @@ import uk.theretiredprogrammer.activity.ActivityIO;
 
 public class EPUBConversionActivity extends Activity {
 
-    private final FileObject preregexfo;
+    private final FileObject hintsfo;
     private final FileObject xsltfo;
-    private final FileObject regexfo;
-    private final FileObject projectdir;
+    private final FileObject fromfile;
+    private final FileObject outfolder;
 
-    public EPUBConversionActivity(FileObject projectdir, ActivityIO activityio) {
+    public EPUBConversionActivity(FileObject projectdir, FileObject epubfile,
+            FileObject fromfile, FileObject outfolder, ActivityIO activityio) {
         super(activityio);
-        this.projectdir = projectdir;
-        this.preregexfo = projectdir.getFileObject("preregex.txt");
+        this.hintsfo = epubfile.getParent().getFileObject(epubfile.getName(), "hints");
         this.xsltfo = projectdir.getFileObject("transform.xsl");
-        this.regexfo = projectdir.getFileObject("regex.txt");
+        this.fromfile = fromfile;
+        this.outfolder = outfolder;
     }
 
     @Override
     public void onActivity() {
-        FileObject sectionsfolder = projectdir.getFileObject("OEBPS/sections");
-        if (sectionsfolder == null) {
-            UserReporting.warning("EPUB", "Cannot access sections - folder structure incorrect");
-            return;
-        }
-        for (var fo : sectionsfolder.getChildren()) {
-            if (fo.hasExt("xhtml")) {
-                conversion(fo, createOutput(fo));
-            }
-        }
+        conversion(fromfile, createOutput());
     }
 
-    private Writer createOutput(FileObject in) {
+    private Writer createOutput() {
         try {
-            FileObject folder = in.getParent();
-            String outfilename = in.getName() + ".html";
-            FileObject out = folder.getFileObject(outfilename);
+            String outfilename = fromfile.getName() + ".html";
+            FileObject out = outfolder.getFileObject(outfilename);
             if (out != null) {
                 out.delete();
             }
-            return new OutputStreamWriter(folder.createAndOpen(outfilename));
+            return new OutputStreamWriter(outfolder.createAndOpen(outfilename));
         } catch (IOException ex) {
             UserReporting.exceptionWithMessage("EPUB", "Failed to setup output file", ex);
             return null;
@@ -79,34 +70,37 @@ public class EPUBConversionActivity extends Activity {
         try {
             document = input.asText();
         } catch (IOException ex) {
-            UserReporting.exceptionWithMessage(activityio.iotabname, "failure while converting document- read from file phase", ex);
+            UserReporting.exceptionWithMessage(activityio.iotabname, "failure while converting document- reading .xhtml file", ex);
             return;
         }
-        if (preregexfo != null) {
-            UserReporting.info("EPUB", "Running Regex pre phase");
+        if (hintsfo != null) {
+            UserReporting.info(activityio.iotabname, "Apply Hints");
             try {
-                document = regex(document, preregexfo);
+                document = regex(document, hintsfo);
             } catch (IOException ex) {
-                UserReporting.exceptionWithMessage(activityio.iotabname, "failure while converting document- first regex phase", ex);
+                UserReporting.exceptionWithMessage(activityio.iotabname, "failure while converting document- when applying hints", ex);
                 return;
             }
+        } else {
+            UserReporting.warning(activityio.iotabname, "Hints file is missing - please create before attemping to Convert");
+            return;
         }
-        if (xsltfo != null) {
-            UserReporting.info("EPUB", "Running XSLT phase");
+        if (xsltfo == null) {
+            UserReporting.info(activityio.iotabname, "Apply Standard Transformation");
+            try ( StringWriter xsltoutputwtr = new StringWriter();  Reader xsltrdr = new InputStreamReader(this.getClass().getResourceAsStream("transform.xsl"))) {
+                XSLT.transform(activityio.iotabname, new StringReader(document), xsltoutputwtr, xsltrdr);
+                document = xsltoutputwtr.toString();
+            } catch (IOException ex) {
+                UserReporting.exceptionWithMessage(activityio.iotabname, "failure while converting document- when applying transformation", ex);
+                return;
+            }
+        } else {
+            UserReporting.info(activityio.iotabname, "Apply Custom Transformation");
             try ( StringWriter xsltoutputwtr = new StringWriter();  Reader xsltrdr = new InputStreamReader(xsltfo.getInputStream())) {
                 XSLT.transform(activityio.iotabname, new StringReader(document), xsltoutputwtr, xsltrdr);
                 document = xsltoutputwtr.toString();
             } catch (IOException ex) {
-                UserReporting.exceptionWithMessage(activityio.iotabname, "failure while converting document- xslt phase", ex);
-                return;
-            }
-        }
-        if (regexfo != null) {
-            UserReporting.info("EPUB", "Running Regex post phase");
-            try {
-                document = regex(document, regexfo);
-            } catch (IOException ex) {
-                UserReporting.exceptionWithMessage(activityio.iotabname, "failure while converting document- second regex phase", ex);
+                UserReporting.exceptionWithMessage(activityio.iotabname, "failure while converting document- when applying transformation", ex);
                 return;
             }
         }
@@ -122,13 +116,17 @@ public class EPUBConversionActivity extends Activity {
         for (String line : regexlinesfo.asLines()) {
             line = line.trim();
             if (!(line.isBlank() || line.startsWith("#"))) {
-                String[] segments = line.split("==>");
-                if (segments.length != 2) {
-                    UserReporting.warning(activityio.iotabname, "regex definition line does not parse: " + line);
+                if (line.endsWith("==>")) {
+                    document = RegularExpression.transform(activityio.iotabname, document, line.substring(0, line.length() - 3).trim(), "");
                 } else {
-                    segments[0] = segments[0].trim();
-                    segments[1] = segments[1].trim();
-                    document = RegularExpression.transform(activityio.iotabname, document, segments[0], segments[1]);
+                    String[] segments = line.split("==>");
+                    if (segments.length != 2) {
+                        UserReporting.warning(activityio.iotabname, "regex definition line does not parse: " + line);
+                    } else {
+                        segments[0] = segments[0].trim();
+                        segments[1] = segments[1].trim();
+                        document = RegularExpression.transform(activityio.iotabname, document, segments[0], segments[1]);
+                    }
                 }
             }
         }

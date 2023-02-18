@@ -15,15 +15,17 @@
  */
 package uk.theretiredprogrammer.epubconversion;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
+public class CSSRule {
 
-public class RegularExpression {
-    
-    public static String transform(String iotabname, String from, String finding, String replacing) {
-        Pattern pattern = Pattern.compile(finding);
-        Matcher matcher = pattern.matcher(from);
-        return matcher.replaceAll(replacing);
+        public final String key;
+        public final String value;
+
+        public CSSRule(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+        
+        public String get() {
+            return key+": "+value+"; ";
+        }
     }
-}

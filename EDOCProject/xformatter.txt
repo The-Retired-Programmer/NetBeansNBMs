@@ -1,0 +1,19 @@
+#
+# Formatter for the HTML output
+# plus
+# correct for any <p> elements which surround block elements
+#
+# convert nbsp; to sp - harsh but does drive a standard and removes a lots of crud
+(.)&nbsp;(.) ==> $1 $2
+# remove white space at start of paragraph
+(<p>|<p .*>)[\s\n]* ==> $1
+# remove white space at end of paragraph
+[\s\n]*</p> ==> </p>
+# remove nbsp at end of paragraph
+&nbsp;</p> ==> </p>
+# remove paragraphs around various block elements (headers, images)
+(<p>|<p .*?>)(<h\d>.*?</h\d>|<img .*?/>)</p> ==> $2
+# mark newline positions - after break element
+[\s\n]*?<br/>[\s\n]*? ==> <br/>¬¬nl¬¬
+# mark newline positions - removing white space between block elements
+(</p>|</h\d>|<img.*?/>)[\s\n]*?(<p|<h|<img) ==> $1¬¬nl¬¬$2

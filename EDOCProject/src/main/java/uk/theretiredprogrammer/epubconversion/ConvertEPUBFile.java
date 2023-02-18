@@ -18,6 +18,7 @@ package uk.theretiredprogrammer.epubconversion;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.api.project.Project;
@@ -37,24 +38,24 @@ import uk.theretiredprogrammer.epub.EPUBProject;
 
 @ActionID(
         category = "Build",
-        id = "uk.theretiredprogrammer.epubconversion.ExtractEPUBFile"
+        id = "uk.theretiredprogrammer.epubconversion.ConvertEPUBFile"
 )
 @ActionRegistration(
-        displayName = "#CTL_EXTRACT_EPUB"
+        displayName = "#CTL_CONVERT_EPUB"
 )
-@ActionReference(path = "Loaders/application/epub+zip/Actions", position = 150)
-@Messages("CTL_EXTRACT_EPUB=Extract EPUB")
-public final class ExtractEPUBFile implements ActionListener, Runnable {
+@ActionReference(path = "Loaders/application/epub+zip/Actions", position = 170)
+@Messages("CTL_CONVERT_EPUB=Convert EPUB")
+public final class ConvertEPUBFile implements ActionListener, Runnable {
 
     private final List<DataObject> context;
 
-    public ExtractEPUBFile(List<DataObject> context) {
+    public ConvertEPUBFile(List<DataObject> context) {
         this.context = context;
     }
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        RequestProcessor rp = new RequestProcessor("epub_extract");
+        RequestProcessor rp = new RequestProcessor("epub_convert");
         rp.post(this);
     }
 
@@ -67,22 +68,39 @@ public final class ExtractEPUBFile implements ActionListener, Runnable {
             if (project != null && project instanceof EPUBProject) {
                 try {
                     EPUBProject aproject = (EPUBProject) project;
-                    FileObject extractionfolder = getExtractionFolder(aproject.getProjectDirectory(), epubname);
-                    Activity.runWithIOTab(new EPUBExtractionActivity(epub, extractionfolder,
-                            new ActivityIO("EPUB")
-                                    .outputToIOSTDERR(STDERR)
-                                    .outputToIOSTDOUT(STDOUT)),
-                            "Extracting EPUB " + epub.getNameExt()
-                    );
+                    FileObject outputfolder = getOutputFolder(aproject.getProjectDirectory(), epubname);
+                    for (var sectionfile : getEPUBSections(aproject.getProjectDirectory(), epubname)) {
+                        Activity.runWithIOTab(new EPUBConversionActivity(aproject.getProjectDirectory(), epub, sectionfile, outputfolder,
+                                new ActivityIO("EPUB")
+                                        .outputToIOSTDERR(STDERR)
+                                        .outputToIOSTDOUT(STDOUT)),
+                                "Converting EPUB " + epub.getNameExt()
+                        );
+                    }
                 } catch (IOException ex) {
-                    UserReporting.exception("EPUB", ex);
+                    UserReporting.warning("EPUB", ex.getLocalizedMessage());
                 }
             }
         }
     }
 
-    private FileObject getExtractionFolder(FileObject projectdir, String epubname) throws IOException {
-        FileObject folder = getFolder(projectdir, "extracted");
+    private List<FileObject> getEPUBSections(FileObject projectdir, String epubname) throws IOException {
+        List<FileObject> xhtmlfiles = new ArrayList<>();
+        FileObject sections = projectdir.getFileObject("extracted/" + epubname + "/OEBPS/sections");
+        if (sections == null) {
+            throw new IOException("No extracted content exists for " + epubname + ".epub");
+        }
+        FileObject[] sectionchildren = sections.getChildren();
+        for (var fo : sectionchildren) {
+            if (fo.isData() && "xhtml".equals(fo.getExt())) {
+                xhtmlfiles.add(fo);
+            }
+        }
+        return xhtmlfiles;
+    }
+
+    private FileObject getOutputFolder(FileObject projectdir, String epubname) throws IOException {
+        FileObject folder = getFolder(projectdir, "converted");
         return getFolder(folder, epubname);
     }
 

@@ -22,15 +22,17 @@ import uk.theretiredprogrammer.activity.ActivityIO;
 public class EPUBExtractionActivity extends Activity {
 
     private final FileObject epubfo;
+    private final FileObject epubextractionfolder;
 
-    public EPUBExtractionActivity(FileObject epubfo, ActivityIO activityio) {
+    public EPUBExtractionActivity(FileObject epubfo, FileObject epubextractionfolder, ActivityIO activityio) {
         super(activityio);
         this.epubfo = epubfo;
+        this.epubextractionfolder = epubextractionfolder;
     }
 
     @Override
     public void onActivity() {
         EPUBExtractor extractor = new EPUBExtractor();
-        extractor.extract(epubfo);
+        extractor.extract(epubfo, epubextractionfolder);
     }
 }

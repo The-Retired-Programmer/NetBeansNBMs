@@ -37,24 +37,24 @@ import uk.theretiredprogrammer.epub.EPUBProject;
 
 @ActionID(
         category = "Build",
-        id = "uk.theretiredprogrammer.epubconversion.ExtractEPUBFile"
+        id = "uk.theretiredprogrammer.epubconversion.CreateEPUBHintsFile"
 )
 @ActionRegistration(
-        displayName = "#CTL_EXTRACT_EPUB"
+        displayName = "#CTL_CREATE_EPUB_HINTS"
 )
-@ActionReference(path = "Loaders/application/epub+zip/Actions", position = 150)
-@Messages("CTL_EXTRACT_EPUB=Extract EPUB")
-public final class ExtractEPUBFile implements ActionListener, Runnable {
+@ActionReference(path = "Loaders/application/epub+zip/Actions", position = 160)
+@Messages("CTL_CREATE_EPUB_HINTS=Create EPUB Hints")
+public final class CreateEPUBHintsFile implements ActionListener, Runnable {
 
     private final List<DataObject> context;
 
-    public ExtractEPUBFile(List<DataObject> context) {
+    public CreateEPUBHintsFile(List<DataObject> context) {
         this.context = context;
     }
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        RequestProcessor rp = new RequestProcessor("epub_extract");
+        RequestProcessor rp = new RequestProcessor("epub_hints");
         rp.post(this);
     }
 
@@ -67,23 +67,26 @@ public final class ExtractEPUBFile implements ActionListener, Runnable {
             if (project != null && project instanceof EPUBProject) {
                 try {
                     EPUBProject aproject = (EPUBProject) project;
-                    FileObject extractionfolder = getExtractionFolder(aproject.getProjectDirectory(), epubname);
-                    Activity.runWithIOTab(new EPUBExtractionActivity(epub, extractionfolder,
+                    FileObject stylesheet = getEPUBStyleSheet(aproject.getProjectDirectory(), epubname);
+                    Activity.runWithIOTab(new EPUBHintsActivity(epub, stylesheet,
                             new ActivityIO("EPUB")
                                     .outputToIOSTDERR(STDERR)
                                     .outputToIOSTDOUT(STDOUT)),
-                            "Extracting EPUB " + epub.getNameExt()
+                            "Creating EPUB Hints for " + epubname
                     );
                 } catch (IOException ex) {
-                    UserReporting.exception("EPUB", ex);
+                    UserReporting.warning("EPUB", ex.getLocalizedMessage());
                 }
             }
         }
     }
 
-    private FileObject getExtractionFolder(FileObject projectdir, String epubname) throws IOException {
-        FileObject folder = getFolder(projectdir, "extracted");
-        return getFolder(folder, epubname);
+    private FileObject getEPUBStyleSheet(FileObject projectdir, String epubname) throws IOException {
+        FileObject styles = projectdir.getFileObject("extracted/" + epubname + "/OEBPS/styles");
+        if (styles == null) {
+            throw new IOException("No extracted content exists for " + epubname + ".epub");
+        }
+        return styles.getFileObject("stylesheet.css");
     }
 
     private FileObject getFolder(FileObject parent, String foldername) throws IOException {

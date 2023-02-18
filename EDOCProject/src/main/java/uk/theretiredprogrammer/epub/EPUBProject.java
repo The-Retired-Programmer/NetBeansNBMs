@@ -27,6 +27,7 @@ import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
 import org.netbeans.spi.project.ui.support.CommonProjectActions;
+import org.openide.actions.PasteAction;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
@@ -36,17 +37,10 @@ import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
+import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
 import uk.theretiredprogrammer.actionssupport.NodeActions;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
-import uk.theretiredprogrammer.epubconversion.EPUBWorkers;
 
 public class EPUBProject implements Project {
 
@@ -81,26 +75,6 @@ public class EPUBProject implements Project {
             });
         }
         return lkp;
-    }
-
-    public SaveBeforeAction getSaveBeforeAction() {
-        return epubproperties.getSaveBeforeAction();
-    }
-
-    public String getTabname() {
-        return "EPUB " + projectDir.getName();
-    }
-
-    public String getPreregex() {
-        return "preregex.txt";
-    }
-
-    public String getXSLT() {
-        return "transform.xsl";
-    }
-
-    public String getRegex() {
-        return "regex.txt";
     }
 
     private final class Info implements ProjectInformation {
@@ -186,31 +160,9 @@ public class EPUBProject implements Project {
                 nodeactions.setNodeBasicActions(
                         CommonProjectActions.renameProjectAction(),
                         CommonProjectActions.copyProjectAction(),
+                        SystemAction.get(PasteAction.class),
                         CommonProjectActions.closeProjectAction()
                 );
-                EPUBWorkers workers = new EPUBWorkers(project.getProjectDirectory());
-                if (workers.isEPUBAvailable()) {
-                    nodeactions.setNodeActions(
-                            new DynamicAsyncAction("Extract EPUB")
-                                    .onAction(() -> Activity.runWithIOTab(
-                                    workers.getExtractionActivity(
-                                            new ActivityIO("EPUB")
-                                                    .outputToIOSTDERR(STDERR)
-                                                    .outputToIOSTDOUT(STDOUT)),
-                                    "Extracting EPUB " + workers.getEPUBName())
-                                    ),
-                            new DynamicAsyncAction("Convert EPUB sections")
-                                    .onAction(() -> Activity.runWithIOTab(
-                                    workers.getConversionActivity(
-                                            new ActivityIO("EPUB")
-                                                    .outputToIOSTDERR(STDERR)
-                                                    .outputToIOSTDOUT(STDOUT)),
-                                    "Converting EPUB " + workers.getEPUBName())
-                                    )
-                    );
-                } else {
-                    UserReporting.info("EPUB", "error, cannot find a .epub file");
-                }
             }
 
             @Override

@@ -22,36 +22,16 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import org.openide.util.Exceptions;
+import uk.theretiredprogrammer.actionssupport.UserReporting;
 
 public class EPUBExtractor {
 
-    /*
-open the epub zip
-try and quess the name for the content folder (only other folder than 
-meta-inf)
-
-get list of images and path to images
-get list of content and and paths to content
-get list (of one) for the styles
-
-API
-    
-constructor - look at the Zip to gain all needed structural info
-    
-request summary of structural info.
-
-open one of the list types and iterate through apply an action to
-each (one for each of Styles, images and content)
-    
-     */
-    public void extract(FileObject ebpubFO) {
-        FileObject projectfolderFO = ebpubFO.getParent();
+    public void extract(FileObject ebpubFO, FileObject epubextractionfolder) {
         byte[] buffer = new byte[1024];
         try ( ZipInputStream zis = new ZipInputStream(ebpubFO.getInputStream())) {
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
-                File newFile = newFile(FileUtil.toFile(projectfolderFO), zipEntry);
+                File newFile = newFile(FileUtil.toFile(epubextractionfolder), zipEntry);
                 if (zipEntry.isDirectory()) {
                     if (!newFile.isDirectory() && !newFile.mkdirs()) {
                         throw new IOException("Failed to create directory " + newFile);
@@ -75,7 +55,7 @@ each (one for each of Styles, images and content)
 
             zis.closeEntry();
         } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
+            UserReporting.exceptionWithMessage("EPUB", "Error during EPUB extraction", ex);
         }
     }
 

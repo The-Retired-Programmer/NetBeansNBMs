@@ -1,0 +1,24 @@
+#
+# THERE ARE TWO FORMS OF PARAGRAPH MAPPING - PLEASE DON'T USE BOTH IN THE SAME DOCUMENT
+#
+# For documents where double returns = paragraph ; single returns = linebreak;
+# use Mapping "PARA_BASE" in top level regex mapping file
+# ie <p class="para0"> ==> <p class="PARA_BASE">
+#
+<p>[\s|&nbsp;]*</p> ==> <BLANKLINE/>
+</p>[\s|\n]*<BLANKLINE/> ==> </TRUEPARA>
+</p>[\s|\n]*<p> ==> <br/>
+</h1>[\s|\n]*<BLANKLINE/> ==> </h1>
+</TRUEPARA> ==> </p>
+<BLANKLINE/> ==> <br/>
+#
+# Where styling is used to separate true paras from text with a linebreak at the end
+# use Mapping "PARA" and "PARA_LINKBREAK" in the toplevel regex mapping file
+# ie <p class="para0"> ==> <p class="PARA"> and <p class="para1"> ==> <p class="PARA_LINEBREAK">
+#
+</PL>[\s|\n]*<PL> ==> <br/>
+</PL>[\s|\n]*<P> ==> <br/>
+<PL> ==> <p>
+</PL> ==> </p>
+<P> ==> <p>
+</P> ==> </p>
