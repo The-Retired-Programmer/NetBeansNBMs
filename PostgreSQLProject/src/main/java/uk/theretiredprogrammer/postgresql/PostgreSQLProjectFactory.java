@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022 richard linsdale.
+ * Copyright 2018-2023 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.netbeans.spi.project.ProjectFactory;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 
 
 @ServiceProvider(service = ProjectFactory.class)
@@ -28,8 +29,9 @@ public class PostgreSQLProjectFactory implements ProjectFactory {
 
     @Override
     public boolean isProject(FileObject projectDirectory) {
+        boolean isA3present = ActionsAndActivitiesFactory.IsActionsAndActivitiesAvailable();
         FileObject postgresqlpropertiesfile = projectDirectory.getFileObject("postgresql.properties");
-        return postgresqlpropertiesfile != null && postgresqlpropertiesfile.isData();
+        return isA3present && postgresqlpropertiesfile != null && postgresqlpropertiesfile.isData();
     }
 
     @Override

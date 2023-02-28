@@ -26,7 +26,6 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
-import org.netbeans.spi.project.ui.support.CommonProjectActions;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
@@ -38,15 +37,18 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
+import uk.theretiredprogrammer.actions.NodeActions;
+import uk.theretiredprogrammer.actions.SaveBeforeAction;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class PostgreSQLProject implements Project {
 
     private final FileObject projectDir;
     private Lookup lkp;
-    private final NodeActions nodeactions;
-    private final PostgreSQLPropertyFile postgresqlproperties;
+    private NodeActions nodeactions;
+    private PostgreSQLPropertyFile postgresqlproperties;
 
     /**
      * Constructor
@@ -56,8 +58,12 @@ public class PostgreSQLProject implements Project {
      */
     PostgreSQLProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
-        nodeactions = new NodeActions(dir, "projectactions");
-        postgresqlproperties = new PostgreSQLPropertyFile(dir, nodeactions, state);
+        try {
+            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+            postgresqlproperties = new PostgreSQLPropertyFile(dir, nodeactions, state);
+        } catch (ApplicationException ex) {
+            UserReporting.exception(ex);
+        }
     }
 
     @Override
@@ -168,11 +174,7 @@ public class PostgreSQLProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodeactions.setNodeBasicActions(
-                        CommonProjectActions.renameProjectAction(),
-                        CommonProjectActions.copyProjectAction(),
-                        CommonProjectActions.closeProjectAction()
-                );
+                nodeactions.setNodeBasicProjectActions();
             }
 
             @Override

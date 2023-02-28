@@ -28,12 +28,13 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
+import static uk.theretiredprogrammer.activity.Activity.STDERR;
+import static uk.theretiredprogrammer.activity.Activity.STDOUT;
 import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Build",
@@ -66,15 +67,23 @@ public final class ExecutePLPGSQLFile implements ActionListener, Runnable {
                 Project project = FileOwnerQuery.getOwner(input);
                 if (project != null && project instanceof PostgreSQLProject) {
                     PostgreSQLProject aproject = (PostgreSQLProject) project;
-                    aproject.getSaveBeforeAction().saveIfModifiedByMode(dataObject);
-                    Activity.runExternalProcessWithIOTab("psql",
-                            "-f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager",
-                            input.getParent(),
-                            new ActivityIO("Execute PgSQL")
-                                    .outputToIOSTDOUT(STDOUT)
-                                    .outputToIOSTDERR(STDERR),
-                            "Executing " + input.getNameExt()
-                    );
+                    Activity activity;
+                    try {
+                        aproject.getSaveBeforeAction().saveIfModified(dataObject);
+                        activity = ActionsAndActivitiesFactory.createActivity()
+                                .setExternalProcess(
+                                        "psql",
+                                        "-f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager",
+                                        input.getParent()
+                                )
+                                .needsIOTab("Execute PgSQL")
+                                .outputToIOSTDOUT(STDOUT)
+                                .outputToIOSTDERR(STDERR);
+                    } catch (ApplicationException ex) {
+                        UserReporting.exceptionWithMessage("Execute PgSQL", "Error when creating Activity", ex);
+                        break;
+                    }
+                    activity.run("Executing " + input.getNameExt());
                 }
             }
         } catch (IOException ex) {

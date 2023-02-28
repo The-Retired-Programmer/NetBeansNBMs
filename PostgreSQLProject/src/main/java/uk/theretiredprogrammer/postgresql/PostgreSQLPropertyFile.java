@@ -20,11 +20,13 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
-import uk.theretiredprogrammer.actionssupport.NodeActions.FileChangeType;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import static uk.theretiredprogrammer.actionssupport.SaveBeforeAction.SaveBeforeActionMode.YES;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.actions.NodeActions;
+import uk.theretiredprogrammer.actions.NodeActions.FileChangeType;
+import uk.theretiredprogrammer.actions.SaveBeforeAction;
+import static uk.theretiredprogrammer.actions.SaveBeforeAction.SaveBeforeActionMode.YES;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class PostgreSQLPropertyFile {
 
@@ -32,7 +34,7 @@ public class PostgreSQLPropertyFile {
     private boolean defined;
     private SaveBeforeAction savebeforeaction;
 
-    public PostgreSQLPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException {
+    public PostgreSQLPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException, ApplicationException {
         loadProperties(projectdir);
         nodeactions.registerFile("postgresql", "properties", fct -> loadProperties(fct, projectdir, state));
     }
@@ -63,13 +65,14 @@ public class PostgreSQLPropertyFile {
             default:
                 try {
                 loadProperties(projectdir);
-            } catch (IOException ex) {
+            } catch (ApplicationException | IOException ex) {
                 UserReporting.exceptionWithMessage("Unable to read properties from postgresql.properties: ", ex);
             }
+
         }
     }
 
-    private void loadProperties(FileObject projectdir) throws IOException {
+    private void loadProperties(FileObject projectdir) throws IOException, ApplicationException {
         clearPropertyValues();
         FileObject propertyfile = projectdir.getFileObject("postgresql", "properties");
         if (propertyfile == null) {
@@ -82,9 +85,9 @@ public class PostgreSQLPropertyFile {
         defined = parseProperties(projectdir, properties);
     }
 
-    private boolean parseProperties(FileObject projectdir, Properties properties) throws IOException {
+    private boolean parseProperties(FileObject projectdir, Properties properties) throws IOException, ApplicationException {
         database = properties.getProperty("database");
-        savebeforeaction = new SaveBeforeAction(properties, "save_before_execution", YES);
+        savebeforeaction = ActionsAndActivitiesFactory.createSaveBeforeAction(properties, "save_before_execution", YES);
         savebeforeaction.setSourceRoot(projectdir);
         return database != null;
     }
