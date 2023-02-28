@@ -25,7 +25,6 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
-import org.netbeans.spi.project.ui.support.CommonProjectActions;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
@@ -37,18 +36,19 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
+import static uk.theretiredprogrammer.activity.Activity.STDERR;
+import static uk.theretiredprogrammer.activity.Activity.STDOUT;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class JBakeProject implements Project {
 
     private final FileObject projectDir;
     private Lookup lkp;
-    private final NodeActions nodeactions;
+    private NodeActions nodeactions;
 
     /**
      * Constructor
@@ -58,7 +58,11 @@ public class JBakeProject implements Project {
      */
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
-        nodeactions = new NodeActions(dir, "projectactions");
+        try {
+            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+        } catch (ApplicationException ex) {
+            UserReporting.exception(ex);
+        }
     }
 
     @Override
@@ -157,20 +161,17 @@ public class JBakeProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodeactions.setNodeBasicActions(
-                        CommonProjectActions.renameProjectAction(),
-                        CommonProjectActions.copyProjectAction(),
-                        CommonProjectActions.closeProjectAction()
-                );
-                nodeactions.setNodeActions(new DynamicAsyncAction("Bake")
-                        .onAction(() -> Activity.runExternalProcessWithIOTab(
-                        "jbake", "-b", projectDir,
-                        new ActivityIO("Bake " + projectDir.getName())
-                                .outputToIOSTDERR(STDERR)
-                                .outputToIOSTDOUT(STDOUT),
-                        "Baking")
-                        )
-                );
+                nodeactions.setNodeBasicProjectActions();
+                try {
+                    Activity activity = ActionsAndActivitiesFactory.createActivity()
+                            .setExternalProcess("jbake", "-b", projectDir)
+                            .outputToIOSTDOUT(STDOUT)
+                            .outputToIOSTDERR(STDERR)
+                            .needsIOTab("Bake " + projectDir.getName());
+                    nodeactions.setNodeActions(ActionsAndActivitiesFactory.createDynamicAction("Bake").onActionAsync(() -> activity.run("Baking")));
+                } catch (ApplicationException ex) {
+                    UserReporting.exceptionWithMessage("Error when parsing the actions properties file", ex);
+                }
             }
 
             @Override

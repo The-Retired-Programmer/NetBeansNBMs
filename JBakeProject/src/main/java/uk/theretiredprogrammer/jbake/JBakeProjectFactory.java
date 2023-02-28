@@ -21,14 +21,16 @@ import org.netbeans.spi.project.ProjectFactory;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 
 @ServiceProvider(service = ProjectFactory.class)
 public class JBakeProjectFactory implements ProjectFactory {
 
     @Override
     public boolean isProject(FileObject projectDirectory) {
+        boolean isA3present = ActionsAndActivitiesFactory.IsActionsAndActivitiesAvailable();
         FileObject jbakepropertiesfile = projectDirectory.getFileObject("jbake.properties");
-        return jbakepropertiesfile != null && jbakepropertiesfile.isData();
+        return isA3present && jbakepropertiesfile != null && jbakepropertiesfile.isData();
     }
 
     @Override
