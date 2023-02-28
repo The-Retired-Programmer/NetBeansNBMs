@@ -35,10 +35,11 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.Activity.STDERR;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Tools",
@@ -179,12 +180,19 @@ public final class CropImageAction implements ActionListener {
                     + " offset " + Integer.toString(left) + "x" + Integer.toString(top);
             String outputfilename = FileUtil.findFreeFileName(input.getParent(), input.getName(), input.getExt())
                     + "." + input.getExt();
-            Activity.runExternalProcessWithIOTab("convert-im6",
-                    "\""+input.getNameExt() + "\" -crop '" + crop + "' \"" + outputfilename+ "\"",
-                    input.getParent(),
-                    new ActivityIO("Image Manipulation")
-                            .outputToIOSTDERR(STDERR),
-                    "Crop " + input.getNameExt() + " to " + outputfilename + " - " + cropfactor);
+            Activity activity;
+            try {
+                activity = ActionsAndActivitiesFactory.createActivity()
+                        .setExternalProcess("convert-im6",
+                                "\"" + input.getNameExt() + "\" -crop '" + crop + "' \"" + outputfilename + "\"",
+                                input.getParent())
+                        .needsIOTab("Image Manipulation")
+                        .outputToIOSTDERR(STDERR);
+            } catch (ApplicationException ex) {
+                UserReporting.exceptionWithMessage("Image Manipulation", "Error when configuring Crop Image Activity", ex);
+                return;
+            }
+            activity.run("Crop " + input.getNameExt() + " to " + outputfilename + " - " + cropfactor);
         }
     }
 }

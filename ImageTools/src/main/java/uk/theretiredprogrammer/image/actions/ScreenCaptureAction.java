@@ -24,10 +24,12 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.Activity.STDERR;
 import uk.theretiredprogrammer.image.ImageManagerImpl;
 import uk.theretiredprogrammer.image.api.ScreenCaptureDescriptor;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Tools",
@@ -54,11 +56,16 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
     public void run() {
         ScreenCaptureDescriptor screencapturedescriptor = ImageManagerImpl.getCurrentScreenCaptureDescriptor();
         String capturefilepath = screencapturedescriptor.getCaptureFilePath();
-        Activity.runExternalProcessWithIOTab("scrot",
-                "-s " + capturefilepath,
-                screencapturedescriptor.getCaptureFolder(),
-                new ActivityIO(screencapturedescriptor.getIoTabname())
-                        .outputToIOSTDERR(STDERR),
-                "Screen Capture:  " + capturefilepath);
+        Activity activity;
+        try {
+            activity = ActionsAndActivitiesFactory.createActivity()
+                    .setExternalProcess("scrot", "-s " + capturefilepath, screencapturedescriptor.getCaptureFolder())
+                    .needsIOTab(screencapturedescriptor.getIoTabname())
+                    .outputToIOSTDERR(STDERR);
+        } catch (ApplicationException ex) {
+            UserReporting.exceptionWithMessage(screencapturedescriptor.getIoTabname(), "Error when configuring Screen Capture Activity", ex);
+            return;
+        }
+        activity.run("Screen Capture:  " + capturefilepath);
     }
 }

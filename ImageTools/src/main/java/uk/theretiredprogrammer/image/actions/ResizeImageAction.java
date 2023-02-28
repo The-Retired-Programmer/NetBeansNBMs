@@ -37,10 +37,11 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.Activity.STDERR;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Tools",
@@ -166,12 +167,19 @@ public final class ResizeImageAction implements ActionListener {
                     : "from "+ Integer.toString(image_h)+ " to "+Integer.toString(dim) + " (vertically)";
             String outputfilename = FileUtil.findFreeFileName(input.getParent(), input.getName(), input.getExt())
                     + "." + input.getExt();
-            Activity.runExternalProcessWithIOTab("convert-im6",
-                    "\""+input.getNameExt() + "\" -resize " + resize + " \"" + outputfilename+ "\"",
-                    input.getParent(),
-                    new ActivityIO("Image Manipulation")
-                            .outputToIOSTDERR(STDERR),
-                    "Resize " + input.getNameExt() + " to " + outputfilename +" - "+rescalefactor);
+            Activity activity;
+            try {
+                activity = ActionsAndActivitiesFactory.createActivity()
+                        .setExternalProcess("convert-im6",
+                                "\""+input.getNameExt() + "\" -resize " + resize + " \"" + outputfilename+ "\"",
+                                input.getParent())
+                        .needsIOTab("Image Manipulation")
+                        .outputToIOSTDERR(STDERR);
+            } catch (ApplicationException ex) {
+                UserReporting.exceptionWithMessage("Image Manipulation", "Error when configuring Resize Image Activity", ex);
+                return;
+            }
+            activity.run("Resize " + input.getNameExt() + " to " + outputfilename +" - "+rescalefactor);
         }
     }
 }

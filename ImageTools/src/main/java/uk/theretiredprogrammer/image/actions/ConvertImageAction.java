@@ -29,10 +29,11 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.Activity.STDERR;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Tools",
@@ -149,12 +150,19 @@ public final class ConvertImageAction implements ActionListener {
 
         @Override
         public void run() {
-            Activity.runExternalProcessWithIOTab("convert-im6",
-                    "\""+input.getNameExt() + "\" \"" + input.getName() + outputext+"\"",
-                    input.getParent(),
-                    new ActivityIO("Image Manipulation")
-                            .outputToIOSTDERR(STDERR),
-                    "Convert " + input.getNameExt() + " to " + input.getName() + outputext);
+            Activity activity;
+            try {
+                activity = ActionsAndActivitiesFactory.createActivity()
+                        .setExternalProcess("convert-im6",
+                                "\"" + input.getNameExt() + "\" \"" + input.getName() + outputext + "\"",
+                                input.getParent())
+                        .needsIOTab("Image Manipulation")
+                        .outputToIOSTDERR(STDERR);
+            } catch (ApplicationException ex) {
+                UserReporting.exceptionWithMessage("Image Manipulation", "Error when configuring Convert Image Activity", ex);
+                return;
+            }
+            activity.run("Convert " + input.getNameExt() + " to " + input.getName() + outputext);
         }
     }
 }
