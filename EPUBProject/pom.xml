@@ -8,7 +8,7 @@
     </parent>
     
     <artifactId>epubproject</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>nbm</packaging>
     
     <name>EPUB Project</name>
@@ -19,8 +19,8 @@
     <dependencies>
         <dependency>
             <groupId>uk.theretiredprogrammer</groupId>
-            <artifactId>actionssupport</artifactId>
-            <version>2.1.4</version>
+            <artifactId>a3api</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>

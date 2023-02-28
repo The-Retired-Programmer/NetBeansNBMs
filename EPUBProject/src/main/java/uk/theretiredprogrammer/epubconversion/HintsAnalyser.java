@@ -20,19 +20,15 @@ import java.util.List;
 
 public class HintsAnalyser {
 
-    public static String analyseBodyRules(List<CSSRule> rules) throws IOException {
-        return "";
-    }
-
     public static String analyseParaRules(List<CSSRule> rules) throws IOException {
         String style = "";
         for (var rule : rules) {
             switch (rule.key) {
                 case "margin":
-                    if (areVerticalMarginsNonZero(rule.value)){
-                        style+=new CSSRule("margin", "6pt 0px 6pt 0px").get();
+                    if (areVerticalMarginsNonZero(rule.value)) {
+                        style += new CSSRule("margin", "6pt 0px 6pt 0px").get();
                     } else {
-                        style+=new CSSRule("margin", "none").get();
+                        style += new CSSRule("margin", "none").get();
                     }
                     break;
                 case "text-align":
@@ -50,7 +46,11 @@ public class HintsAnalyser {
     }
 
     public static String analyseHeadingsRules(List<CSSRule> rules) throws IOException {
-        return ""; // to do
+        return "";
+    }
+
+    public static String analyseBodyRules(List<CSSRule> rules) throws IOException {
+        return "";
     }
 
     public static String analyseSpanRules(List<CSSRule> rules) throws IOException {
@@ -60,8 +60,8 @@ public class HintsAnalyser {
         for (var rule : rules) {
             switch (rule.key) {
                 case "font-size":
-                    if (isPointSizeValueGreaterThan(rule.value,12.0f)) {
-                        style+=new CSSRule("heading", "h3").get();
+                    if (isPointSizeValueGreaterThan(rule.value, 12.0f)) {
+                        style += new CSSRule("heading", "h3").get();
                     }
                     break;
                 case "color":

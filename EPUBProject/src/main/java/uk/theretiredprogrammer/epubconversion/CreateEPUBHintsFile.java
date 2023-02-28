@@ -28,12 +28,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
 import uk.theretiredprogrammer.epub.EPUBProject;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Build",
@@ -68,12 +66,13 @@ public final class CreateEPUBHintsFile implements ActionListener, Runnable {
                 try {
                     EPUBProject aproject = (EPUBProject) project;
                     FileObject stylesheet = getEPUBStyleSheet(aproject.getProjectDirectory(), epubname);
-                    Activity.runWithIOTab(new EPUBHintsActivity(epub, stylesheet,
-                            new ActivityIO("EPUB")
-                                    .outputToIOSTDERR(STDERR)
-                                    .outputToIOSTDOUT(STDOUT)),
-                            "Creating EPUB Hints for " + epubname
-                    );
+                    try {
+                            ActionsAndActivitiesFactory.getActivityIOTab("EPUB").println("Creating EPUB Hints" + epub.getNameExt());
+                            EPUBHintsBuilder.create(epub, stylesheet, "EPUB");
+                            ActionsAndActivitiesFactory.getActivityIOTab("EPUB").printdone();
+                        } catch (ApplicationException ex) {
+                            UserReporting.exceptionWithMessage("EPUB", "Error creating EPUB Hints", ex);
+                        }
                 } catch (IOException ex) {
                     UserReporting.warning("EPUB", ex.getLocalizedMessage());
                 }
@@ -87,16 +86,5 @@ public final class CreateEPUBHintsFile implements ActionListener, Runnable {
             throw new IOException("No extracted content exists for " + epubname + ".epub");
         }
         return styles.getFileObject("stylesheet.css");
-    }
-
-    private FileObject getFolder(FileObject parent, String foldername) throws IOException {
-        FileObject folder = parent.getFileObject(foldername);
-        if (folder == null) {
-            folder = parent.createFolder(foldername);
-        }
-        if (folder == null || !folder.isFolder()) {
-            throw new IOException("Folder \"" + foldername + "\": does not exist and cannot be created; or exists and is not a folder");
-        }
-        return folder;
     }
 }

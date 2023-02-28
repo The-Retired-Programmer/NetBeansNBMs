@@ -22,11 +22,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class EPUBExtractor {
 
-    public void extract(FileObject ebpubFO, FileObject epubextractionfolder) {
+    public static void extract(FileObject ebpubFO, FileObject epubextractionfolder, String iotabname) {
         byte[] buffer = new byte[1024];
         try ( ZipInputStream zis = new ZipInputStream(ebpubFO.getInputStream())) {
             ZipEntry zipEntry = zis.getNextEntry();
@@ -55,7 +55,7 @@ public class EPUBExtractor {
 
             zis.closeEntry();
         } catch (IOException ex) {
-            UserReporting.exceptionWithMessage("EPUB", "Error during EPUB extraction", ex);
+            UserReporting.exceptionWithMessage(iotabname, "Error during EPUB extraction", ex);
         }
     }
 

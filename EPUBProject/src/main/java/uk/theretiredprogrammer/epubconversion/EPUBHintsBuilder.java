@@ -22,33 +22,21 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openide.filesystems.FileLock;
 import org.openide.filesystems.FileObject;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
+import uk.theretiredprogrammer.util.UserReporting;
 
-public class EPUBHintsActivity extends Activity {
+public class EPUBHintsBuilder {
 
-    private final FileObject stylesheet;
-    private final FileObject epubfile;
-
-    public EPUBHintsActivity(FileObject epubfile, FileObject stylesheet, ActivityIO activityio) {
-        super(activityio);
-        this.stylesheet = stylesheet;
-        this.epubfile = epubfile;
-    }
-
-    @Override
-    public void onActivity() {
+    public static void create(FileObject epubfile, FileObject stylesheet, String iotabname) {
         try {
-            try ( PrintWriter out = createHintsFile()) {
-                generateHints(out);
+            try ( PrintWriter out = createHintsFile(epubfile)) {
+                generateHints(epubfile, stylesheet, out);
             }
         } catch (IOException ex) {
-            UserReporting.exceptionWithMessage(activityio.iotabname, "Failure while creating hints file content", ex);
+            UserReporting.exceptionWithMessage(iotabname, "Failure while creating hints file content", ex);
         }
     }
 
-    private PrintWriter createHintsFile() throws IOException {
+    private static PrintWriter createHintsFile(FileObject epubfile) throws IOException {
         String outfilename = epubfile.getName() + ".hints";
         FileObject out = epubfile.getParent().getFileObject(outfilename);
         if (out != null) {
@@ -64,7 +52,7 @@ public class EPUBHintsActivity extends Activity {
         return new PrintWriter(new OutputStreamWriter(epubfile.getParent().createAndOpen(outfilename)));
     }
 
-    private void generateHints(PrintWriter out) throws IOException {
+    private static void generateHints(FileObject epubfile, FileObject stylesheet, PrintWriter out) throws IOException {
         out.println("xmlns=\"http://www.w3.org/1999/xhtml\" ==> ");
         out.println("xmlns:epub=\"http://www.idpf.org/2007/ops\" ==>");
         Extractor lex = new Extractor(stylesheet.asText().replace('\n', ' '));
@@ -80,7 +68,7 @@ public class EPUBHintsActivity extends Activity {
             } else if (name.startsWith("body")) {
                 getBodyStyle(lex);
             } else if (name.startsWith("frame")) {
-                writeHint(out, name, getFrameStyle(lex), getImage());
+                writeHint(out, name, getFrameStyle(lex), getImage(epubfile, stylesheet));
             } else if (name.startsWith("cellTable")) {
                 writeHint(out, name, getCellTableStyle(lex));
             } else if (name.startsWith("rowTable")) {
@@ -93,7 +81,7 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private void writeHint(PrintWriter out, String classname, String style) {
+    private static void writeHint(PrintWriter out, String classname, String style) {
         if (style.isBlank()) {
             out.println("class=\"" + classname + "\" ==>");
         } else {
@@ -101,7 +89,7 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private void writeHint(PrintWriter out, String classname, String style, String imagefile) {
+    private static void writeHint(PrintWriter out, String classname, String style, String imagefile) {
         if (style.isBlank()) {
             out.println("class=\"" + classname + "\" ==> use=\"" + imagefile + "\"");
         } else {
@@ -109,18 +97,18 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private String getParaStyle(Extractor lex) throws IOException {
+    private static String getParaStyle(Extractor lex) throws IOException {
         List<CSSRule> rules = new ArrayList<>();
         while (true) {
             CSSRule rule = lex.nextRule();
             if (rule == null) {
                 return HintsAnalyser.analyseParaRules(rules);
             }
-            rules.add(rule);
+        rules.add(rule);
         }
     }
 
-    private String getSpanStyle(Extractor lex) throws IOException {
+    private static String getSpanStyle(Extractor lex) throws IOException {
         List<CSSRule> rules = new ArrayList<>();
         while (true) {
             CSSRule rule = lex.nextRule();
@@ -131,7 +119,7 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private String getBodyStyle(Extractor lex) throws IOException {
+    private static String getBodyStyle(Extractor lex) throws IOException {
         List<CSSRule> rules = new ArrayList<>();
         while (true) {
             CSSRule rule = lex.nextRule();
@@ -142,7 +130,7 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private String getFrameStyle(Extractor lex) throws IOException {
+    private static String getFrameStyle(Extractor lex) throws IOException {
         List<CSSRule> rules = new ArrayList<>();
         while (true) {
             CSSRule rule = lex.nextRule();
@@ -153,7 +141,7 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private String getImage() throws IOException {
+    private static String getImage(FileObject epubfile, FileObject stylesheet) throws IOException {
         FileObject epubimagesdir = stylesheet.getParent().getParent().getFileObject("images");
         if (epubimagesdir == null) {
             throw new IOException("Cannot find the images folder in the expanded EPUB file");
@@ -179,8 +167,8 @@ public class EPUBHintsActivity extends Activity {
         }
         return imagefilename;
     }
-    
-    private String getCellTableStyle(Extractor lex) throws IOException {
+
+    private static String getCellTableStyle(Extractor lex) throws IOException {
         List<CSSRule> rules = new ArrayList<>();
         while (true) {
             CSSRule rule = lex.nextRule();
@@ -191,7 +179,7 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private String getRowTableStyle(Extractor lex) throws IOException {
+    private static String getRowTableStyle(Extractor lex) throws IOException {
         List<CSSRule> rules = new ArrayList<>();
         while (true) {
             CSSRule rule = lex.nextRule();
@@ -202,7 +190,7 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private String getTableStyle(Extractor lex) throws IOException {
+    private static String getTableStyle(Extractor lex) throws IOException {
         List<CSSRule> rules = new ArrayList<>();
         while (true) {
             CSSRule rule = lex.nextRule();
@@ -213,7 +201,7 @@ public class EPUBHintsActivity extends Activity {
         }
     }
 
-    private class Extractor {
+    private static class Extractor {
 
         private final String cssdocument;
         private int extractpoint;

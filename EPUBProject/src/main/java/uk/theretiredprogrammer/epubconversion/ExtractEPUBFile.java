@@ -28,12 +28,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
 import uk.theretiredprogrammer.epub.EPUBProject;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Build",
@@ -67,13 +65,14 @@ public final class ExtractEPUBFile implements ActionListener, Runnable {
             if (project != null && project instanceof EPUBProject) {
                 try {
                     EPUBProject aproject = (EPUBProject) project;
-                    FileObject extractionfolder = getExtractionFolder(aproject.getProjectDirectory(), epubname);
-                    Activity.runWithIOTab(new EPUBExtractionActivity(epub, extractionfolder,
-                            new ActivityIO("EPUB")
-                                    .outputToIOSTDERR(STDERR)
-                                    .outputToIOSTDOUT(STDOUT)),
-                            "Extracting EPUB " + epub.getNameExt()
-                    );
+                    try {
+                        FileObject extractionfolder = getExtractionFolder(aproject.getProjectDirectory(), epubname);
+                        ActionsAndActivitiesFactory.getActivityIOTab("EPUB").println("Extracting EPUB " + epub.getNameExt());
+                        EPUBExtractor.extract(epub, extractionfolder, "EPUB");
+                        ActionsAndActivitiesFactory.getActivityIOTab("EPUB").printdone();
+                    } catch (ApplicationException ex) {
+                        UserReporting.exceptionWithMessage("EPUB", "Error extracting EPUB", ex);
+                    }
                 } catch (IOException ex) {
                     UserReporting.exception("EPUB", ex);
                 }

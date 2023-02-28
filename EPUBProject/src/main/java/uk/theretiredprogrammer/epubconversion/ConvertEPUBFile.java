@@ -29,12 +29,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDOUT;
 import uk.theretiredprogrammer.epub.EPUBProject;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Build",
@@ -69,16 +67,14 @@ public final class ConvertEPUBFile implements ActionListener, Runnable {
                 try {
                     EPUBProject aproject = (EPUBProject) project;
                     FileObject outputfolder = getOutputFolder(aproject.getProjectDirectory(), epubname);
+                    ActionsAndActivitiesFactory.getActivityIOTab("EPUB").println("Converting EPUB " + epub.getNameExt());
                     for (var sectionfile : getEPUBSections(aproject.getProjectDirectory(), epubname)) {
-                        Activity.runWithIOTab(new EPUBConversionActivity(aproject.getProjectDirectory(), epub, sectionfile, outputfolder,
-                                new ActivityIO("EPUB")
-                                        .outputToIOSTDERR(STDERR)
-                                        .outputToIOSTDOUT(STDOUT)),
-                                "Converting EPUB " + epub.getNameExt()
-                        );
+                        EPUBConvertor.convertHTML(aproject.getProjectDirectory(), epub, sectionfile, outputfolder, "EPUB");
                     }
-                } catch (IOException ex) {
-                    UserReporting.warning("EPUB", ex.getLocalizedMessage());
+                    ActionsAndActivitiesFactory.getActivityIOTab("EPUB").printdone();
+                } catch (IOException | ApplicationException ex) {
+                    UserReporting.exception("EPUB", ex);
+                    break;
                 }
             }
         }

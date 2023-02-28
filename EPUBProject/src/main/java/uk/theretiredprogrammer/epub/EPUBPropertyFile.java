@@ -20,21 +20,22 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
-import uk.theretiredprogrammer.actionssupport.NodeActions.FileChangeType;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import static uk.theretiredprogrammer.actionssupport.SaveBeforeAction.SaveBeforeActionMode.YES;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.actions.NodeActions;
+import uk.theretiredprogrammer.actions.NodeActions.FileChangeType;
+import uk.theretiredprogrammer.actions.SaveBeforeAction;
+import static uk.theretiredprogrammer.actions.SaveBeforeAction.SaveBeforeActionMode.YES;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class EPUBPropertyFile {
 
     private SaveBeforeAction savebeforeaction;
 
-    public EPUBPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException {
+    public EPUBPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException, ApplicationException {
         loadProperties(projectdir);
         nodeactions.registerFile("epub", "properties", fct -> loadProperties(fct, projectdir, state));
     }
-
 
     public SaveBeforeAction getSaveBeforeAction() {
         return savebeforeaction;
@@ -53,13 +54,13 @@ public class EPUBPropertyFile {
             default:
                 try {
                 loadProperties(projectdir);
-            } catch (IOException ex) {
+            } catch (ApplicationException | IOException ex) {
                 UserReporting.exceptionWithMessage("Unable to read properties from epub.properties: ", ex);
             }
         }
     }
 
-    private void loadProperties(FileObject projectdir) throws IOException {
+    private void loadProperties(FileObject projectdir) throws IOException, ApplicationException {
         clearPropertyValues();
         FileObject propertyfile = projectdir.getFileObject("epub", "properties");
         if (propertyfile == null) {
@@ -72,8 +73,8 @@ public class EPUBPropertyFile {
         parseProperties(projectdir, properties);
     }
 
-    private void parseProperties(FileObject projectdir, Properties properties) throws IOException {
-        savebeforeaction = new SaveBeforeAction(properties, "save_before_execution", YES);
+    private void parseProperties(FileObject projectdir, Properties properties) throws IOException, ApplicationException {
+        savebeforeaction = ActionsAndActivitiesFactory.createSaveBeforeAction(properties, "save_before_execution", YES);
         savebeforeaction.setSourceRoot(projectdir);
     }
 }

@@ -26,8 +26,6 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
-import org.netbeans.spi.project.ui.support.CommonProjectActions;
-import org.openide.actions.PasteAction;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
@@ -37,17 +35,19 @@ import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
-import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
+import uk.theretiredprogrammer.actions.NodeActions;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class EPUBProject implements Project {
 
     private final FileObject projectDir;
     private Lookup lkp;
-    private final NodeActions nodeactions;
-    private final EPUBPropertyFile epubproperties;
+    private NodeActions nodeactions;
+    private EPUBPropertyFile epubproperties;
 
     /**
      * Constructor
@@ -57,8 +57,12 @@ public class EPUBProject implements Project {
      */
     EPUBProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
-        nodeactions = new NodeActions(dir, "projectactions");
-        epubproperties = new EPUBPropertyFile(dir, nodeactions, state);
+        try {
+            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+            epubproperties = new EPUBPropertyFile(dir, nodeactions, state);
+        } catch (ApplicationException ex) {
+            UserReporting.exception(ex);
+        }
     }
 
     @Override
@@ -157,12 +161,7 @@ public class EPUBProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodeactions.setNodeBasicActions(
-                        CommonProjectActions.renameProjectAction(),
-                        CommonProjectActions.copyProjectAction(),
-                        SystemAction.get(PasteAction.class),
-                        CommonProjectActions.closeProjectAction()
-                );
+                nodeactions.setNodeBasicProjectActions();
             }
 
             @Override
