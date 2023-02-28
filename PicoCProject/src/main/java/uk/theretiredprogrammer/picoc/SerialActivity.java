@@ -16,68 +16,54 @@
 package uk.theretiredprogrammer.picoc;
 
 import com.fazecast.jSerialComm.SerialPort;
-import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
-import uk.theretiredprogrammer.activity.InputDataTask;
-import uk.theretiredprogrammer.activity.OutputDataTask;
+import java.io.Closeable;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.function.Supplier;
+import uk.theretiredprogrammer.util.UserReporting;
 
-public class SerialActivity extends Activity {
-
-    public static final String TX = "Tx";
-    public static final String RX = "Rx";
+public class SerialActivity  implements Closeable {
 
     private SerialPort serialport;
     private final String devicename;
     private final int baudrate;
+    private final String iotabname;
 
-    public SerialActivity(String devicename, int baudrate, ActivityIO activityio) {
-        super(activityio);
+    public SerialActivity(String iotabname, String devicename, int baudrate) {
+        this.iotabname = iotabname;
         this.devicename = devicename;
         this.baudrate = baudrate;
     }
 
-    @Override
-    public boolean onStart() {
-        serialport = initialiseSerial(devicename, baudrate);
+    public boolean open() {
+        serialport = initialiseSerial();
         return serialport != null;
     }
-
-    @Override
-    public InputDataTask[] createAllInputDataTasks() {
-        return new InputDataTask[]{
-            new InputDataTask(TX, activityio.iotabname).byCharReader(io, activityio.getInputIO(TX), serialport.getOutputStream())
-        };
+    
+    public Supplier<OutputStream> getOutputStreamSupplier() {
+        return () -> serialport.getOutputStream();
     }
-
-    @Override
-    public OutputDataTask[] createAllOutputDataTasks() {
-        return new OutputDataTask[]{
-            new OutputDataTask(RX, activityio.iotabname).byCharWriter(io, activityio.getOutputIO(RX), serialport.getInputStream())
-        };
+    
+    public Supplier<InputStream> getInputStreamSupplier() {
+        return () -> serialport.getInputStream();
     }
-
+    
     @Override
-    public boolean areClosingActionsRequired() {
-        return false;
-    }
-
-    @Override
-    public void onCancel() {
+    public void close() {
         if (serialport.isOpen()) {
             serialport.closePort();
             UserReporting.infoLogOnly("closed serialport (SerialTerminal)");
         }
     }
 
-    private SerialPort initialiseSerial(String devicename, int baudrate) {
+    private SerialPort initialiseSerial() {
         SerialPort serial = SerialPort.getCommPort(devicename);
         if (!serial.openPort()) {
-            UserReporting.error(activityio.iotabname, "Could not open the serial device for I/O");
+            UserReporting.error(iotabname, "Could not open the serial device for I/O");
             return null;
         }
         if (!serial.setBaudRate(baudrate)) {
-            UserReporting.error(activityio.iotabname, "Could not set the baud rate for serial device");
+            UserReporting.error(iotabname, "Could not set the baud rate for serial device");
             return null;
         }
         serial.flushIOBuffers();

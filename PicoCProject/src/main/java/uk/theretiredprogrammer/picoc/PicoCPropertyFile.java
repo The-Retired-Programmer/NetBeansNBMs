@@ -20,11 +20,13 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
-import uk.theretiredprogrammer.actionssupport.NodeActions.FileChangeType;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import static uk.theretiredprogrammer.actionssupport.SaveBeforeAction.SaveBeforeActionMode.ALL;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.actions.NodeActions;
+import uk.theretiredprogrammer.actions.NodeActions.FileChangeType;
+import uk.theretiredprogrammer.actions.SaveBeforeAction;
+import static uk.theretiredprogrammer.actions.SaveBeforeAction.SaveBeforeActionMode.ALL;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class PicoCPropertyFile {
 
@@ -35,7 +37,7 @@ public class PicoCPropertyFile {
     private int baudrate;
     private String devicename;
 
-    public PicoCPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException {
+    public PicoCPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException, ApplicationException {
         loadProperties(projectdir);
         nodeactions.registerFile("pico-c", "properties", fct -> loadProperties(fct, projectdir, state));
     }
@@ -73,13 +75,13 @@ public class PicoCPropertyFile {
             default:
                 try {
                 loadProperties(projectdir);
-            } catch (IOException ex) {
+            } catch (ApplicationException | IOException ex) {
                 UserReporting.exceptionWithMessage("Unable to read properties from pico-c.properties: ", ex);
             }
         }
     }
 
-    private void loadProperties(FileObject projectdir) throws IOException {
+    private void loadProperties(FileObject projectdir) throws IOException, ApplicationException {
         FileObject propertyfile = projectdir.getFileObject("pico-c", "properties");
         if (propertyfile == null) {
             throw new IOException("pico-c.properties missing in " + projectdir.getPath());
@@ -91,8 +93,8 @@ public class PicoCPropertyFile {
         parseProperties(projectdir, properties);
     }
 
-    private void parseProperties(FileObject projectdir, Properties properties) throws IOException {
-        savebeforeaction = new SaveBeforeAction(properties, "save_before_building", ALL);
+    private void parseProperties(FileObject projectdir, Properties properties) throws IOException, ApplicationException {
+        savebeforeaction = ActionsAndActivitiesFactory.createSaveBeforeAction(properties, "save_before_building", ALL);
         savebeforeaction.setSourceRoot(projectdir.getFileObject("src"));
         executables = properties.getProperty("executables", "app").split(",");
         downloadusingbootloader = "Yes".equalsIgnoreCase(properties.getProperty("enable_download_use_bootloader", "No"));

@@ -28,7 +28,6 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
-import org.netbeans.spi.project.ui.support.CommonProjectActions;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
@@ -40,16 +39,19 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
+import uk.theretiredprogrammer.actions.DynamicAction;
+import uk.theretiredprogrammer.actions.NodeActions;
+import uk.theretiredprogrammer.actions.SaveBeforeAction;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class PicoCProject implements Project {
 
     private final FileObject projectDir;
     private Lookup lkp;
-    private final NodeActions nodeactions;
-    private final PicoCPropertyFile picocproperties;
+    private NodeActions nodeactions;
+    private PicoCPropertyFile picocproperties;
 
     /**
      * Constructor
@@ -62,8 +64,12 @@ public class PicoCProject implements Project {
         if (projectDir.getFileObject("build") == null) {
             projectDir.createFolder("build");
         }
-        nodeactions = new NodeActions(dir, "projectactions");
-        picocproperties = new PicoCPropertyFile(dir, nodeactions, state);
+        try {
+            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+            picocproperties = new PicoCPropertyFile(dir, nodeactions, state);
+        } catch (ApplicationException ex) {
+            UserReporting.exception(ex);
+        }
     }
 
     @Override
@@ -170,27 +176,33 @@ public class PicoCProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodeactions.setNodeBasicActions(
-                        CommonProjectActions.renameProjectAction(),
-                        CommonProjectActions.copyProjectAction(),
-                        CommonProjectActions.closeProjectAction()
-                );
-                PicoCBuildWorkers workers = new PicoCBuildWorkers(projectDir.getName(), projectDir.getFileObject("build"));
-                List<DynamicAsyncAction> mynodeactions = new ArrayList<>();
-                mynodeactions.add(new DynamicAsyncAction("Clean").onAction(() -> workers.cleanBuildFolder()));
-                mynodeactions.add(new DynamicAsyncAction("Build Make file").onAction(() -> workers.buildMakeFile()));
-                mynodeactions.add(new DynamicAsyncAction("Build Executables").onAction(() -> workers.buildExecutables()));
-                for (String exe : picocproperties.getExecutables()) {
-                    if (picocproperties.isDownloadUsingDebugPort()) {
-                        mynodeactions.add(new DynamicAsyncAction("Download " + exe + " using Debug Port").onAction(() -> workers.downloadViaDebug(exe)));
+                nodeactions.setNodeBasicProjectActions();
+                List<DynamicAction> mynodeactions = new ArrayList<>();
+                try {
+                    PicoCBuildWorkers workers = new PicoCBuildWorkers(projectDir.getName(), projectDir.getFileObject("build"));
+
+                    mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Clean")
+                            .onActionAsync(() -> workers.cleanBuildFolder()));
+                    mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Build Make file")
+                            .onActionAsync(() -> workers.buildMakeFile()));
+                    mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Build Executables")
+                            .onActionAsync(() -> workers.buildExecutables()));
+                    for (String exe : picocproperties.getExecutables()) {
+                        if (picocproperties.isDownloadUsingDebugPort()) {
+                            mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Download " + exe + " using Debug Port")
+                                    .onActionAsync(() -> workers.downloadViaDebug(exe)));
+                        }
+                        if (picocproperties.isDownloadUsingBootLoader()) {
+                            mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Download " + exe + " using Bootloader")
+                                    .onActionAsync(() -> workers.downloadViaBootLoader(exe)));
+                        }
                     }
-                    if (picocproperties.isDownloadUsingBootLoader()) {
-                        mynodeactions.add(new DynamicAsyncAction("Download " + exe + " using Bootloader").onAction(() -> workers.downloadViaBootLoader(exe)));
-                    }
+                    mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Serial Terminal")
+                            .onActionAsync(() -> workers.showSerialTerminal("Serial Terminal")));
+                } catch (ApplicationException ex) {
+                    UserReporting.exceptionWithMessage("Error creating project node actions", ex);
                 }
-                mynodeactions.add(new DynamicAsyncAction("Serial Terminal").onAction(() -> workers.showSerialTerminal("Serial Terminal")));
-                
-                nodeactions.setNodeActions(mynodeactions.toArray(DynamicAsyncAction[]::new));
+                nodeactions.setNodeActions(mynodeactions.toArray(DynamicAction[]::new));
             }
 
             @Override
