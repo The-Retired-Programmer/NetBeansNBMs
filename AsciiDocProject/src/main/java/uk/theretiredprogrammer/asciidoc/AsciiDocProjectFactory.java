@@ -21,7 +21,7 @@ import org.netbeans.spi.project.ProjectFactory;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 
 
 @ServiceProvider(service = ProjectFactory.class)
@@ -29,8 +29,9 @@ public class AsciiDocProjectFactory implements ProjectFactory {
 
     @Override
     public boolean isProject(FileObject projectDirectory) {
+        boolean isA3present = ActionsAndActivitiesFactory.IsActionsAndActivitiesAvailable();
         FileObject asciidocpropertiesfile = projectDirectory.getFileObject("asciidoc.properties");
-        return asciidocpropertiesfile != null && asciidocpropertiesfile.isData();
+        return isA3present && asciidocpropertiesfile != null && asciidocpropertiesfile.isData();
     }
 
     @Override

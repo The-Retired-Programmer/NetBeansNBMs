@@ -20,11 +20,13 @@ import java.io.InputStream;
 import java.util.Properties;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
-import uk.theretiredprogrammer.actionssupport.NodeActions.FileChangeType;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import static uk.theretiredprogrammer.actionssupport.SaveBeforeAction.SaveBeforeActionMode.ALL;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.actions.NodeActions;
+import uk.theretiredprogrammer.actions.NodeActions.FileChangeType;
+import uk.theretiredprogrammer.actions.SaveBeforeAction;
+import static uk.theretiredprogrammer.actions.SaveBeforeAction.SaveBeforeActionMode.ALL;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class AsciiDocPropertyFile {
 
@@ -33,7 +35,7 @@ public class AsciiDocPropertyFile {
     private String generatedroot;
     private boolean paragraphLayout;
 
-    public AsciiDocPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException {
+    public AsciiDocPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException, ApplicationException {
         loadProperties(projectdir);
         nodeactions.registerFile("asciidoc", "properties", fct -> loadProperties(fct, projectdir, state));
     }
@@ -54,7 +56,7 @@ public class AsciiDocPropertyFile {
         return paragraphLayout;
     }
 
-    private void loadProperties(FileChangeType ftc, FileObject projectdir, ProjectState state) {
+    private void loadProperties(FileChangeType ftc, FileObject projectdir, ProjectState state)  {
         switch (ftc) {
             case RENAMEDFROM:
             case DELETED:
@@ -63,13 +65,13 @@ public class AsciiDocPropertyFile {
             default:
                 try {
                     loadProperties(projectdir);
-                } catch (IOException ex) {
+                } catch (ApplicationException |  IOException ex) {
                     UserReporting.exceptionWithMessage("Unable to read properties from asciidoc.properties: ", ex);
                 }
         }
     }
 
-    private void loadProperties(FileObject projectdir) throws IOException {
+    private void loadProperties(FileObject projectdir) throws IOException, ApplicationException {
         FileObject propertyfile = projectdir.getFileObject("asciidoc", "properties");
         if (propertyfile == null) {
             throw new IOException("asciidoc.properties missing in " + projectdir.getPath());
@@ -81,10 +83,10 @@ public class AsciiDocPropertyFile {
         parseProperties(projectdir, properties);
     }
 
-    private void parseProperties(FileObject projectdir, Properties properties) throws IOException {
+    private void parseProperties(FileObject projectdir, Properties properties) throws IOException, ApplicationException {
         srcroot = properties.getProperty("source_root_folder", "src");
         generatedroot = properties.getProperty("generated_root_folder", "generated_documents");
-        savebeforeaction = new SaveBeforeAction(properties, "save_before_publishing", ALL);
+        savebeforeaction = ActionsAndActivitiesFactory.createSaveBeforeAction(properties, "save_before_publishing", ALL);
         savebeforeaction.setSourceRoot(projectdir.getFileObject(srcroot));
         String layout = properties.getProperty("conversion_layout", "paragraph");
         switch (layout) {

@@ -26,7 +26,6 @@ import org.netbeans.api.project.Project;
 import org.netbeans.api.project.ProjectInformation;
 import org.netbeans.spi.project.ProjectState;
 import org.netbeans.spi.project.ui.LogicalViewProvider;
-import org.netbeans.spi.project.ui.support.CommonProjectActions;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataFolder;
 import org.openide.loaders.DataObjectNotFoundException;
@@ -38,19 +37,20 @@ import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
-import uk.theretiredprogrammer.actionssupport.DynamicAsyncAction;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import uk.theretiredprogrammer.actionssupport.NodeActions;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
+import uk.theretiredprogrammer.actions.NodeActions;
+import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import uk.theretiredprogrammer.image.api.ImageManager;
 import uk.theretiredprogrammer.image.api.ScreenCaptureDescriptor;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.UserReporting;
 
 public class AsciiDocProject implements Project {
 
     private final FileObject projectDir;
     private Lookup lkp;
-    private final NodeActions nodeactions;
-    private final AsciiDocPropertyFile asciidocproperties;
+    private NodeActions nodeactions;
+    private AsciiDocPropertyFile asciidocproperties;
 
     /**
      * Constructor
@@ -60,8 +60,12 @@ public class AsciiDocProject implements Project {
      */
     public AsciiDocProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
-        nodeactions = new NodeActions(dir, "projectactions");
-        asciidocproperties = new AsciiDocPropertyFile(dir, nodeactions, state);
+        try {
+            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+            asciidocproperties = new AsciiDocPropertyFile(dir, nodeactions, state);
+        } catch (ApplicationException ex) {
+            UserReporting.exception(ex);
+        }
     }
 
     @Override
@@ -178,20 +182,20 @@ public class AsciiDocProject implements Project {
                                     node.getLookup()
                                 }));
                 this.project = project;
-                nodeactions.setNodeBasicActions(
-                        CommonProjectActions.renameProjectAction(),
-                        CommonProjectActions.copyProjectAction(),
-                        CommonProjectActions.closeProjectAction()
-                );
+                nodeactions.setNodeBasicProjectActions();
                 imagemanager = Lookup.getDefault().lookup(ImageManager.class);
-                nodeactions.setNodeActions(
-                        new DynamicAsyncAction("Gain Screen Capture")
-                                .enable(imagemanager != null)
-                                .onAction(() -> usescreencapture()),
-                        new DynamicAsyncAction("Drop Screen Capture")
-                                .enable(imagemanager != null)
-                                .onAction(() -> dropscreencapture())
-                );
+                try {
+                    nodeactions.setNodeActions(
+                            ActionsAndActivitiesFactory.createDynamicAction("Gain Screen Capture")
+                                    .enable(imagemanager != null)
+                                    .onActionAsync(() -> usescreencapture()),
+                            ActionsAndActivitiesFactory.createDynamicAction("Drop Screen Capture")
+                                    .enable(imagemanager != null)
+                                    .onActionAsync(() -> dropscreencapture())
+                    );
+                } catch (ApplicationException ex) {
+                    UserReporting.exceptionWithMessage("Publish AsciiDocs", "Error when configuring the Gain/Drop Screen Capture Actions", ex);
+                }
             }
 
             private void usescreencapture() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-23 Richard Linsdale.
+ * Copyright 2022-2023 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,12 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIO;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import static uk.theretiredprogrammer.activity.ActivityIO.STDERR;
+import static uk.theretiredprogrammer.activity.Activity.STDERR;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
+import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.SaveSelfBeforeAction;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Build",
@@ -61,23 +63,34 @@ public final class BuildAdoc implements ActionListener, Runnable {
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
             Project project = FileOwnerQuery.getOwner(input);
+            Activity activity;
             if (project != null && project instanceof AsciiDocProject) {
                 AsciiDocProject aproject = (AsciiDocProject) project;
-                aproject.getSaveBeforeAction().saveIfModifiedByMode(dataObject);
-                Activity.runExternalProcessWithIOTab("asciidoctor",
-                        "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath(),
-                        aproject.getProjectDirectory(),
-                        new ActivityIO(aproject.getTabname())
-                                .outputToIOSTDERR(STDERR),
-                        "Publishing " + input.getNameExt());
+                try {
+                    aproject.getSaveBeforeAction().saveIfModified(dataObject);
+                    activity = ActionsAndActivitiesFactory.createActivity()
+                            .setExternalProcess("asciidoctor",
+                                    "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath(),
+                                    aproject.getProjectDirectory())
+                            .needsIOTab(aproject.getTabname())
+                            .outputToIOSTDERR(STDERR);
+                } catch (ApplicationException ex) {
+                    UserReporting.exceptionWithMessage(aproject.getTabname(), "Error configuring Project AsciiDoc Publishing Activity", ex);
+                    return;
+                }
+                activity.run("Publishing " + input.getNameExt());
             } else {
-                SaveBeforeAction.saveIfModified(dataObject);
-                Activity.runExternalProcessWithIOTab("asciidoctor",
-                        "-r asciidoctor-pdf " + input.getPath(),
-                        input.getParent(),
-                        new ActivityIO("Publish AsciiDocs")
-                                .outputToIOSTDERR(STDERR),
-                        "Publishing " + input.getNameExt());
+                SaveSelfBeforeAction.saveIfModified(dataObject);
+                try {
+                    activity = ActionsAndActivitiesFactory.createActivity()
+                            .setExternalProcess("asciidoctor", "-r asciidoctor-pdf " + input.getPath(), input.getParent())
+                            .needsIOTab("Publish AsciiDocs")
+                            .outputToIOSTDERR(STDERR);
+                } catch (ApplicationException ex) {
+                    UserReporting.exceptionWithMessage("Publish AsciiDocs", "Error configuring AsciiDoc Publishing Activity", ex);
+                    return;
+                }
+                activity.run("Publishing " + input.getNameExt());
             }
         }
     }

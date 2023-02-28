@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Richard Linsdale.
+ * Copyright 2022-2023 Richard Linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
-import uk.theretiredprogrammer.actionssupport.SaveBeforeAction;
-import uk.theretiredprogrammer.actionssupport.UserReporting;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
+import uk.theretiredprogrammer.util.ApplicationException;
+import uk.theretiredprogrammer.util.SaveSelfBeforeAction;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Build",
@@ -62,14 +63,14 @@ public final class ConvertHtmltoAdoc implements ActionListener, Runnable {
             Project project = FileOwnerQuery.getOwner(input);
             if (project != null && project instanceof AsciiDocProject) {
                 AsciiDocProject aproject = (AsciiDocProject) project;
-                aproject.getSaveBeforeAction().saveIfModifiedByMode(dataObject);
                 try {
+                    aproject.getSaveBeforeAction().saveIfModified(dataObject);
                     new HtmlFragment2AsciiDoc().convert(input, aproject.isParagraphLayout());
-                } catch (IOException ex) {
+                } catch (ApplicationException | IOException ex) {
                     UserReporting.exception(ex);
                 }
             } else {
-                SaveBeforeAction.saveIfModified(dataObject);
+                SaveSelfBeforeAction.saveIfModified(dataObject);
                 try {
                     new HtmlFragment2AsciiDoc().convert(input,true);
                 } catch (IOException ex) {
