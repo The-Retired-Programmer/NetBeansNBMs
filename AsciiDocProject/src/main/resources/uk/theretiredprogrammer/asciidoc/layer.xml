@@ -10,6 +10,11 @@
                         <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-asciidocfiles-BuildAdoc.instance"/>
                         <attr intvalue="400" name="position"/>
                     </file>
+                    <file name="uk-theretiredprogrammer-asciidocfiles-FormatAdoc.shadow">
+                        <!--uk.theretiredprogrammer.asciidocfiles.FormatAdoc-->
+                        <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-asciidocfiles-FormatAdoc.instance"/>
+                        <attr intvalue="410" name="position"/>
+                    </file>
                 </folder>
                 <folder name="TokenListProvider">
                     <file name="org-netbeans-modules-spellchecker-plain-PlainTokenListProvider.instance" />
