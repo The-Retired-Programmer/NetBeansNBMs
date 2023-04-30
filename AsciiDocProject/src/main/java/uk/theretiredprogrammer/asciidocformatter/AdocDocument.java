@@ -35,13 +35,22 @@ public class AdocDocument {
     }
 
     private void replaceindocument(StyledDocument document, ReformattedBlocks reformatted) throws ApplicationException {
-        int offset = reformatted.replaceendoffset > document.getLength() ? document.getLength() : reformatted.replaceendoffset;
+        String insert = endofdocumentcorrection(document, reformatted);
         try {
-            document.remove(reformatted.replacestartoffset, offset - reformatted.replacestartoffset);
-            document.insertString(reformatted.replacestartoffset, reformatted.reformatedoutput.toString(), null);
+            document.remove(reformatted.replacestartoffset, reformatted.replaceendoffset - reformatted.replacestartoffset);
+            document.insertString(reformatted.replacestartoffset, insert, null);
         } catch (BadLocationException ex) {
             throw new ApplicationException("Fail: could not find the replacement location", ex);
         }
     }
 
+    private String endofdocumentcorrection(StyledDocument document, ReformattedBlocks reformatted) {
+        if (reformatted.replaceendoffset > document.getLength()) {
+            reformatted.replaceendoffset = document.getLength();
+            String insert = reformatted.reformatedoutput.toString();
+            int insertlength = insert.length();
+            return insert.substring(0, insertlength - 1);
+        }
+        return reformatted.reformatedoutput.toString();
+    }
 }
