@@ -15,6 +15,11 @@
                         <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-asciidocfiles-FormatAdoc.instance"/>
                         <attr intvalue="410" name="position"/>
                     </file>
+                    <file name="uk-theretiredprogrammer-asciidocwordcount-WordCountAdoc.shadow">
+                        <!--uk.theretiredprogrammer.asciidocwordcount.WordCountAdoc-->
+                        <attr name="originalFile" stringvalue="Actions/Build/uk-theretiredprogrammer-asciidocwordcount-WordCountAdoc.instance"/>
+                        <attr intvalue="420" name="position"/>
+                    </file>
                 </folder>
                 <folder name="TokenListProvider">
                     <file name="org-netbeans-modules-spellchecker-plain-PlainTokenListProvider.instance" />
