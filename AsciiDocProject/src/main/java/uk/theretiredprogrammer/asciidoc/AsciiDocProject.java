@@ -93,7 +93,11 @@ public class AsciiDocProject implements Project {
     }
 
     public String getAsciiDoctorParameters() {
-        return "-R " + asciidocproperties.getSourceRootFolder() + " -D " + asciidocproperties.getGeneratedRootFolder() + " ";
+        boolean trace = asciidocproperties.isTrace();
+        String theme = asciidocproperties.getTheme();
+        String themeparameter = theme == null ? " " : " -a pdf-theme=" + theme;
+        String traceparameter = trace ? " --trace" : " ";
+        return traceparameter + themeparameter + " -R " + asciidocproperties.getSourceRootFolder() + " -D " + asciidocproperties.getGeneratedRootFolder() + " ";
     }
 
     public String getTabname() {

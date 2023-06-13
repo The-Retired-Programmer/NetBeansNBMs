@@ -34,6 +34,8 @@ public class AsciiDocPropertyFile {
     private String srcroot;
     private String generatedroot;
     private boolean paragraphLayout;
+    private String theme;
+    private boolean trace;
 
     public AsciiDocPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException, ApplicationException {
         loadProperties(projectdir);
@@ -56,7 +58,15 @@ public class AsciiDocPropertyFile {
         return paragraphLayout;
     }
 
-    private void loadProperties(FileChangeType ftc, FileObject projectdir, ProjectState state)  {
+    public String getTheme() {
+        return theme;
+    }
+
+    public boolean isTrace() {
+        return trace;
+    }
+
+    private void loadProperties(FileChangeType ftc, FileObject projectdir, ProjectState state) {
         switch (ftc) {
             case RENAMEDFROM:
             case DELETED:
@@ -64,10 +74,10 @@ public class AsciiDocPropertyFile {
                 break;
             default:
                 try {
-                    loadProperties(projectdir);
-                } catch (ApplicationException |  IOException ex) {
-                    UserReporting.exceptionWithMessage("Unable to read properties from asciidoc.properties: ", ex);
-                }
+                loadProperties(projectdir);
+            } catch (ApplicationException | IOException ex) {
+                UserReporting.exceptionWithMessage("Unable to read properties from asciidoc.properties: ", ex);
+            }
         }
     }
 
@@ -99,6 +109,19 @@ public class AsciiDocPropertyFile {
             default:
                 paragraphLayout = true;
                 UserReporting.warning("Unknown value for conversion_layout property - default selected");
+        }
+        theme = properties.getProperty("theme", null);
+        String tr = properties.getProperty("trace", "no");
+        switch (tr) {
+            case "yes":
+                trace = true;
+                break;
+            case "no":
+                trace = false;
+                break;
+            default:
+                trace = false;
+                UserReporting.warning("Unknown value for trace property - default selected");
         }
     }
 }
