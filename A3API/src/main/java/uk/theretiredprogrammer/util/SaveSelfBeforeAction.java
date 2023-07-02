@@ -42,7 +42,7 @@ public class SaveSelfBeforeAction {
                 }
             }
         } catch (IOException ex) {
-            UserReporting.exceptionWithMessage("Unable to close a modified file prior to execution: ", ex);
+            UserReporting.exceptionWithMessage("Unable to save a modified file prior to execution: ", ex);
         }
     }
 }

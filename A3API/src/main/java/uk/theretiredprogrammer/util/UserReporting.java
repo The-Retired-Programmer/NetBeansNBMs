@@ -33,11 +33,11 @@ public class UserReporting {
      * The default reporting IoTab is "Error Reporting";
      *
      * All reporting logging uses the
-     * "uk.theretiredprogrammer.actionssupport.UserReporting" logger.
+     * "uk.theretiredprogrammer.a3.UserReporting" logger.
      *
      */
     private static final String DEFAULT_IOTAB = "Error Reporting";
-    private static final String LOGGING = "uk.theretiredprogrammer.actionssupport.UserReporting";
+    private static final String LOGGING = "uk.theretiredprogrammer.a3.UserReporting";
 
     /**
      * Write an exception report to both the IoTab and also the IDE log
