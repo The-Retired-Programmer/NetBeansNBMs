@@ -25,7 +25,6 @@ import uk.theretiredprogrammer.util.ApplicationException;
 
 public class OutputConnection {
 
-    private final String name;
     private final Supplier<InputStream> streamsupplier;
     private final Supplier<Reader> readersupplier;
     private final OutputDataTransferStyle datatransferstyle;
@@ -33,7 +32,6 @@ public class OutputConnection {
     private OutputDataTask outputdatatask;
 
     public OutputConnection(String name, OutputDataTransferStyle datatransferstyle, Supplier<InputStream> streamsupplier, Supplier<Reader> readersupplier) {
-        this.name = name;
         this.streamsupplier = streamsupplier;
         this.readersupplier = readersupplier;
         this.datatransferstyle = datatransferstyle;

@@ -28,8 +28,8 @@ import org.openide.util.actions.SystemAction;
 
 public class NodeActionsImp implements NodeActions {
 
-    private FileChangeManager filechangemanager;
-    private ActionsPropertyFile actionspropertyfile;
+    private final FileChangeManager filechangemanager;
+    private final ActionsPropertyFile actionspropertyfile;
     private List<Action> basicactions = new ArrayList<>();
     private final List<DynamicAction> nodeactions = new ArrayList<>();
 

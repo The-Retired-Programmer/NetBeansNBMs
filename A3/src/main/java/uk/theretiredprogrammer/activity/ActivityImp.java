@@ -58,8 +58,6 @@ public class ActivityImp implements Activity {
     private String iotabname;
     private boolean iotabreset;
     private InputOutput io;
-    private final Map<String, InputIO> inputiomap = new HashMap<>();
-    private final Map<String, OutputIO> outputiomap = new HashMap<>();
     private Process process;
     private String command;
     private String args;
@@ -96,7 +94,7 @@ public class ActivityImp implements Activity {
         outputconnections.put(STDERR, new OutputConnection(STDERR, BUFFERED_WRITER, () -> process.getErrorStream(), () -> process.errorReader()));
         return this;
     }
-    
+
     @Override
     public Activity setDuplexTransfer(Supplier<OutputStream> txStreamSupplier, Supplier<InputStream> rxStreamSupplier, Runnable onTabClose) {
         activitytype = ActivityType.DUPLEX_TRANSFER;
@@ -129,30 +127,30 @@ public class ActivityImp implements Activity {
             } else {
                 runActivity();
             }
-         } catch (ApplicationException ex) {
-            UserReporting.exceptionWithMessage(iotabname,"Error when running an Activity", ex);
+        } catch (ApplicationException ex) {
+            UserReporting.exceptionWithMessage(iotabname, "Error when running an Activity", ex);
         } catch (FileNotFoundException ex) {
-            UserReporting.exceptionWithMessage(iotabname,"Error - missing file when running an Activity", ex);
+            UserReporting.exceptionWithMessage(iotabname, "Error - missing file when running an Activity", ex);
         }
     }
 
     @Override
     public void run() {
-         try {
-             if (iotabname != null) {
-            io = IOProvider.getDefault().getIO(iotabname, false);
-            io.show();
-            if (iotabreset) {
-                io.reset();
+        try {
+            if (iotabname != null) {
+                io = IOProvider.getDefault().getIO(iotabname, false);
+                io.show();
+                if (iotabreset) {
+                    io.reset();
+                }
+                runActivity();
+            } else {
+                runActivity();
             }
-            runActivity();
-        } else {
-            runActivity();
-        }
-             } catch (ApplicationException ex) {
-            UserReporting.exceptionWithMessage(iotabname,"Error when running an Activity", ex);
+        } catch (ApplicationException ex) {
+            UserReporting.exceptionWithMessage(iotabname, "Error when running an Activity", ex);
         } catch (FileNotFoundException ex) {
-            UserReporting.exceptionWithMessage(iotabname,"Error - missing file when running an Activity", ex);
+            UserReporting.exceptionWithMessage(iotabname, "Error - missing file when running an Activity", ex);
         }
     }
 
