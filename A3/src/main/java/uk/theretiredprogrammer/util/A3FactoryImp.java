@@ -25,13 +25,10 @@ import uk.theretiredprogrammer.actions.NodeActionsImp;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import uk.theretiredprogrammer.actions.SaveBeforeActionImp;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIOTab;
-import uk.theretiredprogrammer.activity.ActivityIOTabImp;
 import uk.theretiredprogrammer.activity.ActivityImp;
 
-@ServiceProvider(service=A3Factory.class)
+@ServiceProvider(service = A3Factory.class)
 public class A3FactoryImp implements A3Factory {
-
 
     @Override
     public DynamicAction createDynamicAction(String label) {
@@ -42,12 +39,7 @@ public class A3FactoryImp implements A3Factory {
     public Activity createActivity() {
         return new ActivityImp();
     }
-    
-    @Override
-    public ActivityIOTab getActivityIOTab(String iotabname) {
-        return new ActivityIOTabImp(iotabname);
-    }
-    
+
     @Override
     public NodeActions createNodeActions(FileObject filefolder, String actionpropertiesfilename) {
         return new NodeActionsImp(filefolder, actionpropertiesfilename);

@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.Properties;
 import org.openide.filesystems.FileObject;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
-import static uk.theretiredprogrammer.activity.Activity.STDIN;
-import static uk.theretiredprogrammer.activity.Activity.STDOUT;
 import uk.theretiredprogrammer.activity.ActivityImp;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -82,10 +79,10 @@ public class ActionsPropertyFile {
         String args = properties.getProperty(prefix + ".commandargs", "");
         Activity activity = new ActivityImp()
                 .setExternalProcess(command, args, dir)
-                .outputToIOSTDOUT(STDOUT)
-                .outputToIOSTDERR(STDERR);
+                .stdoutToIOSTDOUT()
+                .stderrToIOSTDERR();
         if ("enable".equalsIgnoreCase(properties.getProperty(prefix + ".IOSTDIN", "disable"))) {
-            activity.inputFromIOSTDIN(STDIN);
+            activity.stdinFromIOSTDIN();
         }
         String tabname = properties.getProperty(prefix + ".tabname", label);
         if (!tabname.isBlank()) {

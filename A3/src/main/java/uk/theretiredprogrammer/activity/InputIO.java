@@ -15,11 +15,10 @@
  */
 package uk.theretiredprogrammer.activity;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -34,9 +33,7 @@ public class InputIO {
     private static enum InStyle {
         IGNORE, EMPTY, IOSTDIN, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEREADER
     }
-
-    public final String name;
-
+    
     private InStyle mode = InStyle.IGNORE;
 
     private FileObject fileobject;
@@ -44,16 +41,8 @@ public class InputIO {
     private File file;
     private InputStream instream;
     private Reader reader;
-
-    public InputIO(String name) {
-        this.name = name;
-    }
-        
-    public boolean isIO() {
-        return mode==InputIO.InStyle.IOSTDIN ;
-    }
     
-    public boolean isDefined() {
+    public boolean isIOConfigured() {
         return mode != InStyle.IGNORE;
     }
 
@@ -93,11 +82,13 @@ public class InputIO {
         mode = InStyle.FILEREADER;
         this.reader = reader;
     }
+    
+    public boolean canProvideReader() {
+        return mode != InStyle.IGNORE;
+    }
 
-    public Reader getReader(InputOutput io, String iotabname) throws ApplicationException, FileNotFoundException {
+    public Reader getReader(InputOutput io) throws ApplicationException, IOException {
         switch (mode) {
-            case IGNORE:
-                throw new ApplicationException(name + " does not have a suitable Reader defined (is IGNORE)");
             case EMPTY:
                 return new StringReader("");
             case IOSTDIN:
@@ -106,26 +97,21 @@ public class InputIO {
             case DATAOBJECT:
             case FILE:
             case FILESTREAM:
-                return new InputStreamReader(getInputStream(iotabname));
+                return new InputStreamReader(getInputStream());
             case FILEREADER:
                 return reader;
-            default:
-                throw new ApplicationException("Unknown mode in " + name + ": " + mode);
         }
+        throw new ApplicationException("Failed to find a STDIN reader");
+    }
+    
+    public boolean canProvideStream() {
+        return !(mode == InStyle.IGNORE || mode == InStyle.IOSTDIN || mode == InStyle.FILEREADER);
     }
 
-    public BufferedReader getBufferReader(InputOutput io, String iotabname) throws ApplicationException, FileNotFoundException {
-        return new BufferedReader(getReader(io, iotabname));
-    }
-
-    public InputStream getInputStream(String iotabname) throws ApplicationException, FileNotFoundException {
+    public InputStream getInputStream() throws ApplicationException, IOException {
         switch (mode) {
-            case IGNORE:
-                throw new ApplicationException(name + " does not have a suitable InputStream defined (is IGNORE)");
             case EMPTY:
                 return new ByteArrayInputStream(new byte[0]);
-            case IOSTDIN:
-                throw new ApplicationException(name + " does not have a suitable InputStream defined (is IOSTDIN)");
             case FILEOBJECT:
                 return fileobject.getInputStream();
             case DATAOBJECT:
@@ -134,10 +120,7 @@ public class InputIO {
                 return new FileInputStream(file);
             case FILESTREAM:
                 return instream;
-            case FILEREADER:
-                throw new ApplicationException(name + " does not have a suitable InputStream defined (is FILEREADER)");
-            default:
-                throw new ApplicationException("Unknown mode in " + name + ": " + mode);
         }
+        throw new ApplicationException("Failed to find a STDIN stream");
     }
 }

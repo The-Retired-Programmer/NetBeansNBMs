@@ -32,8 +32,6 @@ public class OutputIO {
         IGNORE, DISCARD, FILEOBJECT, DATAOBJECT, FILE, FILESTREAM, FILEWRITER, IOSTDOUT, IOSTDERR
     }
 
-    public final String name;
-
     private OutStyle mode = OutStyle.IGNORE;
 
     private Writer writer;
@@ -41,17 +39,9 @@ public class OutputIO {
     private FileObject fileobject;
     private File file;
     private DataObject dataobject;
+    
 
-    public OutputIO(String name) {
-        this.name = name;
-    }
-    
-    public boolean isIO() {
-        return mode==OutStyle.IOSTDOUT || mode == OutStyle.IOSTDERR;
-    }
-    
-    
-    public boolean isDefined() {
+    public boolean isIOConfigured() {
         return mode != OutStyle.IGNORE;
     }
 
@@ -66,7 +56,7 @@ public class OutputIO {
     public void toIOSTDOUT() {
         mode = OutStyle.IOSTDOUT;
     }
-    
+
     public void toIOSTDERR() {
         mode = OutStyle.IOSTDERR;
     }
@@ -96,10 +86,12 @@ public class OutputIO {
         this.writer = writer;
     }
 
-    public Writer getWriter(InputOutput io, String iotabname) throws ApplicationException {
+    public boolean canProvideWriter() {
+        return mode != OutStyle.IGNORE;
+    }
+
+    public Writer getWriter(InputOutput io) throws ApplicationException, IOException {
         switch (mode) {
-            case IGNORE:
-                return null;
             case DISCARD:
                 return Writer.nullWriter();
             case IOSTDOUT:
@@ -109,40 +101,31 @@ public class OutputIO {
             case DATAOBJECT:
             case FILE:
             case FILESTREAM:
-                return new OutputStreamWriter(getOutputStream(iotabname));
+                return new OutputStreamWriter(getOutputStream());
             case FILEWRITER:
                 return writer;
-            default:
-                throw new ApplicationException("Unknown mode in " + name + ": " + mode);
         }
+        throw new ApplicationException("Failed to find a STDERR writer");
     }
 
-    public OutputStream getOutputStream(String iotabname) throws ApplicationException {
-        try {
-            switch (mode) {
-                case IGNORE:
-                    return null;
-                case DISCARD:
-                    return OutputStream.nullOutputStream();
-                case IOSTDOUT:
-                    return null;
-                case IOSTDERR:
-                    return null;
-                case FILEOBJECT:
-                    return fileobject.getOutputStream();
-                case DATAOBJECT:
-                    return dataobject.getPrimaryFile().getOutputStream();
-                case FILE:
-                    return new FileOutputStream(file);
-                case FILESTREAM:
-                    return outstream;
-                case FILEWRITER:
-                    return null;
-                default:
-                    throw new ApplicationException("Unknown mode in " + name + ": " + mode);
-            }
-        } catch (IOException ex) {
-            throw new ApplicationException("Could not open " + name + " OutputStream ",ex);
+    public boolean canProvideStream() {
+        return !(mode == OutStyle.IGNORE || mode == OutStyle.IOSTDOUT
+                || mode == OutStyle.IOSTDERR || mode == OutStyle.FILEWRITER);
+    }
+
+    public OutputStream getOutputStream() throws ApplicationException, IOException {
+        switch (mode) {
+            case DISCARD:
+                return OutputStream.nullOutputStream();
+            case FILEOBJECT:
+                return fileobject.getOutputStream();
+            case DATAOBJECT:
+                return dataobject.getPrimaryFile().getOutputStream();
+            case FILE:
+                return new FileOutputStream(file);
+            case FILESTREAM:
+                return outstream;
         }
+        throw new ApplicationException("Failed to find a STDERR stream");
     }
 }

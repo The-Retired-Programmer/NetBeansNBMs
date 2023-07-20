@@ -15,25 +15,7 @@
  */
 package uk.theretiredprogrammer.activity;
 
-import org.openide.util.RequestProcessor.Task;
-
-public abstract class DataTask {
-    
-    protected static final String NEWLINE = System.getProperty("line.separator");
-    
-    protected Task task;
-    protected final String iotabname;
-    protected final String name;
-    
-    public DataTask(String name, String iotabname) {
-        this.iotabname= iotabname;
-        this.name = name;
-        this.task = null;
-    }
-    
-    public Task getTask() {
-        return task;
-    }
-
-    public abstract void close();
+public interface DataTask {
+    public void close();
+    public void cancel();
 }
