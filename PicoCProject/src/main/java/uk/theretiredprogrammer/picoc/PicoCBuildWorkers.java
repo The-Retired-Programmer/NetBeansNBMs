@@ -20,10 +20,6 @@ import java.io.IOException;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.RX;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
-import static uk.theretiredprogrammer.activity.Activity.STDOUT;
-import static uk.theretiredprogrammer.activity.Activity.TX;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -38,21 +34,20 @@ public class PicoCBuildWorkers {
         this.buildfolder = buildfolder;
     }
 
-    public final void showSerialTerminal(String iotabname) {
-        SerialActivity serial= new SerialActivity(iotabname,"/dev/serial0", 115200);
-        serial.open();
+    public final void showSerialTerminal(String iotabname, PicoCPropertyFile picocproperties) {
         Activity activity;
-            try {
-                activity = ActionsAndActivitiesFactory.createActivity()
-                        .setDuplexTransfer(serial.getOutputStreamSupplier(), serial.getInputStreamSupplier(), ()->serial.close())
-                        .needsIOTab(iotabname)
-                        .inputFromIOSTDIN(TX)
-                        .outputToIOSTDOUT(RX);
-            } catch (ApplicationException ex) {
-                UserReporting.exceptionWithMessage(iotabname, "Error initialising the serial terminal", ex);
-                return;
-            }
-            activity.run();
+        try {
+            activity = ActionsAndActivitiesFactory.createActivity()
+                    .setDevice(new SerialDeviceDescriptor(picocproperties.getDevicename(),
+                            picocproperties.getBaudrate(), picocproperties.getEncoding()))
+                    .needsIOTab(iotabname)
+                    .stdinFromIOSTDIN()
+                    .stdoutToIOSTDOUT();
+        } catch (ApplicationException ex) {
+            UserReporting.exceptionWithMessage(iotabname, "Error initialising the serial terminal activity", ex);
+            return;
+        }
+        activity.run();
     }
 
     public final void cleanBuildFolder() {
@@ -60,13 +55,24 @@ public class PicoCBuildWorkers {
             UserReporting.error(iotabname, "Build folder is not present");
             return;
         }
+        Activity activity;
         try {
-            ActionsAndActivitiesFactory.getActivityIOTab(iotabname).println("Cleaning Build Folder");
+            activity = ActionsAndActivitiesFactory.createActivity()
+                    .setMethod(() -> cleanbuildfolder())
+                    .needsIOTab(iotabname);
+        } catch (ApplicationException ex) {
+            UserReporting.exception(iotabname, ex);
+            return;
+        }
+        activity.run("Cleaning Build Folder");
+    }
+
+    private void cleanbuildfolder() {
+        try {
             for (FileObject content : buildfolder.getChildren()) {
                 content.delete();
             }
-            ActionsAndActivitiesFactory.getActivityIOTab(iotabname).printdone();
-        } catch (IOException | ApplicationException ex) {
+        } catch (IOException ex) {
             UserReporting.exception(iotabname, ex);
         }
     }
@@ -83,8 +89,8 @@ public class PicoCBuildWorkers {
                 activity = ActionsAndActivitiesFactory.createActivity()
                         .setExternalProcess("cmake", "..", buildfolder)
                         .needsIOTab(iotabname)
-                        .outputToIOSTDERR(STDERR)
-                        .outputToIOSTDOUT(STDOUT);
+                        .stderrToIOSTDERR()
+                        .stdoutToIOSTDOUT();
             } catch (ApplicationException ex) {
                 UserReporting.exceptionWithMessage(iotabname, "Error initialising the cmake activity", ex);
                 return;
@@ -107,8 +113,8 @@ public class PicoCBuildWorkers {
                 activity = ActionsAndActivitiesFactory.createActivity()
                         .setExternalProcess("make", "", buildfolder)
                         .needsIOTab(iotabname)
-                        .outputToIOSTDERR(STDERR)
-                        .outputToIOSTDOUT(STDOUT);
+                        .stderrToIOSTDERR()
+                        .stdoutToIOSTDOUT();
             } catch (ApplicationException ex) {
                 UserReporting.exceptionWithMessage(iotabname, "Error initialising the make activity", ex);
                 return;
@@ -124,18 +130,19 @@ public class PicoCBuildWorkers {
             UserReporting.error(iotabname, "Build folder is not present");
             return;
         }
+        String userhome = System.getProperty("user.home", "?");
         String executablepath = getExecutablePath(buildname, "elf");
         Activity activity;
         try {
             activity = ActionsAndActivitiesFactory.createActivity()
                     .setExternalProcess("openocd",
-                            "-f /home/richard/pico/openocd/tcl/interface/raspberrypi-swd.cfg "
-                            + "-f /home/richard/pico/openocd/tcl/target/rp2040.cfg "
+                            "-f " + userhome + "/pico/openocd/tcl/interface/raspberrypi-swd.cfg "
+                            + "-f " + userhome + "/pico/openocd/tcl/target/rp2040.cfg "
                             + "-c \"program " + executablepath + " verify reset exit\"",
                             buildfolder)
                     .needsIOTab(iotabname)
-                    .outputToIOSTDERR(STDERR)
-                    .outputToIOSTDOUT(STDOUT);
+                    .stderrToIOSTDERR()
+                    .stdoutToIOSTDOUT();
         } catch (ApplicationException ex) {
             UserReporting.exceptionWithMessage(iotabname, "Error initialising the downloading via debug port activity", ex);
             return;
@@ -148,13 +155,16 @@ public class PicoCBuildWorkers {
             UserReporting.error(iotabname, "Build folder is not present");
             return;
         }
+        Activity activity;
         try {
-            ActionsAndActivitiesFactory.getActivityIOTab(iotabname).println("Downloading " + buildname + ".uf2 via Boot Loader");
-            loadUsingBootLoader(buildname);
-            ActionsAndActivitiesFactory.getActivityIOTab(iotabname).printdone();
+            activity = ActionsAndActivitiesFactory.createActivity()
+                    .setMethod(() -> loadUsingBootLoader(buildname))
+                    .needsIOTab(iotabname);
         } catch (ApplicationException ex) {
             UserReporting.exception(iotabname, ex);
+            return;
         }
+        activity.run("Downloading " + buildname + ".uf2 via Boot Loader");
     }
 
     private String getExecutablePath(String buildname, String ext) {
@@ -165,22 +175,23 @@ public class PicoCBuildWorkers {
         return buildfolder.getFileObject(buildname, ext);
     }
 
-    public void loadUsingBootLoader(String buildname) throws ApplicationException {
+    public void loadUsingBootLoader(String buildname) {
+        String username = System.getProperty("user.name", "?");
         FileObject uf2file = getExecutable(buildname, "uf2");
         if (uf2file != null && uf2file.isData()) {
-            File picobootloaderfs = new File("/media/richard/RPI-RP2");
+            File picobootloaderfs = new File("/media/" + username + "/RPI-RP2");
             FileObject picobootloader = FileUtil.toFileObject(picobootloaderfs);
             if (picobootloader != null && picobootloader.isFolder()) {
                 try {
                     FileUtil.copyFile(uf2file, picobootloader, uf2file.getName());
                 } catch (IOException ex) {
-                    throw new ApplicationException("Boot Loader - failure during file copy", ex);
+                    UserReporting.exceptionWithMessage(iotabname, "Boot Loader - failure during file copy", ex);
                 }
             } else {
-                throw new ApplicationException("Bootloader is not enabled - operate BOOTSEL with Reset to mount");
+                UserReporting.error(iotabname, "Bootloader is not enabled - operate BOOTSEL with Reset to mount");
             }
         } else {
-            throw new ApplicationException("Cannot download via bootloader - .uf2 is missing");
+            UserReporting.error(iotabname, "Cannot download via bootloader - .uf2 is missing");
         }
     }
 }

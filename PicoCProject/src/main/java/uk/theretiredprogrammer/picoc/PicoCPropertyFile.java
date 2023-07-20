@@ -36,6 +36,7 @@ public class PicoCPropertyFile {
     private boolean downloadusingdebugport;
     private int baudrate;
     private String devicename;
+    private String encoding;
 
     public PicoCPropertyFile(FileObject projectdir, NodeActions nodeactions, ProjectState state) throws IOException, ApplicationException {
         loadProperties(projectdir);
@@ -64,6 +65,10 @@ public class PicoCPropertyFile {
 
     public int getBaudrate() {
         return baudrate;
+    }
+
+    public String getEncoding() {
+        return encoding;
     }
 
     private void loadProperties(FileChangeType ftc, FileObject projectdir, ProjectState state) {
@@ -101,5 +106,6 @@ public class PicoCPropertyFile {
         downloadusingdebugport = "Yes".equalsIgnoreCase(properties.getProperty("enable_download_use_debugport", "Yes"));
         baudrate = Integer.parseInt(properties.getProperty("serial_baudrate", "115200"));
         devicename = properties.getProperty("serial_device_name", "/dev/serial0");
+        encoding = properties.getProperty("serial_encoding", "US-ASCII");
     }
 }

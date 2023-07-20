@@ -198,7 +198,7 @@ public class PicoCProject implements Project {
                         }
                     }
                     mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Serial Terminal")
-                            .onActionAsync(() -> workers.showSerialTerminal("Serial Terminal")));
+                            .onActionAsync(() -> workers.showSerialTerminal("Serial Terminal", picocproperties)));
                 } catch (ApplicationException ex) {
                     UserReporting.exceptionWithMessage("Error creating project node actions", ex);
                 }
