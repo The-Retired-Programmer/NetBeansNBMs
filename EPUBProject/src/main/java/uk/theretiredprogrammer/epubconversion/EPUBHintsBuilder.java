@@ -26,7 +26,7 @@ import uk.theretiredprogrammer.util.UserReporting;
 
 public class EPUBHintsBuilder {
 
-    public static void create(FileObject epubfile, FileObject stylesheet, String iotabname) {
+    public static boolean create(FileObject epubfile, FileObject stylesheet, String iotabname) {
         try {
             try ( PrintWriter out = createHintsFile(epubfile)) {
                 generateHints(epubfile, stylesheet, out);
@@ -34,6 +34,7 @@ public class EPUBHintsBuilder {
         } catch (IOException ex) {
             UserReporting.exceptionWithMessage(iotabname, "Failure while creating hints file content", ex);
         }
+        return true;
     }
 
     private static PrintWriter createHintsFile(FileObject epubfile) throws IOException {

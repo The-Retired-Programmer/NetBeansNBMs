@@ -28,9 +28,9 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
+import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.epub.EPUBProject;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
-import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
@@ -63,19 +63,18 @@ public final class ExtractEPUBFile implements ActionListener, Runnable {
             String epubname = epub.getName();
             Project project = FileOwnerQuery.getOwner(epub);
             if (project != null && project instanceof EPUBProject) {
+                Activity activity;
+                EPUBProject aproject = (EPUBProject) project;
                 try {
-                    EPUBProject aproject = (EPUBProject) project;
-                    try {
-                        FileObject extractionfolder = getExtractionFolder(aproject.getProjectDirectory(), epubname);
-                        ActionsAndActivitiesFactory.getActivityIOTab("EPUB").println("Extracting EPUB " + epub.getNameExt());
-                        EPUBExtractor.extract(epub, extractionfolder, "EPUB");
-                        ActionsAndActivitiesFactory.getActivityIOTab("EPUB").printdone();
-                    } catch (ApplicationException ex) {
-                        UserReporting.exceptionWithMessage("EPUB", "Error extracting EPUB", ex);
-                    }
-                } catch (IOException ex) {
-                    UserReporting.exception("EPUB", ex);
+                    FileObject extractionfolder = getExtractionFolder(aproject.getProjectDirectory(), epubname);
+                    activity = ActionsAndActivitiesFactory.createActivity()
+                            .setMethod(() -> EPUBExtractor.extract(epub, extractionfolder, "EPUB"))
+                            .needsIOTab("EPUB");
+                } catch (Exception ex) {
+                    UserReporting.exceptionWithMessage("EPUB", "Error extracting EPUB", ex);
+                    return;
                 }
+                activity.run("Extracting EPUB " + epub.getNameExt());
             }
         }
     }

@@ -28,9 +28,9 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
+import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.epub.EPUBProject;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
-import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
@@ -63,19 +63,23 @@ public final class CreateEPUBHintsFile implements ActionListener, Runnable {
             String epubname = epub.getName();
             Project project = FileOwnerQuery.getOwner(epub);
             if (project != null && project instanceof EPUBProject) {
+                Activity activity;
                 try {
                     EPUBProject aproject = (EPUBProject) project;
                     FileObject stylesheet = getEPUBStyleSheet(aproject.getProjectDirectory(), epubname);
                     try {
-                            ActionsAndActivitiesFactory.getActivityIOTab("EPUB").println("Creating EPUB Hints" + epub.getNameExt());
-                            EPUBHintsBuilder.create(epub, stylesheet, "EPUB");
-                            ActionsAndActivitiesFactory.getActivityIOTab("EPUB").printdone();
-                        } catch (ApplicationException ex) {
-                            UserReporting.exceptionWithMessage("EPUB", "Error creating EPUB Hints", ex);
-                        }
+                        activity = ActionsAndActivitiesFactory.createActivity()
+                                .setMethod(() -> EPUBHintsBuilder.create(epub, stylesheet, "EPUB"))
+                                .needsIOTab("EPUB");
+                    } catch (Exception ex) {
+                        UserReporting.exceptionWithMessage("EPUB", "Error creating EPUB Hints", ex);
+                        return;
+                    }
                 } catch (IOException ex) {
                     UserReporting.warning("EPUB", ex.getLocalizedMessage());
+                    return;
                 }
+                activity.run("Creating EPUB Hints" + epub.getNameExt());
             }
         }
     }

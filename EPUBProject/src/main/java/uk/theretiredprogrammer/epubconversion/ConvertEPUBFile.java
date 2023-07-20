@@ -29,6 +29,7 @@ import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
+import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.epub.EPUBProject;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
@@ -44,19 +45,19 @@ import uk.theretiredprogrammer.util.UserReporting;
 @ActionReference(path = "Loaders/application/epub+zip/Actions", position = 170)
 @Messages("CTL_CONVERT_EPUB=Convert EPUB")
 public final class ConvertEPUBFile implements ActionListener, Runnable {
-
+    
     private final List<DataObject> context;
-
+    
     public ConvertEPUBFile(List<DataObject> context) {
         this.context = context;
     }
-
+    
     @Override
     public void actionPerformed(ActionEvent ev) {
         RequestProcessor rp = new RequestProcessor("epub_convert");
         rp.post(this);
     }
-
+    
     @Override
     public void run() {
         for (DataObject dataObject : context) {
@@ -64,22 +65,33 @@ public final class ConvertEPUBFile implements ActionListener, Runnable {
             String epubname = epub.getName();
             Project project = FileOwnerQuery.getOwner(epub);
             if (project != null && project instanceof EPUBProject) {
+                Activity activity;
                 try {
                     EPUBProject aproject = (EPUBProject) project;
                     FileObject outputfolder = getOutputFolder(aproject.getProjectDirectory(), epubname);
-                    ActionsAndActivitiesFactory.getActivityIOTab("EPUB").println("Converting EPUB " + epub.getNameExt());
-                    for (var sectionfile : getEPUBSections(aproject.getProjectDirectory(), epubname)) {
-                        EPUBConvertor.convertHTML(aproject.getProjectDirectory(), epub, sectionfile, outputfolder, "EPUB");
-                    }
-                    ActionsAndActivitiesFactory.getActivityIOTab("EPUB").printdone();
+                    activity = ActionsAndActivitiesFactory.createActivity()
+                            .setMethod(() -> convertAllHTMLSections(aproject.getProjectDirectory(), epubname, epub, outputfolder, "EPUB"))
+                            .needsIOTab("EPUB");
+                    
                 } catch (IOException | ApplicationException ex) {
                     UserReporting.exception("EPUB", ex);
-                    break;
+                    return;
                 }
+                activity.run("Converting EPUB " + epub.getNameExt());
             }
         }
     }
-
+    
+    private void convertAllHTMLSections(FileObject dir, String name, FileObject file, FileObject outputfolder, String iotabname) {
+        try {
+            for (var sectionfile : getEPUBSections(dir, name)) {
+                EPUBConvertor.convertHTML(dir, file, sectionfile, outputfolder, iotabname);
+            }
+        } catch (IOException ex) {
+            UserReporting.exception(iotabname, ex);
+        }
+    }
+    
     private List<FileObject> getEPUBSections(FileObject projectdir, String epubname) throws IOException {
         List<FileObject> xhtmlfiles = new ArrayList<>();
         FileObject sections = projectdir.getFileObject("extracted/" + epubname + "/OEBPS/sections");
@@ -94,12 +106,12 @@ public final class ConvertEPUBFile implements ActionListener, Runnable {
         }
         return xhtmlfiles;
     }
-
+    
     private FileObject getOutputFolder(FileObject projectdir, String epubname) throws IOException {
         FileObject folder = getFolder(projectdir, "converted");
         return getFolder(folder, epubname);
     }
-
+    
     private FileObject getFolder(FileObject parent, String foldername) throws IOException {
         FileObject folder = parent.getFileObject(foldername);
         if (folder == null) {

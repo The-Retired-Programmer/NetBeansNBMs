@@ -26,7 +26,7 @@ import uk.theretiredprogrammer.util.UserReporting;
 
 public class EPUBExtractor {
 
-    public static void extract(FileObject ebpubFO, FileObject epubextractionfolder, String iotabname) {
+    public static boolean extract(FileObject ebpubFO, FileObject epubextractionfolder, String iotabname) {
         byte[] buffer = new byte[1024];
         try ( ZipInputStream zis = new ZipInputStream(ebpubFO.getInputStream())) {
             ZipEntry zipEntry = zis.getNextEntry();
@@ -56,7 +56,9 @@ public class EPUBExtractor {
             zis.closeEntry();
         } catch (IOException ex) {
             UserReporting.exceptionWithMessage(iotabname, "Error during EPUB extraction", ex);
+            return false;
         }
+        return true;
     }
 
     public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
