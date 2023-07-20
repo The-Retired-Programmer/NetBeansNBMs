@@ -21,11 +21,10 @@ import uk.theretiredprogrammer.actions.DynamicAction;
 import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIOTab;
 
 /**
  * The Interface for the ActionsandActivity Factory
- * 
+ *
  * Methods to create objects from the ActionsAndActivities Library.
  *
  */
@@ -66,12 +65,4 @@ public interface A3Factory {
      * @return a SaveBeforeAction instance
      */
     public SaveBeforeAction createSaveBeforeAction(Properties properties, String propertyname, SaveBeforeAction.SaveBeforeActionMode defaultmode);
-
-    /**
-     * Get an ActivityIOTab for a specific IOTab selected by its name.
-     *
-     * @param iotabname the IoTab name
-     * @return an ActivityIOTab instance
-     */
-    public ActivityIOTab getActivityIOTab(String iotabname);
 }

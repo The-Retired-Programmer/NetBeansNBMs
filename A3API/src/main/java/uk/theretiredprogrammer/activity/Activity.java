@@ -20,14 +20,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 import org.openide.filesystems.FileObject;
 import org.openide.loaders.DataObject;
 import uk.theretiredprogrammer.util.ApplicationException;
 
 /**
  * The Interface for the Activity
- * 
+ *
  * Methods to configure and execute objects from the Activities Library.
  *
  */
@@ -42,31 +42,28 @@ public interface Activity {
     public Activity needsIOTab(String iotabname);
 
     /**
-     * Request that the Activity is a Duplex Transfer (No external process and
-     * two channels TX and RX)
+     * Request that the Activity runs an Method an wishes to use STDOUT file handling
      *
-     * @param txStreamSupplier the supplier of an OutputStream which receives
-     * data from the Activity TX channel
-     * @param rxStreamSupplier the supplier of an InputStream which will provide
-     * data for the Activity RX channel
+     * @param method the method to be called
      * @return this instance
-     * @throws ApplicationException a failure Exception
      */
-    public Activity setDuplexTransfer(Supplier<OutputStream> txStreamSupplier, Supplier<InputStream> rxStreamSupplier) throws ApplicationException;
+    public Activity setMethod(Consumer<Writer> method);
+    
+    /**
+     * Request that the Activity runs an Method
+     *
+     * @param method the method to be called
+     * @return this instance
+     */
+    public Activity setMethod(Runnable method);
 
     /**
-     * Request that the Activity is a Duplex Transfer (No external process and
-     * two channels TX and RX)
+     * Request that the Activity is a Device Transfer
      *
-     * @param txStreamSupplier the supplier of an OutputStream which receives
-     * data from the Activity TX channel
-     * @param rxStreamSupplier the supplier of an InputStream which will provide
-     * data for the Activity RX channel
-     * @param onTabClose a function to be run when the IO Tab is closed
+     * @param descriptor the device descriptor
      * @return this instance
-     * @throws ApplicationException a failure Exception
      */
-    public Activity setDuplexTransfer(Supplier<OutputStream> txStreamSupplier, Supplier<InputStream> rxStreamSupplier, Runnable onTabClose) throws ApplicationException;
+    public Activity setDevice(DeviceDescriptor descriptor);
 
     /**
      * Request that the Activity runs an External Process (with up to three
@@ -76,9 +73,8 @@ public interface Activity {
      * @param args the command arguments
      * @param dir the working directory
      * @return this instance
-     * @throws ApplicationException a failure Exception
      */
-    public Activity setExternalProcess(final String command, final String args, FileObject dir) throws ApplicationException;
+    public Activity setExternalProcess(final String command, final String args, FileObject dir);
 
     /**
      * Run the configured Activity
@@ -103,223 +99,207 @@ public interface Activity {
      */
     public Activity ioTabClear();
 
+    // STDIN configuration
     /**
-     * the STDERR channel identifier
-     */
-    public String STDERR = "STDERR";
-
-    /**
-     * the STDIN channel identifier
-     */
-    public String STDIN = "STDIN";
-
-    /**
-     * the STDOUT channel identifier
-     */
-    public String STDOUT = "STDOUT";
-
-    /**
-     * the RX channel identifier
-     */
-    public String RX = "RX";
-
-    /**
-     * the TX channel identifier
-     */
-    public String TX = "TX";
-
-    /**
-     * The Channel's expected Data Transfer Mode
-     */
-    public static enum InputDataTransferStyle {
-
-        /**
-         * Transfer one char at a time (reader-> output stream)
-         */
-        CHAR_READER,
-        /**
-         * Transfer one line at a time (reader-> writer)
-         */
-        BUFFERED_READER,
-        /**
-         * Transfer 8K at a time (input stream -> out stream)
-         */
-        BUFFERED_STREAM,
-        /**
-         * Either a Buffered Stream (or if it is not available) a Buffered
-         * Reader
-         */
-        BUFFERED_STREAM_OR_READER
-    }
-
-    // InputIO configuration
-    /**
-     * Input is an empty file;
+     * STDIN is an empty file;
      *
-     * @param name the channel name
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity inputEmpty(String name) throws ApplicationException;
+    public Activity stdinFromEmpty() throws ApplicationException;
 
     /**
-     * Input from a FileObject.
+     * STDIN from a FileObject.
      *
-     * @param name the channel name
      * @param fileobject the source
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity inputFromFile(String name, FileObject fileobject) throws ApplicationException;
+    public Activity stdinFromFile(FileObject fileobject) throws ApplicationException;
 
     /**
-     * Input from a File.
+     * STDIN from a File.
      *
-     * @param name the channel name
      * @param file the source
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity inputFromFile(String name, File file) throws ApplicationException;
+    public Activity stdinFromFile(File file) throws ApplicationException;
 
     /**
-     * Input from a DataObject.
+     * STDIN from a DataObject.
      *
-     * @param name the channel name
      * @param dataobject the source
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity inputFromFile(String name, DataObject dataobject) throws ApplicationException;
+    public Activity stdinFromFile(DataObject dataobject) throws ApplicationException;
 
     /**
-     * Input from a InputStream.
+     * STDIN from a InputStream.
      *
-     * @param name the channel name
      * @param instream the source
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity inputFromFile(String name, InputStream instream) throws ApplicationException;
+    public Activity stdinFromFile(InputStream instream) throws ApplicationException;
 
     /**
-     * Input from a Reader.
+     * STDIN from a Reader.
      *
-     * @param name the channel name
      * @param reader the source
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity inputFromFile(String name, Reader reader) throws ApplicationException;
+    public Activity stdinFromFile(Reader reader) throws ApplicationException;
 
     /**
-     * Input from the IOTab STDIN.
+     * STDIN from the IOTab STDIN.
      *
-     * @param name the channel name
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity inputFromIOSTDIN(String name) throws ApplicationException;
+    public Activity stdinFromIOSTDIN() throws ApplicationException;
 
+    // STDOUT configuration
     /**
-     * The Channel's expected Data Transfer Mode
-     */
-    public static enum OutputDataTransferStyle {
-
-        /**
-         * Transfer one char at a time (input stream -> Writer)
-         */
-        CHAR_WRITER,
-        /**
-         * Transfer one line at a time (reader-> writer)
-         */
-        BUFFERED_WRITER,
-        /**
-         * Transfer 8K at a time (input stream -> out stream)
-         */
-        BUFFERED_STREAM,
-        /**
-         * Either a Buffered Stream (or if it is not available) a Buffered
-         * Writer
-         */
-        BUFFERED_STREAM_OR_WRITER
-    }
-
-    // OutputIO configuration
-    /**
-     * Output is discarded.
+     * STDOUT is discarded.
      *
-     * @param name the channel name
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity outputDiscard(String name) throws ApplicationException;
+    public Activity stdoutToDiscard() throws ApplicationException;
 
     /**
-     * Output to a FileObject.
+     * STDOUT to a FileObject.
      *
-     * @param name the channel name
      * @param fileobject the target
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity outputToFile(String name, FileObject fileobject) throws ApplicationException;
+    public Activity stdoutToFile(FileObject fileobject) throws ApplicationException;
 
     /**
-     * Output to a File.
+     * STDOUT to a File.
      *
-     * @param name the channel name
      * @param file the target
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity outputToFile(String name, File file) throws ApplicationException;
+    public Activity stdoutToFile(File file) throws ApplicationException;
 
     /**
-     * Output to a DataObject.
+     * STDOUT to a DataObject.
      *
-     * @param name the channel name
      * @param dataobject the target
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity outputToFile(String name, DataObject dataobject) throws ApplicationException;
+    public Activity stdoutToFile(DataObject dataobject) throws ApplicationException;
 
     /**
-     * Output to an OutputStream.
+     * STDOUT to an OutputStream.
      *
-     * @param name the channel name
      * @param outstream the target
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity outputToFile(String name, OutputStream outstream) throws ApplicationException;
+    public Activity stdoutToFile(OutputStream outstream) throws ApplicationException;
 
     /**
-     * Output to a Writer.
+     * STDOUT to a Writer.
      *
-     * @param name the channel name
      * @param writer the target
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity outputToFile(String name, Writer writer) throws ApplicationException;
+    public Activity stdoutToFile(Writer writer) throws ApplicationException;
 
     /**
-     * Output to the IOTab STDERR.
+     * STDOUT to the IOTab STDERR.
      *
-     * @param name the channel name
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity outputToIOSTDERR(String name) throws ApplicationException;
+    public Activity stdoutToIOSTDERR() throws ApplicationException;
 
     /**
-     * Output to the IOTab STDOUT.
+     * STDOUT to the IOTab STDOUT.
      *
-     * @param name the channel name
      * @return this instance
      * @throws ApplicationException a failure Exception
      */
-    public Activity outputToIOSTDOUT(String name) throws ApplicationException;
+    public Activity stdoutToIOSTDOUT() throws ApplicationException;
+
+    // STDERR configuration
+    /**
+     * STDERR is discarded.
+     *
+     * @return this instance
+     * @throws ApplicationException a failure Exception
+     */
+    public Activity stderrToDiscard() throws ApplicationException;
+
+    /**
+     * STDERR to a FileObject.
+     *
+     * @param fileobject the target
+     * @return this instance
+     * @throws ApplicationException a failure Exception
+     */
+    public Activity stderrToFile(FileObject fileobject) throws ApplicationException;
+
+    /**
+     * STDERR to a File.
+     *
+     * @param file the target
+     * @return this instance
+     * @throws ApplicationException a failure Exception
+     */
+    public Activity stderrToFile(File file) throws ApplicationException;
+
+    /**
+     * STDERR to a DataObject.
+     *
+     * @param dataobject the target
+     * @return this instance
+     * @throws ApplicationException a failure Exception
+     */
+    public Activity stderrToFile(DataObject dataobject) throws ApplicationException;
+
+    /**
+     * STDERR to an OutputStream.
+     *
+     * @param outstream the target
+     * @return this instance
+     * @throws ApplicationException a failure Exception
+     */
+    public Activity stderrToFile(OutputStream outstream) throws ApplicationException;
+
+    /**
+     * STDERR to a Writer.
+     *
+     * @param writer the target
+     * @return this instance
+     * @throws ApplicationException a failure Exception
+     */
+    public Activity stderrToFile(Writer writer) throws ApplicationException;
+
+    /**
+     * STDERR to the IOTab STDERR.
+     *
+     * @return this instance
+     * @throws ApplicationException a failure Exception
+     */
+    public Activity stderrToIOSTDERR() throws ApplicationException;
+
+    /**
+     * STDERR to the IOTab STDOUT.
+     *
+     * @return this instance
+     * @throws ApplicationException a failure Exception
+     */
+    public Activity stderrToIOSTDOUT() throws ApplicationException;
+    
+    public static final String NEWLINE = System.getProperty("line.separator");
 }

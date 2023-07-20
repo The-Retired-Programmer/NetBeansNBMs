@@ -22,11 +22,10 @@ import uk.theretiredprogrammer.actions.DynamicAction;
 import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.activity.ActivityIOTab;
 
 /**
  * The ActionsandActivity Factory
- * 
+ *
  * methods to create objects from the ActionsAndActivities Library.
  *
  */
@@ -54,21 +53,6 @@ public class ActionsAndActivitiesFactory {
             throw new ApplicationException("Activity and Actions NBM is not loaded");
         }
         return factory.createActivity();
-    }
-
-    /**
-     * Get an ActivityIOTab
-     *
-     * @param iotabname the IO Tab name - used to lookup the IO Tab
-     * @return an ActivityIOTab instance
-     * @throws ApplicationException a failure Exception
-     */
-    public static ActivityIOTab getActivityIOTab(String iotabname) throws ApplicationException {
-        A3Factory factory = Lookup.getDefault().lookup(A3Factory.class);
-        if (factory == null) {
-            throw new ApplicationException("Activity and Actions NBM is not loaded");
-        }
-        return factory.getActivityIOTab(iotabname);
     }
 
     /**
