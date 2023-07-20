@@ -19,8 +19,6 @@ import org.openide.filesystems.FileObject;
 
 public interface ScreenCaptureDescriptor {
     
-    public ScreenCaptureDescriptor create(FileObject capturefolder, String imagefilenameroot, String imageext, String iotabname);
-
     public FileObject getCaptureFolder();
 
     public String getCaptureFilePath();
