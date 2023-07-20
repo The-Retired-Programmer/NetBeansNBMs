@@ -26,10 +26,6 @@ public class ScreenCaptureDescriptorImpl implements ScreenCaptureDescriptor {
     private final String imageext;
     private final String iotabname;
 
-    public ScreenCaptureDescriptorImpl create(FileObject capturefolder, String imagefilenameroot, String imageext, String iotabname) {
-        return new ScreenCaptureDescriptorImpl(capturefolder, imagefilenameroot, imageext, iotabname);
-    }
-
     public ScreenCaptureDescriptorImpl(FileObject capturefolder, String imagefilenameroot, String imageext, String iotabname) {
         this.capturefolder = capturefolder;
         this.imagefilenameroot = imagefilenameroot;

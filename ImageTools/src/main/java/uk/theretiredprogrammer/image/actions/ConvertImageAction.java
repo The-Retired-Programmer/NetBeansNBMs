@@ -30,7 +30,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -57,8 +56,6 @@ public final class ConvertImageAction implements ActionListener {
     public void actionPerformed(ActionEvent ev) {
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
-            //Project project = FileOwnerQuery.getOwner(input);
-            //if (project != null && project instanceof AsciiDocProject) {
             switch (input.getExt().toLowerCase()) {
                 case "gif":
                     convertImage(input, "jpg", "png");
@@ -157,7 +154,7 @@ public final class ConvertImageAction implements ActionListener {
                                 "\"" + input.getNameExt() + "\" \"" + input.getName() + outputext + "\"",
                                 input.getParent())
                         .needsIOTab("Image Manipulation")
-                        .outputToIOSTDERR(STDERR);
+                        .stderrToIOSTDERR();
             } catch (ApplicationException ex) {
                 UserReporting.exceptionWithMessage("Image Manipulation", "Error when configuring Convert Image Activity", ex);
                 return;

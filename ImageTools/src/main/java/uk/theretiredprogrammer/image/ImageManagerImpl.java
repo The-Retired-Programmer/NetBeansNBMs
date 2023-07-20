@@ -30,9 +30,10 @@ public class ImageManagerImpl implements ImageManager {
     private static final ScreenCaptureDescriptorImpl UNRESERVEDSCREENCAPTUREDESCRIPTOR;
 
     static {
+        String userhome = System.getProperty("user.home","?");
         UNRESERVEDSCREENCAPTUREDESCRIPTOR = new ScreenCaptureDescriptorImpl(
-                FileUtil.toFileObject(new File("/home/richard/SCREENCAPTURE/")),
-                "screen_capture", "png", "Screen Capture");
+                FileUtil.toFileObject(new File(userhome+"/screenshots/")),
+                "screenshot", "png", "Screen Shot");
         currentscreencapturedescriptor = UNRESERVEDSCREENCAPTUREDESCRIPTOR;
     }
     

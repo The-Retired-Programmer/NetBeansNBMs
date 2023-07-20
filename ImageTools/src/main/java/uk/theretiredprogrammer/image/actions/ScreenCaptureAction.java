@@ -24,7 +24,6 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
 import uk.theretiredprogrammer.image.ImageManagerImpl;
 import uk.theretiredprogrammer.image.api.ScreenCaptureDescriptor;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
@@ -61,7 +60,7 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
             activity = ActionsAndActivitiesFactory.createActivity()
                     .setExternalProcess("scrot", "-s " + capturefilepath, screencapturedescriptor.getCaptureFolder())
                     .needsIOTab(screencapturedescriptor.getIoTabname())
-                    .outputToIOSTDERR(STDERR);
+                    .stderrToIOSTDERR();
         } catch (ApplicationException ex) {
             UserReporting.exceptionWithMessage(screencapturedescriptor.getIoTabname(), "Error when configuring Screen Capture Activity", ex);
             return;

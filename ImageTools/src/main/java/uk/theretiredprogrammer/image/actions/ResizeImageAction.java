@@ -38,7 +38,6 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -82,7 +81,7 @@ public final class ResizeImageAction implements ActionListener {
         dd.setClosingOptions(new Object[]{resizebutton});
         DialogDisplayer.getDefault().createDialog(dd).setVisible(true);
     }
-    
+
     private void getImageSize(FileObject input) {
         try {
             image_h = 100;
@@ -105,7 +104,7 @@ public final class ResizeImageAction implements ActionListener {
     }
 
     private JTextField getConfiguredTextField(JTextField field) {
-        field.setText(Integer.toString(vorh.isSelected()?image_w:image_h));
+        field.setText(Integer.toString(vorh.isSelected() ? image_w : image_h));
         return field;
     }
 
@@ -135,7 +134,7 @@ public final class ResizeImageAction implements ActionListener {
                 boolean ishval = vorh.isSelected();
                 doResizeActivity(input, dim, ishval);
             } else if (source == vorh) {
-                size.setText(Integer.toString(vorh.isSelected()?image_w:image_h));
+                size.setText(Integer.toString(vorh.isSelected() ? image_w : image_h));
             }
         }
     }
@@ -163,23 +162,23 @@ public final class ResizeImageAction implements ActionListener {
                     ? Integer.toString(dim) + "x1000000"
                     : "1000000x" + Integer.toString(dim);
             String rescalefactor = ishval
-                    ? "from "+ Integer.toString(image_w)+ " to "+Integer.toString(dim) + " (horizontally)"
-                    : "from "+ Integer.toString(image_h)+ " to "+Integer.toString(dim) + " (vertically)";
+                    ? "from " + Integer.toString(image_w) + " to " + Integer.toString(dim) + " (horizontally)"
+                    : "from " + Integer.toString(image_h) + " to " + Integer.toString(dim) + " (vertically)";
             String outputfilename = FileUtil.findFreeFileName(input.getParent(), input.getName(), input.getExt())
                     + "." + input.getExt();
             Activity activity;
             try {
                 activity = ActionsAndActivitiesFactory.createActivity()
                         .setExternalProcess("convert-im6",
-                                "\""+input.getNameExt() + "\" -resize " + resize + " \"" + outputfilename+ "\"",
+                                "\"" + input.getNameExt() + "\" -resize " + resize + " \"" + outputfilename + "\"",
                                 input.getParent())
                         .needsIOTab("Image Manipulation")
-                        .outputToIOSTDERR(STDERR);
+                        .stderrToIOSTDERR();
             } catch (ApplicationException ex) {
                 UserReporting.exceptionWithMessage("Image Manipulation", "Error when configuring Resize Image Activity", ex);
                 return;
             }
-            activity.run("Resize " + input.getNameExt() + " to " + outputfilename +" - "+rescalefactor);
+            activity.run("Resize " + input.getNameExt() + " to " + outputfilename + " - " + rescalefactor);
         }
     }
 }

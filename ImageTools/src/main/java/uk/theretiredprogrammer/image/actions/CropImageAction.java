@@ -36,7 +36,6 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -187,7 +186,7 @@ public final class CropImageAction implements ActionListener {
                                 "\"" + input.getNameExt() + "\" -crop '" + crop + "' \"" + outputfilename + "\"",
                                 input.getParent())
                         .needsIOTab("Image Manipulation")
-                        .outputToIOSTDERR(STDERR);
+                        .stderrToIOSTDERR();
             } catch (ApplicationException ex) {
                 UserReporting.exceptionWithMessage("Image Manipulation", "Error when configuring Crop Image Activity", ex);
                 return;
