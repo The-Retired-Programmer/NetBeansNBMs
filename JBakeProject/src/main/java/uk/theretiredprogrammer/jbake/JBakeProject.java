@@ -38,8 +38,6 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
-import static uk.theretiredprogrammer.activity.Activity.STDOUT;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -165,8 +163,8 @@ public class JBakeProject implements Project {
                 try {
                     Activity activity = ActionsAndActivitiesFactory.createActivity()
                             .setExternalProcess("jbake", "-b", projectDir)
-                            .outputToIOSTDOUT(STDOUT)
-                            .outputToIOSTDERR(STDERR)
+                            .stdoutToIOSTDOUT()
+                            .stderrToIOSTDERR()
                             .needsIOTab("Bake " + projectDir.getName());
                     nodeactions.setNodeActions(ActionsAndActivitiesFactory.createDynamicAction("Bake").onActionAsync(() -> activity.run("Baking")));
                 } catch (ApplicationException ex) {
