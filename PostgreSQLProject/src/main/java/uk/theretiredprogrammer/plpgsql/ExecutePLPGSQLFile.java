@@ -29,8 +29,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
-import static uk.theretiredprogrammer.activity.Activity.STDOUT;
 import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
@@ -77,8 +75,8 @@ public final class ExecutePLPGSQLFile implements ActionListener, Runnable {
                                         input.getParent()
                                 )
                                 .needsIOTab("Execute PgSQL")
-                                .outputToIOSTDOUT(STDOUT)
-                                .outputToIOSTDERR(STDERR);
+                                .stdoutToIOSTDOUT()
+                                .stderrToIOSTDERR();
                     } catch (ApplicationException ex) {
                         UserReporting.exceptionWithMessage("Execute PgSQL", "Error when creating Activity", ex);
                         break;
