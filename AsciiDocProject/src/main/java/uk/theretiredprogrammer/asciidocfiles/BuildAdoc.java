@@ -28,7 +28,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import static uk.theretiredprogrammer.activity.Activity.STDERR;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
@@ -73,7 +72,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
                                     "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath(),
                                     aproject.getProjectDirectory())
                             .needsIOTab(aproject.getTabname())
-                            .outputToIOSTDERR(STDERR);
+                            .stderrToIOSTDERR();
                 } catch (ApplicationException ex) {
                     UserReporting.exceptionWithMessage(aproject.getTabname(), "Error configuring Project AsciiDoc Publishing Activity", ex);
                     return;
@@ -85,7 +84,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
                     activity = ActionsAndActivitiesFactory.createActivity()
                             .setExternalProcess("asciidoctor", "-r asciidoctor-pdf " + input.getPath(), input.getParent())
                             .needsIOTab("Publish AsciiDocs")
-                            .outputToIOSTDERR(STDERR);
+                            .stderrToIOSTDERR();
                 } catch (ApplicationException ex) {
                     UserReporting.exceptionWithMessage("Publish AsciiDocs", "Error configuring AsciiDoc Publishing Activity", ex);
                     return;

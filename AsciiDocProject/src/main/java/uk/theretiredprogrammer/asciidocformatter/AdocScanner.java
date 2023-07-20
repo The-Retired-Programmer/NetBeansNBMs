@@ -99,7 +99,7 @@ public class AdocScanner {
         if (linetext.replaceAll("^\\h*", "").equals("\n")) {
             return AdocLineType.EMPTYLINE;
         }
-        if (/*linetext.endsWith(".\n") || */linetext.endsWith(" +\n")) {
+        if (linetext.endsWith(" +\n")) {
             return AdocLineType.ENDLINE;
         }
         if (linetext.equals("+\n")) {
@@ -108,7 +108,7 @@ public class AdocScanner {
         if (linetext.startsWith("* ") || linetext.startsWith(". ") || linetext.startsWith("<") || linetext.startsWith("=")) {
             return AdocLineType.STARTLINE;
         }
-        if (linetext.startsWith(":") || linetext.startsWith("[")) {
+        if (linetext.startsWith(":") /*|| linetext.startsWith("[") */) {
             return AdocLineType.COMMANDLINE;
         }
         if (linetext.equals("----\n")) {

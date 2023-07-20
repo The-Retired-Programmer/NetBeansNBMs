@@ -29,6 +29,7 @@ import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
+import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
@@ -61,48 +62,51 @@ public final class FormatAdoc implements ActionListener, Runnable {
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
             Project project = FileOwnerQuery.getOwner(input);
+            String iotabname;
+            Activity activity;
             if (project != null && project instanceof AsciiDocProject) {
                 AsciiDocProject aproject = (AsciiDocProject) project;
-                String iotabname = aproject.getTabname();
-                try {
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).println("Formatting Lines");
-                    reformat(dataObject);
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).printdone();
-                } catch (ApplicationException ex) {
-                    UserReporting.exceptionWithMessage(iotabname, "Error Formatting Lines", ex);
-                }
+                iotabname = aproject.getTabname();
             } else {
-                String iotabname = "Publish AsciiDocs";
-                try {
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).println("Formatting Lines");
-                    reformat(dataObject);
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).printdone();
-                } catch (ApplicationException ex) {
-                    UserReporting.exceptionWithMessage(iotabname, "Error Formatting Lines", ex);
-                }
+                iotabname = "Publish AsciiDocs";
             }
+            try {
+                activity = ActionsAndActivitiesFactory.createActivity()
+                        .setMethod(() -> reformat(dataObject, iotabname))
+                        .needsIOTab(iotabname);
+            } catch (ApplicationException ex) {
+                UserReporting.exceptionWithMessage(iotabname, "Error Formatting Lines", ex);
+                return;
+            }
+            activity.run("Formatting Lines");
         }
     }
 
-    private void reformat(DataObject dataobject) throws ApplicationException {
+    private void reformat(DataObject dataobject, String iotabname) {
         final EditorCookie edit = (EditorCookie) dataobject.getLookup().lookup(EditorCookie.class);
         if (edit == null) {
-            throw new ApplicationException("Fatal: Editor Cookie missing");
+            UserReporting.error(iotabname, "Fatal: Editor Cookie missing");
+            return;
         }
         JEditorPane[] panes = edit.getOpenedPanes();
         if (panes == null) {
-            throw new ApplicationException("Fatal: File is not open in editor");
+            UserReporting.error(iotabname, "Fatal: File is not open in editor");
+            return;
         }
         JEditorPane pane = panes[0];
         Caret caret = pane.getCaret();
         int mark = caret.getMark();
         int dot = caret.getDot();
-        if (mark == dot) {
-            new AdocDocument().reformatSelectedBlock(edit.getDocument(), mark);
-        } else if (mark > dot) {
-            new AdocDocument().reformatSelectedBlocks(edit.getDocument(), dot, mark);
-        } else {
-            new AdocDocument().reformatSelectedBlocks(edit.getDocument(), mark, dot);
+        try {
+            if (mark == dot) {
+                new AdocDocument().reformatSelectedBlock(edit.getDocument(), mark);
+            } else if (mark > dot) {
+                new AdocDocument().reformatSelectedBlocks(edit.getDocument(), dot, mark);
+            } else {
+                new AdocDocument().reformatSelectedBlocks(edit.getDocument(), mark, dot);
+            }
+        } catch (ApplicationException ex) {
+            UserReporting.exception(iotabname, ex);
         }
     }
 }

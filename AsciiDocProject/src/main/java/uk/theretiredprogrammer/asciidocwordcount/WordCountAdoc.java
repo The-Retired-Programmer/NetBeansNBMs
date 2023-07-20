@@ -17,6 +17,8 @@ package uk.theretiredprogrammer.asciidocwordcount;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 import javax.swing.JEditorPane;
 import javax.swing.text.BadLocationException;
@@ -31,6 +33,8 @@ import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
+import uk.theretiredprogrammer.activity.Activity;
+import static uk.theretiredprogrammer.activity.Activity.NEWLINE;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
@@ -63,32 +67,37 @@ public final class WordCountAdoc implements ActionListener, Runnable {
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
             Project project = FileOwnerQuery.getOwner(input);
+            String iotabname;
+            Activity activity;
             if (project != null && project instanceof AsciiDocProject) {
                 AsciiDocProject aproject = (AsciiDocProject) project;
-                String iotabname = aproject.getTabname();
-                try {
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).println("Counting Words");
-                    int wordcount = wordCount(dataObject);
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).println(wordcount + " words");
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).printdone();
-                } catch (ApplicationException ex) {
-                    UserReporting.exceptionWithMessage(iotabname, "Error Word Count", ex);
-                }
+                iotabname = aproject.getTabname();
             } else {
-                String iotabname = "Publish AsciiDocs";
-                try {
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).println("Counting Words");
-                    int wordcount = wordCount(dataObject);
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).println(wordcount + " words");
-                    ActionsAndActivitiesFactory.getActivityIOTab(iotabname).printdone();
-                } catch (ApplicationException ex) {
-                    UserReporting.exceptionWithMessage(iotabname, "Error Word Count", ex);
-                }
+                iotabname = "Publish AsciiDocs";
             }
+            try {
+                activity = ActionsAndActivitiesFactory.createActivity()
+                        .setMethod((stdoutwriter) -> wordCount(dataObject, iotabname, stdoutwriter))
+                        .needsIOTab(iotabname)
+                        .stdoutToIOSTDOUT();
+            } catch (ApplicationException ex) {
+                UserReporting.exceptionWithMessage(iotabname, "Error Word Count", ex);
+                return;
+            }
+            activity.run("Counting Words");
         }
     }
 
-    private int wordCount(DataObject dataobject) throws ApplicationException {
+    private void wordCount(DataObject dataobject, String iotabname, Writer stdoutwriter) {
+        try {
+            stdoutwriter.write(wordCounter(dataobject) + " words");
+            stdoutwriter.write(NEWLINE);
+        } catch (IOException | ApplicationException ex) {
+            UserReporting.exception(iotabname, ex);
+        }
+    }
+
+    private int wordCounter(DataObject dataobject) throws ApplicationException {
         final EditorCookie edit = (EditorCookie) dataobject.getLookup().lookup(EditorCookie.class);
         if (edit == null) {
             throw new ApplicationException("Fatal: Editor Cookie missing");
@@ -109,9 +118,9 @@ public final class WordCountAdoc implements ActionListener, Runnable {
             return wc(edit.getDocument(), mark, dot);
         }
     }
-    
+
     private int wcAll(StyledDocument document) throws ApplicationException {
-        return wc(document,0,document.getLength());
+        return wc(document, 0, document.getLength());
     }
 
     private int wc(StyledDocument document, int frompos, int topos) throws ApplicationException {
