@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Localizing-Bundle: uk/theretiredprogrammer/image/Bundle.properties
+OpenIDE-Module-Localizing-Bundle: uk/theretiredprogrammer/imagetools/Bundle.properties
 OpenIDE-Module-Display-Category: Tools - TheRetiredProgrammer
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.image.actions;
+package uk.theretiredprogrammer.imagetools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,10 +36,10 @@ import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Tools",
-        id = "uk.theretiredprogrammer.image.actions.ConvertImageAction"
+        id = "uk.theretiredprogrammer.imagetools.ConvertImageAction"
 )
 @ActionRegistration(
-        iconBase = "uk/theretiredprogrammer/image/actions/arrow_divide.png",
+        iconBase = "uk/theretiredprogrammer/imagetools/arrow_divide.png",
         displayName = "#CTL_ConvertImageAction"
 )
 @ActionReference(path = "Loaders/image/png-gif-jpeg-bmp/Actions", position = 150)
@@ -127,7 +127,6 @@ public final class ConvertImageAction implements ActionListener {
                 doConvertActivity(input, ".jpg");
             }
         }
-
     }
 
     private void doConvertActivity(FileObject input, String outputext) {

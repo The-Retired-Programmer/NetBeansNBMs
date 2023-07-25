@@ -14,7 +14,7 @@
     <name>Image Tools</name>
     <description>Image Tools Library - from The-Retired-Programmer</description>
  
-    <url>http://www.theretiredprogrammer.uk/image-plugin</url>
+    <url>http://www.theretiredprogrammer.uk/image-tools</url>
     
     <dependencies>
         <dependency>
@@ -22,10 +22,10 @@
             <artifactId>a3api</artifactId>
             <version>1.0.2</version>
         </dependency>
-        <dependency>
+         <dependency>
             <groupId>uk.theretiredprogrammer</groupId>
-            <artifactId>imagetoolsapi</artifactId>
-            <version>1.0.2</version>
+            <artifactId>screencapture</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -76,6 +76,16 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-dialogs</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-editor-mimelookup</artifactId>
+            <version>${netbeans.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-nodes</artifactId>
             <version>${netbeans.version}</version>
         </dependency>
     </dependencies>

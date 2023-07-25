@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.image.actions;
+package uk.theretiredprogrammer.imagetools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,10 +22,8 @@ import java.io.IOException;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import static javax.swing.SwingConstants.LEFT;
 import org.openide.DialogDescriptor;
 import static org.openide.DialogDescriptor.RIGHT_ALIGN;
 import org.openide.DialogDisplayer;
@@ -44,21 +42,21 @@ import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Tools",
-        id = "uk.theretiredprogrammer.image.actions.ResizeImageAction"
+        id = "uk.theretiredprogrammer.imagetools.CropImageAction"
 )
 @ActionRegistration(
-        iconBase = "uk/theretiredprogrammer/image/actions/arrow_out.png",
-        displayName = "#CTL_ResizeImageAction"
+        iconBase = "uk/theretiredprogrammer/imagetools/cut.png",
+        displayName = "#CTL_CropImageAction"
 )
-@ActionReference(path = "Loaders/image/png-gif-jpeg-bmp/Actions", position = 160)
-@Messages("CTL_ResizeImageAction=Resize Image")
-public final class ResizeImageAction implements ActionListener {
+@ActionReference(path = "Loaders/image/png-gif-jpeg-bmp/Actions", position = 170)
+@Messages("CTL_CropImageAction=Crop Image")
+public final class CropImageAction implements ActionListener {
 
     private final List<DataObject> context;
     private int image_w = 100;
     private int image_h = 100;
 
-    public ResizeImageAction(List<DataObject> context) {
+    public CropImageAction(List<DataObject> context) {
         this.context = context;
     }
 
@@ -66,19 +64,17 @@ public final class ResizeImageAction implements ActionListener {
     public void actionPerformed(ActionEvent ev) {
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
-            //Project project = FileOwnerQuery.getOwner(input);
-            //if (project != null && project instanceof AsciiDocProject) {
             getImageSize(input);
-            resizeImage(input);
+            cropImage(input);
         }
     }
 
-    private void resizeImage(FileObject input) {
+    private void cropImage(FileObject input) {
         Object[] options = createOptions();
-        DialogDescriptor dd = new DialogDescriptor(null, "Image Resize", false,
+        DialogDescriptor dd = new DialogDescriptor(null, "Image Crop", false,
                 options, options[options.length - 1], RIGHT_ALIGN,
                 null, new ButtonListener(input));
-        dd.setClosingOptions(new Object[]{resizebutton});
+        dd.setClosingOptions(null);
         DialogDisplayer.getDefault().createDialog(dd).setVisible(true);
     }
 
@@ -95,28 +91,33 @@ public final class ResizeImageAction implements ActionListener {
     }
 
     private Object[] createOptions() {
-        Object[] options = new Object[4];
-        options[0] = sizelabel;
-        options[1] = getConfiguredTextField(size);
-        options[2] = getConfiguredCheckBox(vorh);
-        options[3] = resizebutton;
+        Object[] options = new Object[9];
+        options[0] = widthlabel;
+        options[1] = getConfiguredTextField(width, image_w);
+        options[2] = heightlabel;
+        options[3] = getConfiguredTextField(height, image_h);
+        options[4] = offsetleftlabel;
+        options[5] = getConfiguredTextField(offsetleft, 0);
+        options[6] = offsettoplabel;
+        options[7] = getConfiguredTextField(offsettop, 0);
+        options[8] = cropbutton;
         return options;
     }
 
-    private JTextField getConfiguredTextField(JTextField field) {
-        field.setText(Integer.toString(vorh.isSelected() ? image_w : image_h));
+    private JTextField getConfiguredTextField(JTextField field, int defaultvalue) {
+        field.setText(Integer.toString(defaultvalue));
         return field;
     }
 
-    private JCheckBox getConfiguredCheckBox(JCheckBox field) {
-        field.setHorizontalTextPosition(LEFT);
-        return field;
-    }
-
-    private static final JButton resizebutton = new JButton("Resize image");
-    private static final JTextField size = new JTextField(10);
-    private static final JLabel sizelabel = new JLabel("Required Size");
-    private static final JCheckBox vorh = new JCheckBox("Use required Size horizontally", true);
+    private static final JButton cropbutton = new JButton("Crop image");
+    private static final JTextField offsetleft = new JTextField(10);
+    private static final JLabel offsetleftlabel = new JLabel("Left offset");
+    private static final JTextField offsettop = new JTextField(10);
+    private static final JLabel offsettoplabel = new JLabel("Top offset");
+    private static final JTextField width = new JTextField(10);
+    private static final JLabel widthlabel = new JLabel("Width");
+    private static final JTextField height = new JTextField(10);
+    private static final JLabel heightlabel = new JLabel("Height");
 
     private class ButtonListener implements ActionListener {
 
@@ -129,56 +130,66 @@ public final class ResizeImageAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             Object source = e.getSource();
-            if (source == resizebutton) {
-                int dim = Integer.parseInt(size.getText());
-                boolean ishval = vorh.isSelected();
-                doResizeActivity(input, dim, ishval);
-            } else if (source == vorh) {
-                size.setText(Integer.toString(vorh.isSelected() ? image_w : image_h));
+            if (source == cropbutton) {
+                int w = Integer.parseInt(width.getText());
+                int h = Integer.parseInt(height.getText());
+                int left = Integer.parseInt(offsetleft.getText());
+                int top = Integer.parseInt(offsettop.getText());
+                if (w + left > image_w) {
+                    UserReporting.warning("Image Manipulation", "attempting to crop image beyond rhs of image");
+                    return;
+                }
+                if (h + top > image_h) {
+                    UserReporting.warning("Image Manipulation", "attempting to crop image beyond bottom of image");
+                    return;
+                }
+                doCropActivity(input, w, h, left, top);
             }
         }
     }
 
-    private void doResizeActivity(FileObject input, int dim, boolean ishval) {
+    private void doCropActivity(FileObject input, int w, int h, int left, int top) {
         RequestProcessor rp = new RequestProcessor("imageconversion");
-        rp.post(new RunResizeActivity(input, dim, ishval));
+        rp.post(new RunCropActivity(input, w, h, left, top));
     }
 
-    private class RunResizeActivity implements Runnable {
+    private class RunCropActivity implements Runnable {
 
         private final FileObject input;
-        private final int dim;
-        private final boolean ishval;
+        private final int w;
+        private final int h;
+        private final int left;
+        private final int top;
 
-        public RunResizeActivity(FileObject input, int dim, boolean ishval) {
+        public RunCropActivity(FileObject input, int w, int h, int left, int top) {
             this.input = input;
-            this.dim = dim;
-            this.ishval = ishval;
+            this.w = w;
+            this.h = h;
+            this.left = left;
+            this.top = top;
         }
 
         @Override
         public void run() {
-            String resize = ishval
-                    ? Integer.toString(dim) + "x1000000"
-                    : "1000000x" + Integer.toString(dim);
-            String rescalefactor = ishval
-                    ? "from " + Integer.toString(image_w) + " to " + Integer.toString(dim) + " (horizontally)"
-                    : "from " + Integer.toString(image_h) + " to " + Integer.toString(dim) + " (vertically)";
+            String crop = Integer.toString(w) + "x" + Integer.toString(h) + "+" + Integer.toString(left) + "+" + Integer.toString(top);
+            String cropfactor = "from " + Integer.toString(image_w) + "x" + Integer.toString(image_h)
+                    + " to " + Integer.toString(w) + "x" + Integer.toString(h)
+                    + " offset " + Integer.toString(left) + "x" + Integer.toString(top);
             String outputfilename = FileUtil.findFreeFileName(input.getParent(), input.getName(), input.getExt())
                     + "." + input.getExt();
             Activity activity;
             try {
                 activity = ActionsAndActivitiesFactory.createActivity()
                         .setExternalProcess("convert-im6",
-                                "\"" + input.getNameExt() + "\" -resize " + resize + " \"" + outputfilename + "\"",
+                                "\"" + input.getNameExt() + "\" -crop '" + crop + "' \"" + outputfilename + "\"",
                                 input.getParent())
                         .needsIOTab("Image Manipulation")
                         .stderrToIOSTDERR();
             } catch (ApplicationException ex) {
-                UserReporting.exceptionWithMessage("Image Manipulation", "Error when configuring Resize Image Activity", ex);
+                UserReporting.exceptionWithMessage("Image Manipulation", "Error when configuring Crop Image Activity", ex);
                 return;
             }
-            activity.run("Resize " + input.getNameExt() + " to " + outputfilename + " - " + rescalefactor);
+            activity.run("Crop " + input.getNameExt() + " to " + outputfilename + " - " + cropfactor);
         }
     }
 }
