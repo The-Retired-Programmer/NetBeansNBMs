@@ -24,8 +24,8 @@
         </dependency>
         <dependency>
             <groupId>uk.theretiredprogrammer</groupId>
-            <artifactId>imagetoolsapi</artifactId>
-            <version>1.0.2</version>
+            <artifactId>screencapture</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>

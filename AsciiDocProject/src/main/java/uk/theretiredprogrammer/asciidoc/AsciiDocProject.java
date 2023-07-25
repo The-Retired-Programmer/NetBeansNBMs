@@ -39,8 +39,6 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
-import uk.theretiredprogrammer.image.api.ImageManager;
-import uk.theretiredprogrammer.image.api.ScreenCaptureDescriptor;
 import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -170,8 +168,6 @@ public class AsciiDocProject implements Project {
         private final class ProjectNode extends FilterNode {
 
             final AsciiDocProject project;
-            final ImageManager imagemanager;
-            ScreenCaptureDescriptor screencapturedescriptor;
 
             public ProjectNode(Node node, AsciiDocProject project)
                     throws DataObjectNotFoundException {
@@ -187,33 +183,6 @@ public class AsciiDocProject implements Project {
                                 }));
                 this.project = project;
                 nodeactions.setNodeBasicProjectActions();
-                imagemanager = Lookup.getDefault().lookup(ImageManager.class);
-                try {
-                    nodeactions.setNodeActions(
-                            ActionsAndActivitiesFactory.createDynamicAction("Gain Screen Capture")
-                                    .enable(imagemanager != null)
-                                    .onActionAsync(() -> usescreencapture()),
-                            ActionsAndActivitiesFactory.createDynamicAction("Drop Screen Capture")
-                                    .enable(imagemanager != null)
-                                    .onActionAsync(() -> dropscreencapture())
-                    );
-                } catch (ApplicationException ex) {
-                    UserReporting.exceptionWithMessage("Publish AsciiDocs", "Error when configuring the Gain/Drop Screen Capture Actions", ex);
-                }
-            }
-
-            private void usescreencapture() {
-                FileObject screenshotfolder = projectDir.getFileObject(asciidocproperties.getSourceRootFolder());
-                screencapturedescriptor = imagemanager.createScreenCaptureDescriptor(screenshotfolder, "screenshot", "png", "Publish AsciiDocs");
-                if (!imagemanager.gainDedicatedUse(screencapturedescriptor)) {
-                    UserReporting.error("Publish AsciiDocs", "Failed to Gain Screen Capture");
-                }
-            }
-
-            private void dropscreencapture() {
-                if (!imagemanager.dropDedicatedUse(screencapturedescriptor)) {
-                    UserReporting.error("Publish AsciiDocs", "Failed to Drop Screen Capture");
-                }
             }
 
             @Override

@@ -22,7 +22,7 @@
                     </file>
                 </folder>
                 <folder name="TokenListProvider">
-                    <file name="org-netbeans-modules-spellchecker-plain-PlainTokenListProvider.instance" />
+                    <file name="org-netbeans-modules-spellchecker-plain-PlainTokenListProvider.instance"/>
                 </folder>
                 <!--
                 <folder name="CompletionProviders">
@@ -41,5 +41,23 @@
         <file name="ASCIIDOC">
             <attr name="displayName" stringvalue="ASCIIDOC"/>
         </file>
+    </folder>
+    <folder name="ScreenCapture">
+        <folder name="Projects">
+            <folder name="uk-theretiredprogrammer-asciidoc-AsciiDocProject">
+                <file name="ScreenCapture.instance">
+                    <attr name="instanceClass" stringvalue="uk.theretiredprogrammer.asciidoc.AsciidocProjectScreenCapture"/>
+                </file>
+            </folder>
+        </folder>
+        <folder name="Files">
+            <folder name="text">
+                <folder name="x-asciidoc">
+                    <file name="ScreenCapture.instance">
+                        <attr name="instanceClass" stringvalue="uk.theretiredprogrammer.asciidocfiles.AsciidocMimeScreenCapture"/>
+                    </file>
+                </folder>
+            </folder>
+        </folder>
     </folder>
 </filesystem>
