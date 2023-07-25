@@ -81,27 +81,26 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
                     filescreencapture = getFileScreenCapture(input);
                 }
             }
-        } catch (ClassNotFoundException | IOException ex) {
-            UserReporting.exception("Screen Capture", ex);
-            return;
-        }
 
-        if (filescreencapture != null) {
-            if (projectscreencapture != null) {
-                if (projectscreencapture.getPriority() == PROJECT) {
-                    captureScreen(projectscreencapture);
+            if (filescreencapture != null) {
+                if (projectscreencapture != null) {
+                    if (projectscreencapture.getPriority() == PROJECT) {
+                        captureScreen(projectscreencapture);
+                    } else {
+                        captureScreen(filescreencapture);
+                    }
                 } else {
                     captureScreen(filescreencapture);
                 }
             } else {
-                captureScreen(filescreencapture);
+                if (projectscreencapture != null) {
+                    captureScreen(projectscreencapture);
+                } else {
+                    captureScreen(getBasicScreenCapture());
+                }
             }
-        } else {
-            if (projectscreencapture != null) {
-                captureScreen(projectscreencapture);
-            } else {
-                captureScreen(getBasicScreenCapture());
-            }
+        } catch (ClassNotFoundException | IOException ex) {
+            UserReporting.exception("Screen Capture", ex);
         }
     }
 
@@ -161,7 +160,7 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
         return null;
     }
 
-    private ScreenCapture getBasicScreenCapture() {
+    private ScreenCapture getBasicScreenCapture() throws IOException {
         ScreenCapture basicscreencapture = new BasicScreenCapture();
         basicscreencapture.setCaptureBaseFolder(FileUtil.toFileObject(new File(System.getProperty("user.home", "?"))));
         return basicscreencapture;
