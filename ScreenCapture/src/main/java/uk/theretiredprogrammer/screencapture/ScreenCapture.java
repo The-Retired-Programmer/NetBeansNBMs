@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.screencapture;
 
+import java.io.IOException;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 
@@ -39,8 +40,18 @@ public abstract class ScreenCapture {
         this.iotabname = iotabname;
     }
     
-    public void setCaptureBaseFolder(FileObject capturebasefolder) {
+    public void setCaptureBaseFolder(FileObject capturebasefolder) throws IOException {
         capturefolder = capturebasefolder.getFileObject(capturefolderpath);
+        if (capturefolder == null) {
+            capturefolder = capturebasefolder;
+            for (var part: capturefolderpath.split("/")) {
+                FileObject fonext = capturefolder.getFileObject(part);
+                if (fonext == null) {
+                    fonext = capturefolder.createFolder(part);
+                }
+                capturefolder = fonext;
+            }
+        }
     }
 
     public FileObject getCaptureFolder() {
