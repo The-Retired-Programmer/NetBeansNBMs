@@ -63,7 +63,7 @@ public class InputIO {
         this.fileobject = fileobject;
     }
 
-    public void fromFile(File file) {
+   public void fromFile(File file) {
         mode = InStyle.FILE;
         this.file = file;
     }

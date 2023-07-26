@@ -93,8 +93,9 @@
                 <configuration>
                     <brandingToken>a3</brandingToken>
                     <publicPackages>
-                        <publicPackage>uk.theretiredprogrammer.actionssupport</publicPackage>
+                        <publicPackage>uk.theretiredprogrammer.actions</publicPackage>
                         <publicPackage>uk.theretiredprogrammer.activity</publicPackage>
+                        <publicPackage>uk.theretiredprogrammer.util</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

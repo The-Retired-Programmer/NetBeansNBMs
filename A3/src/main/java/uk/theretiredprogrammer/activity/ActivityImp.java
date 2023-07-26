@@ -42,7 +42,7 @@ public class ActivityImp implements Activity {
     private DataTask taskSTDOUT;
     private final ConnectionSTDERR connectionSTDERR = new ConnectionSTDERR();
     private DataTask taskSTDERR;
-
+   
     @Override
     public Activity needsIOTab(String iotabname) {
         this.iotabname = iotabname;
