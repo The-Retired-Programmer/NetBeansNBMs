@@ -24,7 +24,7 @@ import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.actions.NodeActions.FileChangeType;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import static uk.theretiredprogrammer.actions.SaveBeforeAction.SaveBeforeActionMode.ALL;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -96,7 +96,7 @@ public class AsciiDocPropertyFile {
     private void parseProperties(FileObject projectdir, Properties properties) throws IOException, ApplicationException {
         srcroot = properties.getProperty("source_root_folder", "src");
         generatedroot = properties.getProperty("generated_root_folder", "generated_documents");
-        savebeforeaction = ActionsAndActivitiesFactory.createSaveBeforeAction(properties, "save_before_publishing", ALL);
+        savebeforeaction = ActivitiesAndActionsFactory.createSaveBeforeAction(properties, "save_before_publishing", ALL);
         savebeforeaction.setSourceRoot(projectdir.getFileObject(srcroot));
         String layout = properties.getProperty("conversion_layout", "paragraph");
         switch (layout) {

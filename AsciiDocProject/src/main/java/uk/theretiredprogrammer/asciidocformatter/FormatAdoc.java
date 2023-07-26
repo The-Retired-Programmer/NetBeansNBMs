@@ -31,7 +31,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -71,7 +71,7 @@ public final class FormatAdoc implements ActionListener, Runnable {
                 iotabname = "Publish AsciiDocs";
             }
             try {
-                activity = ActionsAndActivitiesFactory.createActivity()
+                activity = ActivitiesAndActionsFactory.createActivity()
                         .setMethod(() -> reformat(dataObject, iotabname))
                         .needsIOTab(iotabname);
             } catch (ApplicationException ex) {

@@ -36,7 +36,7 @@ import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import static uk.theretiredprogrammer.activity.Activity.NEWLINE;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -76,7 +76,7 @@ public final class WordCountAdoc implements ActionListener, Runnable {
                 iotabname = "Publish AsciiDocs";
             }
             try {
-                activity = ActionsAndActivitiesFactory.createActivity()
+                activity = ActivitiesAndActionsFactory.createActivity()
                         .setMethod((stdoutwriter) -> wordCount(dataObject, iotabname, stdoutwriter))
                         .needsIOTab(iotabname)
                         .stdoutToIOSTDOUT();

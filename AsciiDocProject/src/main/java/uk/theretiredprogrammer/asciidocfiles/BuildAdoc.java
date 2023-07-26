@@ -29,7 +29,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.asciidoc.AsciiDocProject;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.SaveSelfBeforeAction;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -67,7 +67,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
                 AsciiDocProject aproject = (AsciiDocProject) project;
                 try {
                     aproject.getSaveBeforeAction().saveIfModified(dataObject);
-                    activity = ActionsAndActivitiesFactory.createActivity()
+                    activity = ActivitiesAndActionsFactory.createActivity()
                             .setExternalProcess("asciidoctor",
                                     "-r asciidoctor-pdf " + aproject.getAsciiDoctorParameters() + input.getPath(),
                                     aproject.getProjectDirectory())
@@ -81,7 +81,7 @@ public final class BuildAdoc implements ActionListener, Runnable {
             } else {
                 SaveSelfBeforeAction.saveIfModified(dataObject);
                 try {
-                    activity = ActionsAndActivitiesFactory.createActivity()
+                    activity = ActivitiesAndActionsFactory.createActivity()
                             .setExternalProcess("asciidoctor", "-r asciidoctor-pdf " + input.getPath(), input.getParent())
                             .needsIOTab("Publish AsciiDocs")
                             .stderrToIOSTDERR();
