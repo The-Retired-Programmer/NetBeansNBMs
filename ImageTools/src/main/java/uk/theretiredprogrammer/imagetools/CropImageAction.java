@@ -36,7 +36,7 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -179,7 +179,7 @@ public final class CropImageAction implements ActionListener {
                     + "." + input.getExt();
             Activity activity;
             try {
-                activity = ActionsAndActivitiesFactory.createActivity()
+                activity = ActivitiesAndActionsFactory.createActivity()
                         .setExternalProcess("convert-im6",
                                 "\"" + input.getNameExt() + "\" -crop '" + crop + "' \"" + outputfilename + "\"",
                                 input.getParent())

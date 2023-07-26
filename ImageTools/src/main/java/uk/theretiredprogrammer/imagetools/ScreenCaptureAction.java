@@ -36,7 +36,7 @@ import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.screencapture.ScreenCapture;
 import static uk.theretiredprogrammer.screencapture.ScreenCapture.Priority.FILE;
 import static uk.theretiredprogrammer.screencapture.ScreenCapture.Priority.PROJECT;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -109,7 +109,7 @@ public final class ScreenCaptureAction implements ActionListener, Runnable {
         String capturefilepath = screencapture.getCaptureFilePath();
         Activity activity;
         try {
-            activity = ActionsAndActivitiesFactory.createActivity()
+            activity = ActivitiesAndActionsFactory.createActivity()
                     .setExternalProcess("scrot", "-s " + capturefilepath, capturefolder)
                     .needsIOTab(screencapture.getIoTabname())
                     .stderrToIOSTDERR();

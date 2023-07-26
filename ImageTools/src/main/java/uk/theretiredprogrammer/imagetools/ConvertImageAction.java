@@ -30,7 +30,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -148,7 +148,7 @@ public final class ConvertImageAction implements ActionListener {
         public void run() {
             Activity activity;
             try {
-                activity = ActionsAndActivitiesFactory.createActivity()
+                activity = ActivitiesAndActionsFactory.createActivity()
                         .setExternalProcess("convert-im6",
                                 "\"" + input.getNameExt() + "\" \"" + input.getName() + outputext + "\"",
                                 input.getParent())
