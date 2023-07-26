@@ -39,7 +39,7 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -59,7 +59,7 @@ public class PostgreSQLProject implements Project {
     PostgreSQLProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
         try {
-            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+            nodeactions = ActivitiesAndActionsFactory.createNodeActions(dir, "projectactions");
             postgresqlproperties = new PostgreSQLPropertyFile(dir, nodeactions, state);
         } catch (ApplicationException ex) {
             UserReporting.exception(ex);

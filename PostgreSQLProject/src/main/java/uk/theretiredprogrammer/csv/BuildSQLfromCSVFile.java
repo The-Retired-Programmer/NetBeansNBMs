@@ -31,7 +31,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.SaveSelfBeforeAction;
 import uk.theretiredprogrammer.util.UserReporting;
@@ -67,7 +67,7 @@ public final class BuildSQLfromCSVFile implements ActionListener, Runnable {
             SaveSelfBeforeAction.saveIfModified(dataObject);
             Activity activity;
             try {
-                activity = ActionsAndActivitiesFactory.createActivity()
+                activity = ActivitiesAndActionsFactory.createActivity()
                         .setMethod(() -> createSQL(csvfile))
                         .needsIOTab(IOTABNAME);
             } catch (ApplicationException ex) {

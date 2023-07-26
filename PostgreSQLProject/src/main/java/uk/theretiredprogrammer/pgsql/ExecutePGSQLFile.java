@@ -30,7 +30,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.postgresql.PostgreSQLProject;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -68,7 +68,7 @@ public final class ExecutePGSQLFile implements ActionListener, Runnable {
                     Activity activity;
                     try {
                         aproject.getSaveBeforeAction().saveIfModified(dataObject);
-                        activity = ActionsAndActivitiesFactory.createActivity()
+                        activity = ActivitiesAndActionsFactory.createActivity()
                                 .setExternalProcess(
                                         "psql",
                                         "-f " + input.getPath() + " -d " + aproject.getDatabaseName() + " -P pager",

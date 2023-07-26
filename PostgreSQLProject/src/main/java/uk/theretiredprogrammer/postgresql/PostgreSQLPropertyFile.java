@@ -24,7 +24,7 @@ import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.actions.NodeActions.FileChangeType;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import static uk.theretiredprogrammer.actions.SaveBeforeAction.SaveBeforeActionMode.YES;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -87,7 +87,7 @@ public class PostgreSQLPropertyFile {
 
     private boolean parseProperties(FileObject projectdir, Properties properties) throws IOException, ApplicationException {
         database = properties.getProperty("database");
-        savebeforeaction = ActionsAndActivitiesFactory.createSaveBeforeAction(properties, "save_before_execution", YES);
+        savebeforeaction = ActivitiesAndActionsFactory.createSaveBeforeAction(properties, "save_before_execution", YES);
         savebeforeaction.setSourceRoot(projectdir);
         return database != null;
     }
