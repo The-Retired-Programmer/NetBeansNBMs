@@ -38,7 +38,7 @@ import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -57,7 +57,7 @@ public class JBakeProject implements Project {
     JBakeProject(FileObject dir, ProjectState state) {
         this.projectDir = dir;
         try {
-            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+            nodeactions = ActivitiesAndActionsFactory.createNodeActions(dir, "projectactions");
         } catch (ApplicationException ex) {
             UserReporting.exception(ex);
         }
@@ -161,12 +161,12 @@ public class JBakeProject implements Project {
                 this.project = project;
                 nodeactions.setNodeBasicProjectActions();
                 try {
-                    Activity activity = ActionsAndActivitiesFactory.createActivity()
+                    Activity activity = ActivitiesAndActionsFactory.createActivity()
                             .setExternalProcess("jbake", "-b", projectDir)
                             .stdoutToIOSTDOUT()
                             .stderrToIOSTDERR()
                             .needsIOTab("Bake " + projectDir.getName());
-                    nodeactions.setNodeActions(ActionsAndActivitiesFactory.createDynamicAction("Bake").onActionAsync(() -> activity.run("Baking")));
+                    nodeactions.setNodeActions(ActivitiesAndActionsFactory.createDynamicAction("Bake").onActionAsync(() -> activity.run("Baking")));
                 } catch (ApplicationException ex) {
                     UserReporting.exceptionWithMessage("Error when parsing the actions properties file", ex);
                 }
