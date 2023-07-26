@@ -30,7 +30,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.epub.EPUBProject;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
@@ -68,7 +68,7 @@ public final class CreateEPUBHintsFile implements ActionListener, Runnable {
                     EPUBProject aproject = (EPUBProject) project;
                     FileObject stylesheet = getEPUBStyleSheet(aproject.getProjectDirectory(), epubname);
                     try {
-                        activity = ActionsAndActivitiesFactory.createActivity()
+                        activity = ActivitiesAndActionsFactory.createActivity()
                                 .setMethod(() -> EPUBHintsBuilder.create(epub, stylesheet, "EPUB"))
                                 .needsIOTab("EPUB");
                     } catch (Exception ex) {

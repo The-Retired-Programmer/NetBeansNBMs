@@ -21,14 +21,14 @@ import org.netbeans.spi.project.ProjectFactory;
 import org.netbeans.spi.project.ProjectState;
 import org.openide.filesystems.FileObject;
 import org.openide.util.lookup.ServiceProvider;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 
 @ServiceProvider(service = ProjectFactory.class)
 public class EPUBProjectFactory implements ProjectFactory {
 
     @Override
     public boolean isProject(FileObject projectDirectory) {
-        boolean isA3present = ActionsAndActivitiesFactory.IsActionsAndActivitiesAvailable();
+        boolean isA3present = ActivitiesAndActionsFactory.IsActivitiesAndActionsAvailable();
         FileObject epubpropertiesfile = projectDirectory.getFileObject("epub.properties");
         return isA3present && epubpropertiesfile != null && epubpropertiesfile.isData();
     }

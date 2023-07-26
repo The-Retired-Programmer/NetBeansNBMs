@@ -38,7 +38,7 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import uk.theretiredprogrammer.actions.NodeActions;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -58,7 +58,7 @@ public class EPUBProject implements Project {
     EPUBProject(FileObject dir, ProjectState state) throws IOException {
         this.projectDir = dir;
         try {
-            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+            nodeactions = ActivitiesAndActionsFactory.createNodeActions(dir, "projectactions");
             epubproperties = new EPUBPropertyFile(dir, nodeactions, state);
         } catch (ApplicationException ex) {
             UserReporting.exception(ex);

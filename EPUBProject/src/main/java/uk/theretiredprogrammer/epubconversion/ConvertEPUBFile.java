@@ -31,7 +31,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.epub.EPUBProject;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -69,7 +69,7 @@ public final class ConvertEPUBFile implements ActionListener, Runnable {
                 try {
                     EPUBProject aproject = (EPUBProject) project;
                     FileObject outputfolder = getOutputFolder(aproject.getProjectDirectory(), epubname);
-                    activity = ActionsAndActivitiesFactory.createActivity()
+                    activity = ActivitiesAndActionsFactory.createActivity()
                             .setMethod(() -> convertAllHTMLSections(aproject.getProjectDirectory(), epubname, epub, outputfolder, "EPUB"))
                             .needsIOTab("EPUB");
                     

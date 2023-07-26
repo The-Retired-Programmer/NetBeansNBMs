@@ -30,7 +30,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import uk.theretiredprogrammer.activity.Activity;
 import uk.theretiredprogrammer.epub.EPUBProject;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
@@ -67,7 +67,7 @@ public final class ExtractEPUBFile implements ActionListener, Runnable {
                 EPUBProject aproject = (EPUBProject) project;
                 try {
                     FileObject extractionfolder = getExtractionFolder(aproject.getProjectDirectory(), epubname);
-                    activity = ActionsAndActivitiesFactory.createActivity()
+                    activity = ActivitiesAndActionsFactory.createActivity()
                             .setMethod(() -> EPUBExtractor.extract(epub, extractionfolder, "EPUB"))
                             .needsIOTab("EPUB");
                 } catch (Exception ex) {
