@@ -24,19 +24,19 @@ import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import uk.theretiredprogrammer.activity.Activity;
 
 /**
- * The ActionsandActivity Factory
+ * The ActivitiesAndActions Factory. 
  *
- * methods to create objects from the ActionsAndActivities Library.
+ * Methods to create objects from the ActivitiesAndActions Module.
  *
  */
-public class ActionsAndActivitiesFactory {
+public class ActivitiesAndActionsFactory {
 
     /**
-     * Test if the ActionsAndActivities Services NBM is installed.
+     * Test if the ActivityAndActions Services NBM is installed.
      *
      * @return true if available
      */
-    public static boolean IsActionsAndActivitiesAvailable() {
+    public static boolean IsActivitiesAndActionsAvailable() {
         A3Factory factory = Lookup.getDefault().lookup(A3Factory.class);
         return factory != null;
     }
@@ -50,7 +50,7 @@ public class ActionsAndActivitiesFactory {
     public static Activity createActivity() throws ApplicationException {
         A3Factory factory = Lookup.getDefault().lookup(A3Factory.class);
         if (factory == null) {
-            throw new ApplicationException("Activity and Actions NBM is not loaded");
+            throw new ApplicationException("Activities and Actions NBM is not loaded");
         }
         return factory.createActivity();
     }
@@ -65,7 +65,7 @@ public class ActionsAndActivitiesFactory {
     public static DynamicAction createDynamicAction(String label) throws ApplicationException {
         A3Factory factory = Lookup.getDefault().lookup(A3Factory.class);
         if (factory == null) {
-            throw new ApplicationException("Activity and Actions NBM is not loaded");
+            throw new ApplicationException("Activities and Actions NBM is not loaded");
         }
         return factory.createDynamicAction(label);
     }
@@ -82,7 +82,7 @@ public class ActionsAndActivitiesFactory {
     public static NodeActions createNodeActions(FileObject filefolder, String actionpropertiesfilename) throws ApplicationException {
         A3Factory factory = Lookup.getDefault().lookup(A3Factory.class);
         if (factory == null) {
-            throw new ApplicationException("Activity and Actions NBM is not loaded");
+            throw new ApplicationException("Activities and Actions NBM is not loaded");
         }
         return factory.createNodeActions(filefolder, actionpropertiesfilename);
     }
@@ -103,7 +103,7 @@ public class ActionsAndActivitiesFactory {
     public static SaveBeforeAction createSaveBeforeAction(Properties properties, String propertyname, SaveBeforeAction.SaveBeforeActionMode defaultmode) throws ApplicationException {
         A3Factory factory = Lookup.getDefault().lookup(A3Factory.class);
         if (factory == null) {
-            throw new ApplicationException("Activity and Actions NBM is not loaded");
+            throw new ApplicationException("Activities and Actions NBM is not loaded");
         }
         return factory.createSaveBeforeAction(properties, propertyname, defaultmode);
     }

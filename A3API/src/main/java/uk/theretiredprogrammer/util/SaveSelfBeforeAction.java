@@ -20,8 +20,8 @@ import org.openide.cookies.SaveCookie;
 import org.openide.loaders.DataObject;
 
 /**
- * A simple method to SaveBeforeAction without the needs of
- * a project property to control the mode of operation
+ * A simple method to execute a SaveBeforeAction without the needs for
+ * project properties to control the mode of operation.
  * 
  * See SaveBeforeAction for the fuller implementation
  * 

@@ -16,7 +16,8 @@
 package uk.theretiredprogrammer.util;
 
 /**
- * An Exception used within the ActionsAndActivities Library.
+ * An Exception used within the ActivitiesAndActions Module. Can also be used in
+ * Project Modules if required.
  *
  */
 public class ApplicationException extends Exception {

@@ -23,9 +23,9 @@ import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import uk.theretiredprogrammer.activity.Activity;
 
 /**
- * The Interface for the ActionsandActivity Factory
+ * The Interface for the ActivitiesAndActions Factory.
  *
- * Methods to create objects from the ActionsAndActivities Library.
+ * Methods to create objects from the ActivitiesAndActions Module.
  *
  */
 public interface A3Factory {

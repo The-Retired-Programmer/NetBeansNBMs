@@ -21,7 +21,7 @@ import org.netbeans.api.io.IOProvider;
 import org.netbeans.api.io.InputOutput;
 
 /**
- * A group of methods for reporting.
+ * A group of methods for reporting. both to the UI and the IDE log.
  *
  * It reports to both a logger and also writes to an IO Tab to ensure user
  * visibility
@@ -32,8 +32,8 @@ public class UserReporting {
     /**
      * The default reporting IoTab is "Error Reporting";
      *
-     * All reporting logging uses the
-     * "uk.theretiredprogrammer.a3.UserReporting" logger.
+     * All reporting logging uses the "uk.theretiredprogrammer.a3.UserReporting"
+     * logger.
      *
      */
     private static final String DEFAULT_IOTAB = "Error Reporting";

@@ -301,5 +301,8 @@ public interface Activity {
      */
     public Activity stderrToIOSTDOUT() throws ApplicationException;
     
+    /**
+     * Convenience variable - the OS specific line terminator
+     */
     public static final String NEWLINE = System.getProperty("line.separator");
 }
