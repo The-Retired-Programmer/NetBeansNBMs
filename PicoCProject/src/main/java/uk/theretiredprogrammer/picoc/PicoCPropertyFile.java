@@ -24,7 +24,7 @@ import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.actions.NodeActions.FileChangeType;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
 import static uk.theretiredprogrammer.actions.SaveBeforeAction.SaveBeforeActionMode.ALL;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -99,7 +99,7 @@ public class PicoCPropertyFile {
     }
 
     private void parseProperties(FileObject projectdir, Properties properties) throws IOException, ApplicationException {
-        savebeforeaction = ActionsAndActivitiesFactory.createSaveBeforeAction(properties, "save_before_building", ALL);
+        savebeforeaction = ActivitiesAndActionsFactory.createSaveBeforeAction(properties, "save_before_building", ALL);
         savebeforeaction.setSourceRoot(projectdir.getFileObject("src"));
         executables = properties.getProperty("executables", "app").split(",");
         downloadusingbootloader = "Yes".equalsIgnoreCase(properties.getProperty("enable_download_use_bootloader", "No"));

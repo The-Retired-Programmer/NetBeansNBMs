@@ -42,7 +42,7 @@ import org.openide.util.lookup.ProxyLookup;
 import uk.theretiredprogrammer.actions.DynamicAction;
 import uk.theretiredprogrammer.actions.NodeActions;
 import uk.theretiredprogrammer.actions.SaveBeforeAction;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -65,7 +65,7 @@ public class PicoCProject implements Project {
             projectDir.createFolder("build");
         }
         try {
-            nodeactions = ActionsAndActivitiesFactory.createNodeActions(dir, "projectactions");
+            nodeactions = ActivitiesAndActionsFactory.createNodeActions(dir, "projectactions");
             picocproperties = new PicoCPropertyFile(dir, nodeactions, state);
         } catch (ApplicationException ex) {
             UserReporting.exception(ex);
@@ -181,23 +181,23 @@ public class PicoCProject implements Project {
                 try {
                     PicoCBuildWorkers workers = new PicoCBuildWorkers(projectDir.getName(), projectDir.getFileObject("build"));
 
-                    mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Clean")
+                    mynodeactions.add(ActivitiesAndActionsFactory.createDynamicAction("Clean")
                             .onActionAsync(() -> workers.cleanBuildFolder()));
-                    mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Build Make file")
+                    mynodeactions.add(ActivitiesAndActionsFactory.createDynamicAction("Build Make file")
                             .onActionAsync(() -> workers.buildMakeFile()));
-                    mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Build Executables")
+                    mynodeactions.add(ActivitiesAndActionsFactory.createDynamicAction("Build Executables")
                             .onActionAsync(() -> workers.buildExecutables()));
                     for (String exe : picocproperties.getExecutables()) {
                         if (picocproperties.isDownloadUsingDebugPort()) {
-                            mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Download " + exe + " using Debug Port")
+                            mynodeactions.add(ActivitiesAndActionsFactory.createDynamicAction("Download " + exe + " using Debug Port")
                                     .onActionAsync(() -> workers.downloadViaDebug(exe)));
                         }
                         if (picocproperties.isDownloadUsingBootLoader()) {
-                            mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Download " + exe + " using Bootloader")
+                            mynodeactions.add(ActivitiesAndActionsFactory.createDynamicAction("Download " + exe + " using Bootloader")
                                     .onActionAsync(() -> workers.downloadViaBootLoader(exe)));
                         }
                     }
-                    mynodeactions.add(ActionsAndActivitiesFactory.createDynamicAction("Serial Terminal")
+                    mynodeactions.add(ActivitiesAndActionsFactory.createDynamicAction("Serial Terminal")
                             .onActionAsync(() -> workers.showSerialTerminal("Serial Terminal", picocproperties)));
                 } catch (ApplicationException ex) {
                     UserReporting.exceptionWithMessage("Error creating project node actions", ex);

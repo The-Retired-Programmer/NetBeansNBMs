@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import uk.theretiredprogrammer.activity.Activity;
-import uk.theretiredprogrammer.util.ActionsAndActivitiesFactory;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
 import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.UserReporting;
 
@@ -37,7 +37,7 @@ public class PicoCBuildWorkers {
     public final void showSerialTerminal(String iotabname, PicoCPropertyFile picocproperties) {
         Activity activity;
         try {
-            activity = ActionsAndActivitiesFactory.createActivity()
+            activity = ActivitiesAndActionsFactory.createActivity()
                     .setDevice(new SerialDeviceDescriptor(picocproperties.getDevicename(),
                             picocproperties.getBaudrate(), picocproperties.getEncoding()))
                     .needsIOTab(iotabname)
@@ -57,7 +57,7 @@ public class PicoCBuildWorkers {
         }
         Activity activity;
         try {
-            activity = ActionsAndActivitiesFactory.createActivity()
+            activity = ActivitiesAndActionsFactory.createActivity()
                     .setMethod(() -> cleanbuildfolder())
                     .needsIOTab(iotabname);
         } catch (ApplicationException ex) {
@@ -86,7 +86,7 @@ public class PicoCBuildWorkers {
         if (cmaketxt != null && cmaketxt.isData()) {
             Activity activity;
             try {
-                activity = ActionsAndActivitiesFactory.createActivity()
+                activity = ActivitiesAndActionsFactory.createActivity()
                         .setExternalProcess("cmake", "..", buildfolder)
                         .needsIOTab(iotabname)
                         .stderrToIOSTDERR()
@@ -110,7 +110,7 @@ public class PicoCBuildWorkers {
         if (make != null && make.isData()) {
             Activity activity;
             try {
-                activity = ActionsAndActivitiesFactory.createActivity()
+                activity = ActivitiesAndActionsFactory.createActivity()
                         .setExternalProcess("make", "", buildfolder)
                         .needsIOTab(iotabname)
                         .stderrToIOSTDERR()
@@ -134,7 +134,7 @@ public class PicoCBuildWorkers {
         String executablepath = getExecutablePath(buildname, "elf");
         Activity activity;
         try {
-            activity = ActionsAndActivitiesFactory.createActivity()
+            activity = ActivitiesAndActionsFactory.createActivity()
                     .setExternalProcess("openocd",
                             "-f " + userhome + "/pico/openocd/tcl/interface/raspberrypi-swd.cfg "
                             + "-f " + userhome + "/pico/openocd/tcl/target/rp2040.cfg "
@@ -157,7 +157,7 @@ public class PicoCBuildWorkers {
         }
         Activity activity;
         try {
-            activity = ActionsAndActivitiesFactory.createActivity()
+            activity = ActivitiesAndActionsFactory.createActivity()
                     .setMethod(() -> loadUsingBootLoader(buildname))
                     .needsIOTab(iotabname);
         } catch (ApplicationException ex) {
