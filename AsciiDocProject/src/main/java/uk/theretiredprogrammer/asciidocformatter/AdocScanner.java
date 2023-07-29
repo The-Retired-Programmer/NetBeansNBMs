@@ -108,7 +108,10 @@ public class AdocScanner {
         if (linetext.startsWith("* ") || linetext.startsWith(". ") || linetext.startsWith("<") || linetext.startsWith("=")) {
             return AdocLineType.STARTLINE;
         }
-        if (linetext.startsWith(":") /*|| linetext.startsWith("[") */) {
+        if (linetext.startsWith("[.") ) {
+            return AdocLineType.LINE;
+        }
+        if (linetext.startsWith(":") || linetext.startsWith("[") ) {
             return AdocLineType.COMMANDLINE;
         }
         if (linetext.equals("----\n")) {
@@ -190,7 +193,8 @@ public class AdocScanner {
                         case COMMANDLINE:
                             return complete(AdocBlockType.NEWLINE);
                         case BLOCKBRACKETLINE:
-                            throw new ApplicationException("Fail: block bracket (----) should not be within a paragraph");
+                            throw new ApplicationException("Fail: block bracket (----) should not be within a paragraph\n"
+                                    +blockbuilder.toString());
                     }
                     break;
                 case INSIDEBLOCK:
