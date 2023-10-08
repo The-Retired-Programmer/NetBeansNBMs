@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.totextile;
+package uk.theretiredprogrammer.html2textile.textiletranslation;
 
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -21,23 +21,29 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
-public class OlTranslator extends TextileElementTranslator {
+public class ATranslator extends TextileElementTranslator {
 
-    public OlTranslator(PrintWriter out) {
+    private final static String RELATIVE_PREFIX = "https://exe-sailing-club.org/";
+    
+    public ATranslator(PrintWriter out) {
         super(out);
     }
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id"};
+        return new String[]{"style", "class", "id", "href"};
     }
 
     public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException {
-        if (attributes.getLength() != 0) {
-            out.write("#".repeat(translator.findlistdepth(element)));
-            writeClassStyleId(attributes);
-            out.write((".\n"));
-        }
+        out.write("\"");
+        writeClassStyleId(attributes);
         translator.processChildren(children);
-        out.write("\n");
+        out.write("\":");
+        out.write(getURL(isAttribute(name, "href", attributes)));
+        out.write(" ");
+    }
+
+    private String getURL(String hrefvalue) {
+        return hrefvalue.startsWith("https://") || hrefvalue.startsWith("mailto:") || hrefvalue.startsWith("tel:")
+                ? hrefvalue : RELATIVE_PREFIX + hrefvalue;
     }
 }

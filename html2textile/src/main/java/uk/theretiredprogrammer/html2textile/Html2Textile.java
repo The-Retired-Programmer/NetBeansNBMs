@@ -15,7 +15,7 @@
  */
 package uk.theretiredprogrammer.html2textile;
 
-import uk.theretiredprogrammer.html2textile.totextile.TextileTranslator;
+import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;

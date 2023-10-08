@@ -13,32 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.totextile;
+package uk.theretiredprogrammer.html2textile.textiletranslation;
 
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class PTranslator extends TextileElementTranslator {
+public class TdTranslator extends TextileElementTranslator {
 
-    public PTranslator(PrintWriter out) {
+    public TdTranslator(PrintWriter out) {
         super(out);
     }
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id"};
+        return new String[]{"style", "class", "id", "rowspan", "colspan"};
     }
 
     public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException {
         if (attributes.getLength() != 0) {
-            out.write("p");
+            writeColOrRowSpan(attributes, "rowspan", '/');
+            writeColOrRowSpan(attributes, "colspan", '\\');
             writeClassStyleId(attributes);
             out.write(". ");
         }
         translator.processChildren(children);
-        out.write("\n\n");
+        out.write("|");
     }
 
+    private void writeColOrRowSpan(NamedNodeMap attributes, String attributename, char outSymbol) throws IOException {
+        Node attribute = attributes.getNamedItem(attributename);
+        if (attribute == null) {
+            return;
+        }
+        out.write(outSymbol);
+        out.write(attribute.getNodeValue());
+    }
 }

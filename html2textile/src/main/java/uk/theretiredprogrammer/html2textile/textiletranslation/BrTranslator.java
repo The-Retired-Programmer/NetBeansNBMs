@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.totextile;
+package uk.theretiredprogrammer.html2textile.textiletranslation;
 
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
-import uk.theretiredprogrammer.util.UserReporting;
 
-public class UnknownTranslator extends TextileElementTranslator {
+public class BrTranslator extends TextileElementTranslator {
 
-    public UnknownTranslator(PrintWriter out) {
+    public BrTranslator(PrintWriter out) {
         super(out);
     }
 
@@ -33,7 +32,8 @@ public class UnknownTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException {
-        out.write(" **UNKNOWN ELEMENT (" + name + ")** ");
-        UserReporting.error("Html to Textile conversion", "Failed to create Textile output - unknown Element found (" + name + ")");
+        checkNoAttributes(attributes);
+        out.write("\n");
     }
+
 }

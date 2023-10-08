@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.totextile;
+package uk.theretiredprogrammer.html2textile.textiletranslation;
 
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -21,21 +21,22 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
-public class UTranslator extends TextileElementTranslator {
+public class LiTranslator extends TextileElementTranslator {
 
-    public UTranslator(PrintWriter out) {
+    public LiTranslator(PrintWriter out) {
         super(out);
     }
 
     public String[] allowedAttributes() {
-        return new String[0];
+        return new String[]{"style", "class", "id"};
     }
 
     public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException {
-        out.write("_");
-        checkNoAttributes(attributes);
+        out.write((translator.isparentlisttypeOL(element)?"#":"*").repeat( translator.findlistdepth(element)));
+        writeClassStyleId(attributes);
+        out.write((" "));
         translator.processChildren(children);
-        out.write("_");
+        out.write("\n");
     }
 
 }
