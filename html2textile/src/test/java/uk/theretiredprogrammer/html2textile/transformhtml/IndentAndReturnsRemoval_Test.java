@@ -27,23 +27,23 @@ import org.xml.sax.SAXException;
 
 public class IndentAndReturnsRemoval_Test {
 
-    public IndentAndReturnsRemoval_Test() {
-    }
-
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_indentandreturns.html");
         Reader in = new InputStreamReader(is);
         TransformHtml transformer = new TransformHtml(in);
         //
-        IndentAndReturnsRemoval.run(transformer);
-       String result = DomSerialisation.run(transformer);
+        transformer.transform(new IndentAndReturnsRemoval());
+        //
+        String result = transformer.getSerialisedDOM();
+        //System.out.println(result);
         assertEquals(expected(), result);
-
     }
 
     private String expected() {
-        return "html\n"
-                + "    img\n";
+        return """
+               html
+                   img
+               """;
     }
 }

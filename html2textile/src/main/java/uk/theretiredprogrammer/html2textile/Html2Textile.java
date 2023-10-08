@@ -15,23 +15,29 @@
  */
 package uk.theretiredprogrammer.html2textile;
 
-import uk.theretiredprogrammer.html2textile.totextile.ToTextile;
-import java.io.BufferedWriter;
+import uk.theretiredprogrammer.html2textile.totextile.TextileTranslator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Element;
+import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.tranformtext.TransformText;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 
 public class Html2Textile {
 
-    public static void convert(Reader from, BufferedWriter textilewriter) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException {
-        try ( Reader wrapped = TransformText.transform(from)) { 
-             Element root = TransformHtml.transform(wrapped);
-             ToTextile.translate(root, textilewriter);
+    public static void convert(Reader from, PrintWriter textilewriter) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        TransformText texttransformer = new TransformText(from);
+        texttransformer.rootWrap("html");
+        texttransformer.replace("&nbsp;", " ");
+        try (Reader wrapped = texttransformer.transform()) {
+            TransformHtml transformer = new TransformHtml(wrapped);
+            transformer.transform();
+            TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textilewriter);
+            translator.translate();
         }
     }
 }
+ 

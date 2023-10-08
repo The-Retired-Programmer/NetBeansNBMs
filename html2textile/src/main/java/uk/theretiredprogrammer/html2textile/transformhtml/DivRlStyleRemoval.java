@@ -19,19 +19,14 @@ import org.w3c.dom.Element;
 
 public class DivRlStyleRemoval extends DomModifications {
     
-    public static void run(TransformHtml transformer) {
-        DomModifications rules = new DivRlStyleRemoval();
-        transformer.transform(rules);
-    }
-    
-    public Outcome testElementAndModify(Element element, int level){
+    public SubsequentWalkAction testElementAndModify(Element element, int level){
         if (element.getTagName().equals("div") &&
-                "margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000;"
+                "margin:20px20px20px20px;font-family:arial,helvetica,sans-serif;font-size:12pt;line-height:1.5em;color:#000000;"
                         .equals(getOnlyAttribute(element,"style"))){
             removeElement(element);
-            return Outcome.RESTART_SWEEP_FROM_ROOT;
+            return SubsequentWalkAction.RESTART_WALK_FROM_ROOT;
         } else {
-            return Outcome.CONTINUE_SWEEP;
+            return SubsequentWalkAction.CONTINUE_WALK;
         }
     }
 }

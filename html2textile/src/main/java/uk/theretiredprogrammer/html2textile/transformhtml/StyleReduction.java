@@ -20,29 +20,24 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 public class StyleReduction extends DomModifications {
-    
-    public static void run(TransformHtml transformer) {
-        DomModifications rules = new StyleReduction();
-        transformer.transform(rules);
-    }
-    
-    public Outcome testElementAndModify(Element element, int level){
+
+    public SubsequentWalkAction testElementAndModify(Element element, int level) {
         NamedNodeMap attributes = element.getAttributes();
         Node style = attributes.getNamedItem("style");
         if (style != null) {
             style.setNodeValue(
-                    remove(style.getNodeValue().replace(" ", ""),
-                    "font-family:arial,helvetica,sans-serif;",
-                    "font-size:12pt;",
-                    "color:#000000;",
-                    "background-color:inherit;",
-                    "font-family:inherit;",
-                    "font-size:10pt;")
+                    remove(style.getNodeValue(),
+                            "font-family:arial,helvetica,sans-serif;",
+                            "font-size:12pt;",
+                            "color:#000000;",
+                            "background-color:inherit;",
+                            "font-family:inherit;",
+                            "font-size:10pt;")
             );
         }
-        return Outcome.CONTINUE_SWEEP;
+        return SubsequentWalkAction.CONTINUE_WALK;
     }
-    
+
     private String remove(String from, String... removethese) {
         for (String removeme : removethese) {
             int here = from.indexOf(removeme);

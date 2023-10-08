@@ -17,14 +17,15 @@ package uk.theretiredprogrammer.html2textile;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import org.openide.loaders.DataObject;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -64,26 +65,24 @@ public final class ActionHtml2Textile implements ActionListener, Runnable {
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
             SaveSelfBeforeAction.saveIfModified(dataObject);
-            try {
-                try ( Reader rdr = getReader(input);  BufferedWriter wtr = getWriter(input)) {
-                    Html2Textile.convert(rdr, wtr);
-                }
-            } catch (IOException | ParserConfigurationException | SAXException ex) {
+            try ( Reader rdr = getReader(input);  PrintWriter wtr = getWriter(input)) {
+                Html2Textile.convert(rdr, wtr);
+            } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
                 UserReporting.exception("Html to Textile conversion", ex);
             }
         }
     }
-    
+
     private Reader getReader(FileObject input) throws FileNotFoundException {
         return new InputStreamReader(input.getInputStream());
     }
 
-    private BufferedWriter getWriter(FileObject input) throws IOException {
+    private PrintWriter getWriter(FileObject input) throws IOException {
         FileObject parent = input.getParent();
         FileObject target = parent.getFileObject(input.getName(), "textile");
         if (target != null) {
             target.delete();
         }
-        return new BufferedWriter(new OutputStreamWriter(parent.createAndOpen(input.getName() + ".textile")));
+        return new PrintWriter(new OutputStreamWriter(parent.createAndOpen(input.getName() + ".textile")));
     }
 }

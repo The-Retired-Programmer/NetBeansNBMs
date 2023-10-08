@@ -17,15 +17,22 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
+import javax.xml.XMLConstants;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import static org.w3c.dom.Node.TEXT_NODE;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.transformhtml.DomModifications.Outcome;
+import uk.theretiredprogrammer.html2textile.transformhtml.DomModifications.SubsequentWalkAction;
 
 public class TransformHtml {
 
@@ -34,75 +41,101 @@ public class TransformHtml {
 //              optimise html constructs
 //              remove usage patterns whish are redundent or poorly inserted by cut & paste of other formats
 //
-    public static Element transform(Reader input) throws IOException, SAXException, ParserConfigurationException {
-        TransformHtml transformer = new TransformHtml(input);
-        transformer.transform(new DivRlStyleRemoval());
-        return transformer.root;
-    }
-
-    final Element root;
+    private final Element root;
+    private int level = 0;
 
     public TransformHtml(Reader input) throws IOException, ParserConfigurationException, SAXException {
         root = newInstance().newDocumentBuilder().parse(new InputSource(input)).getDocumentElement();
     }
 
-    private int level = 0;
+    public void transform() {
+        transform(new IndentAndReturnsRemoval());
+        transform(new StyleNormalisation());
+        transform(new DivRlStyleRemoval());
+        transform(new DivReduction());
+        transform(new StyleReduction());
+        transform(new Style2u());
+        transform(new Style2strong());
+        transform(new NullSpanRemoval());
+        transform(new StyleMerge());
+        transform(new NullAttributeRemoval());
+        transform(new ElementTrailingSpaceRemoval());
+        transform(new ReplaceWithHeadings());
+    }
+
+    public void writeHtml(Writer output) throws TransformerException {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.transform(new DOMSource(root.getOwnerDocument()), new StreamResult(output));
+    }
+
+    public String getSerialisedDOM() {
+        DomSerialisation rules = new DomSerialisation();
+        transform(rules);
+        return rules.getContent();
+    }
     
+    public Element getRoot() {
+        return root;
+    }
+
     void transform(DomModifications transformrules) {
         Node next = root;
         level = 0;
-        while ((next = processNode(next, transformrules, level))!= null) {}
+        while ((next = processNode(next, transformrules, level)) != null) {
+        }
     }
-    
-    
+
     private Node processNode(Node node, DomModifications transformrules, int level) {
         Node parentnode = node.getParentNode();
-        switch (node.getNodeType()) {
-            case TEXT_NODE:
-                return nextSiblingNode(node, parentnode, transformrules.testTextAndModify(node, level));
-            case ELEMENT_NODE:
-                return nextChildNode(node, parentnode, transformrules.testElementAndModify((Element) node, level));
-            default:
-                return nextSiblingNode(node, parentnode, Outcome.CONTINUE_SWEEP);
-        }
-        
+        return switch (node.getNodeType()) {
+            case TEXT_NODE ->
+                nextSiblingNode(node, parentnode, transformrules.testTextAndModify(node, level));
+            case ELEMENT_NODE ->
+                nextChildNode(node, parentnode, transformrules.testElementAndModify((Element) node, level));
+            default ->
+                nextSiblingNode(node, parentnode, SubsequentWalkAction.CONTINUE_WALK);
+        };
     }
-    
-    private Node nextSiblingNode(Node node, Node parentnode, Outcome outcome) {
-        switch (outcome) {
-            case RESTART_SWEEP_FROM_ROOT:
+
+    private Node nextSiblingNode(Node node, Node parentnode, SubsequentWalkAction SubsequentWalkAction) {
+        switch (SubsequentWalkAction) {
+            case RESTART_WALK_FROM_ROOT:
                 level = 0;
                 return root;
-            case RESTART_SWEEP_FROM_PARENT:
+            case RESTART_WALK_FROM_PARENT:
                 level--;
                 return parentnode;
-            case CONTINUE_SWEEP:
+            case CONTINUE_WALK:
             default:
                 return findSiblingNode(node);
         }
     }
-    
+
     private Node findSiblingNode(Node node) {
         Node next;
         while ((next = node.getNextSibling()) == null) {
             node = node.getParentNode();
             level--;
-            if(level == 0 ||node == null) {
+            if (level == 0 || node == null) {
                 return null;
             }
         }
         return next;
     }
-    
-    private Node nextChildNode(Node node, Node parentnode, Outcome outcome) {
-        switch (outcome) {
-            case RESTART_SWEEP_FROM_ROOT:
+
+    private Node nextChildNode(Node node, Node parentnode, SubsequentWalkAction SubsequentWalkAction) {
+        switch (SubsequentWalkAction) {
+            case RESTART_WALK_FROM_ROOT:
                 level = 0;
                 return root;
-            case RESTART_SWEEP_FROM_PARENT:
+            case RESTART_WALK_FROM_PARENT:
                 level--;
                 return parentnode;
-            case CONTINUE_SWEEP:
+            case CONTINUE_WALK:
             default:
                 Node next = node.getFirstChild();
                 if (next == null) {

@@ -19,21 +19,50 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TransformText {
+
 //
 // STAGE 1 - textual transforms
 //          update the input (html or html fragment)
 //          wrap in <html> tag - so is valid XML structure which can be loaded
 //          replace any &nbsp; entities with a space
 //
+    private final Reader original;
+    private String rootname = "";
+    private final Map<String, String> replacements = new HashMap<>();
 
-    public static Reader transform(Reader original) throws IOException {
+    public TransformText(Reader original) {
+        this.original = original;
+    }
+
+    public void rootWrap(String name) {
+        this.rootname = name;
+    }
+
+    public void replace(String old, String with) {
+        replacements.put(old, with);
+    }
+
+    public Reader transform() throws IOException {
         StringWriter wrapped = new StringWriter();
-        wrapped.write("<html>\n");
-        original.transferTo(wrapped);
-        wrapped.write("</html>\n");
-        String content = wrapped.toString();
-        return new StringReader(content.replace("&nbsp;", " "));
+        if (rootname.isEmpty()) {
+            original.transferTo(wrapped);
+        } else {
+            wrapped.write("<" + rootname + ">\n");
+            original.transferTo(wrapped);
+            wrapped.write("</" + rootname + ">\n");
+        }
+        return new StringReader(applyreplacements(wrapped.toString()));
+    }
+
+    private String applyreplacements(String before) {
+        String text = before;
+        for (var replacement : replacements.entrySet()) {
+            text = text.replace(replacement.getKey(), replacement.getValue());
+        }
+        return text;
     }
 }

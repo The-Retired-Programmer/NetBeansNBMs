@@ -20,19 +20,13 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 public class DomSerialisation extends DomModifications {
-    
-    public static String run(TransformHtml transformer){
-        DomSerialisation rules = new DomSerialisation();
-        transformer.transform(rules);
-        return rules.getContent();
-    }
 
     private final StringBuilder sb = new StringBuilder();
 
     private static final String INDENTTEXT = "    ";
 
     @Override
-    public Outcome testElementAndModify(Element element, int level){
+    public SubsequentWalkAction testElementAndModify(Element element, int level){
         write(INDENTTEXT.repeat(level));
         write(element.getTagName());
         
@@ -46,11 +40,11 @@ public class DomSerialisation extends DomModifications {
             write("\"");
         }
         write('\n');
-        return Outcome.CONTINUE_SWEEP;
+        return SubsequentWalkAction.CONTINUE_WALK;
     }
 
     @Override
-    public Outcome testTextAndModify(Node textnode, int level) {
+    public SubsequentWalkAction testTextAndModify(Node textnode, int level) {
         write(INDENTTEXT.repeat(level));
         write("\"");
         write(textnode.getNodeValue()
@@ -58,7 +52,7 @@ public class DomSerialisation extends DomModifications {
                 .replace("\r", "\\r").replace("\"", "\\\"")
         );
         write("\"\n");
-        return Outcome.CONTINUE_SWEEP;
+        return SubsequentWalkAction.CONTINUE_WALK;
     }
 
     public String getContent() {

@@ -27,25 +27,30 @@ import org.xml.sax.SAXException;
 
 public class DivRlStyleRemoval_Test {
 
-    public DivRlStyleRemoval_Test() {
-    }
-
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_rldiv.html");
         Reader in = new InputStreamReader(is);
         TransformHtml transformer = new TransformHtml(in);
-        IndentAndReturnsRemoval.run(transformer);
+        transformer.transform(new IndentAndReturnsRemoval());
+        transformer.transform(new StyleNormalisation());
         //
-        DivRlStyleRemoval.run(transformer);
-        String result = DomSerialisation.run(transformer);
+        transformer.transform(new DivRlStyleRemoval());
+        //
+        String result = transformer.getSerialisedDOM();
+        //System.out.println(result);
         assertEquals(expected(), result);
-
     }
 
     private String expected() {
-        return "html\n" +
-                "    p\n" +
-                "        \"This is wrapped in an RL div\"\n";
+        return """
+               html
+                   p
+                       "This is wrapped in an RL div"
+                   p
+                       "and this"
+                   p
+                       "and finally"
+               """;
     }
 }

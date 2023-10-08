@@ -35,20 +35,28 @@ public class DomSerialisation_Test {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_rldiv.html");
         Reader in = new InputStreamReader(is);
         TransformHtml transformer = new TransformHtml(in);
-
-        String result = DomSerialisation.run(transformer);
+        //
+        String result = transformer.getSerialisedDOM();
+        //System.out.println(result);
         assertEquals(expected(), result);
-
     }
 
     private String expected() {
-        return "html\n"
-                + "    \"\\n    \"\n"
-                + "    div style=\"margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000;\"\n"
-                + "        \"\\n        \"\n"
-                + "        p\n"
-                + "            \"This is wrapped in an RL div\"\n"
-                + "        \"\\n    \"\n"
-                + "    \"\\n\"\n";
+        return """
+               html
+                   "\\n    "
+                   div style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000;"
+                       "\\n        "
+                       p
+                           "This is wrapped in an RL div"
+                       "\\n        "
+                       p
+                           "and this"
+                       "\\n        "
+                       p
+                           "and finally"
+                       "\\n    "
+                   "\\n"
+               """;
     }
 }

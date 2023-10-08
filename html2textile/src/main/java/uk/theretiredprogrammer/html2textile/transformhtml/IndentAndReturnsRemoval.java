@@ -19,29 +19,24 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class IndentAndReturnsRemoval extends DomModifications {
-    
-    public static void run(TransformHtml transformer) {
-        DomModifications rules = new IndentAndReturnsRemoval();
-        transformer.transform(rules);
-    }
 
     @Override
-    public Outcome testElementAndModify(Element element, int level){
-        return Outcome.CONTINUE_SWEEP;
+    public SubsequentWalkAction testElementAndModify(Element element, int level){
+        return SubsequentWalkAction.CONTINUE_WALK;
     }
     
     @Override
-    public Outcome testTextAndModify(Node textnode, int level){
+    public SubsequentWalkAction testTextAndModify(Node textnode, int level){
         if (isFilterable(textnode.getNodeValue())) {
             removeNode(textnode);
-            return Outcome.RESTART_SWEEP_FROM_PARENT;
+            return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
         }
-        return Outcome.CONTINUE_SWEEP;
+        return SubsequentWalkAction.CONTINUE_WALK;
     }
 
     private boolean isFilterable(String text) {
-        return text.contains("\n")
-                ? text.replace("\n", " ").replace("\t", " ").strip().equals("")
+        return text.contains("\n") || text.contains("\r")
+                ? text.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip().equals("")
                 : false;
     }
 }

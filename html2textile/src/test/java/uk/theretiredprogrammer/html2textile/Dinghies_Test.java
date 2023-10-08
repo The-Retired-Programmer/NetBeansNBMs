@@ -15,28 +15,28 @@
  */
 package uk.theretiredprogrammer.html2textile;
 
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.xml.sax.SAXException;
 
 public class Dinghies_Test {
-    
+
     public Dinghies_Test() {
     }
 
     @Test
-    public void testDinghiesConversion() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
-        try (Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/dinghies.html");
-        BufferedWriter to = new BufferedWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/dinghies.textile"))){
+    public void testDinghiesConversion() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerException {
+        try ( Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/dinghies.html");  PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/dinghies.textile"))) {
             Html2Textile.convert(from, to);
         }
     }
-    
+
 }
