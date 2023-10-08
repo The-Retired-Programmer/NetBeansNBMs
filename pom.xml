@@ -4,7 +4,7 @@
     
     <groupId>uk.theretiredprogrammer</groupId>
     <artifactId>netbeansnbms</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <packaging>pom</packaging>
     
     <name>NetBeansNBMs</name>
@@ -12,8 +12,8 @@
     
     <properties>
         <netbeans.version>RELEASE140</netbeans.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
@@ -72,7 +72,7 @@
                 <plugin>
                     <groupId>org.apache.netbeans.utilities</groupId>
                     <artifactId>nbm-maven-plugin</artifactId>
-                    <version>4.3</version>
+                    <version>4.7</version>
                     <extensions>true</extensions>
                     <configuration>
                         <cluster>TRP-Tools</cluster>
