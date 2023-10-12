@@ -18,12 +18,11 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import uk.theretiredprogrammer.util.UserReporting;
 
 public class UnknownTranslator extends TextileElementTranslator {
 
-    public UnknownTranslator(PrintWriter out) {
-        super(out);
+    public UnknownTranslator(PrintWriter out, PrintWriter err) {
+        super(out, err);
     }
 
     public String[] allowedAttributes() {
@@ -32,7 +31,7 @@ public class UnknownTranslator extends TextileElementTranslator {
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         String name = element.getTagName();
-        out.write(" **UNKNOWN ELEMENT (" + name + ")** ");
-        UserReporting.error("Html to Textile conversion", "Failed to create Textile output - unknown Element found (" + name + ")");
+        out.write(" UNKNOWN ELEMENT (" + name + ") ");
+        err.println("Error: failed to create Textile output - unknown Element found (" + name + ")");
     }
 }

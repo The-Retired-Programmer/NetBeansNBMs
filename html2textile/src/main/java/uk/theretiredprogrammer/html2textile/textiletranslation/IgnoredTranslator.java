@@ -20,12 +20,11 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import uk.theretiredprogrammer.util.UserReporting;
 
 public class IgnoredTranslator extends TextileElementTranslator {
 
-    public IgnoredTranslator(PrintWriter out) {
-        super(out);
+    public IgnoredTranslator(PrintWriter out, PrintWriter err) {
+        super(out, err);
     }
 
     public String[] allowedAttributes() {
@@ -43,7 +42,7 @@ public class IgnoredTranslator extends TextileElementTranslator {
                     message += ", ";
                 }
             }
-            UserReporting.warning("Html to Textile conversion", message);
+            err.println("Warning: " + message);
         }
         translator.processChildren(element);
     }

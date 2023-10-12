@@ -22,17 +22,18 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import static org.w3c.dom.Node.TEXT_NODE;
-import uk.theretiredprogrammer.util.UserReporting;
 
 public class TextileTranslator {
 
     private final PrintWriter out;
     private final Element root;
+    private final PrintWriter err;
 
     // STAGE 3 - Translate the html file to Textile markup.
-    public TextileTranslator(Element root, PrintWriter out) {
+    public TextileTranslator(Element root, PrintWriter out, PrintWriter err) {
         this.out = out;
         this.root = root;
+        this.err = err;
     }
 
     public void translate() throws IOException {
@@ -40,12 +41,12 @@ public class TextileTranslator {
     }
 
     void translate(Element element) throws IOException {
-        TextileElementTranslator translator = TextileElementTranslator.factory(element, out);
+        TextileElementTranslator translator = TextileElementTranslator.factory(element, out, err);
         translator.write(element, false, this);
     }
 
     private void translate(Element element, boolean isParentTerminatorContext) throws IOException {
-        TextileElementTranslator translator = TextileElementTranslator.factory(element, out);
+        TextileElementTranslator translator = TextileElementTranslator.factory(element, out, err);
         translator.write(element, isParentTerminatorContext, this);
     }
 
@@ -113,7 +114,7 @@ public class TextileTranslator {
             }
             node = node.getParentNode();
         }
-        UserReporting.warning("Html to Textile conversion", "Cannot find parent Ul/OL for this list element");
+        err.println("Error: cannot find parent Ul/OL for this list element");
         return false;
     }
 }

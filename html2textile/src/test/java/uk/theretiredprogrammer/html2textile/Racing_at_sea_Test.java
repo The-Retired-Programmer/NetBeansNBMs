@@ -34,9 +34,12 @@ public class Racing_at_sea_Test {
 
     @Test
     public void testDinghiesConversion() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerException {
-        try (Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/racing-at-sea.html");
-        PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/racing-at-sea.textile"))){
-            Html2Textile.convert(from, to);
+        try (
+                Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/racing-at-sea.html");
+                PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/racing-at-sea.textile"));
+                PrintWriter err = new PrintWriter(System.err)
+                ){
+            Html2Textile.convert(from, to, err);
         }
     }
     

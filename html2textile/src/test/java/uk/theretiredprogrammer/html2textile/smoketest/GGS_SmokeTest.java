@@ -49,14 +49,14 @@ public class GGS_SmokeTest {
             transformer.writeHtml(new FileWriter("/home/richard/GGS_SMOKE_TEST.html"));
             serialised = transformer.getSerialisedDOM();
             //
-            try ( PrintWriter out = new PrintWriter(new FileWriter("/home/richard/GGS_SMOKE_TEST.textile"))) {
-                TextileTranslator translator = new TextileTranslator(transformer.getRoot(), out);
+            try ( PrintWriter out = new PrintWriter(new FileWriter("/home/richard/GGS_SMOKE_TEST.textile")); PrintWriter err = new PrintWriter(System.err)) {
+                TextileTranslator translator = new TextileTranslator(transformer.getRoot(), out, err);
                 translator.translate();
             }
         }
         //System.out.println(serialised);
         assertEquals(expected(), serialised);
-        
+
     }
 
     private String expected() {

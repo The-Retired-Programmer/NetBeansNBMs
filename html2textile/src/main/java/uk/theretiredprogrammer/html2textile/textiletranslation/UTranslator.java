@@ -21,8 +21,8 @@ import org.w3c.dom.Element;
 
 public class UTranslator extends TextileElementTranslator {
 
-    public UTranslator(PrintWriter out) {
-        super(out);
+    public UTranslator(PrintWriter out, PrintWriter err) {
+        super(out, err);
     }
 
     public String[] allowedAttributes() {
@@ -30,9 +30,6 @@ public class UTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        out.write("_");
-        checkNoAttributes(element);
-        translator.processChildrenInTerminatorContext(element);
-        out.write("_");
+        bracket("_", element, isParentTerminatorContext, translator);
     }
 }

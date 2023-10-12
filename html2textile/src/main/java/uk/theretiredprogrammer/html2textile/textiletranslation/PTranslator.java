@@ -21,8 +21,8 @@ import org.w3c.dom.Element;
 
 public class PTranslator extends TextileElementTranslator {
 
-    public PTranslator(PrintWriter out) {
-        super(out);
+    public PTranslator(PrintWriter out, PrintWriter err) {
+        super(out, err);
     }
 
     public String[] allowedAttributes() {

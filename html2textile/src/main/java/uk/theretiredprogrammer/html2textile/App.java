@@ -34,9 +34,9 @@ public class App {
         PrintWriter err = new PrintWriter(System.err);
         //
         try (rdr; wtr; err) {
-            Html2Textile.convert(rdr, wtr);
+            Html2Textile.convert(rdr, wtr, err);
         } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
-            err.println("Html2Textile: failed -" + ex.getLocalizedMessage());
+            err.println("Exception: " + ex.getLocalizedMessage());
             System.exit(4);
         }
     }

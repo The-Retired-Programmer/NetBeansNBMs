@@ -19,70 +19,71 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
-import uk.theretiredprogrammer.util.UserReporting;
 
 public abstract class TextileElementTranslator {
 
     final PrintWriter out;
+    final PrintWriter err;
 
-    TextileElementTranslator(PrintWriter out) {
+    TextileElementTranslator(PrintWriter out, PrintWriter err) {
         this.out = out;
+        this.err = err;
     }
 
-    public static TextileElementTranslator factory(Element element, PrintWriter out) {
+    public static TextileElementTranslator factory(Element element, PrintWriter out, PrintWriter err) {
         return switch (element.getTagName().toLowerCase()) {
             case "html" ->
-                new IgnoredTranslator(out);
+                new IgnoredTranslator(out, err);
             case "div" ->
-                new DivTranslator(out);
+                new DivTranslator(out, err);
             case "p" ->
-                new PTranslator(out);
+                new PTranslator(out, err);
             case "span" ->
-                new SpanTranslator(out);
+                new SpanTranslator(out, err);
             case "strong" ->
-                new StrongTranslator(out);
+                new StrongTranslator(out, err);
             case "b" ->
-                new StrongTranslator(out);
+                new StrongTranslator(out, err);
             case "sup" ->
-                new SupTranslator(out);
+                new SupTranslator(out, err);
             case "sub" ->
-                new SubTranslator(out);
+                new SubTranslator(out, err);
             case "br" ->
-                new BrTranslator(out);
+                new BrTranslator(out, err);
             case "img" ->
-                new ImgTranslator(out);
+                new ImgTranslator(out, err);
             case "a" ->
-                new ATranslator(out);
+                new ATranslator(out, err);
             case "h1" ->
-                new HxTranslator(out);
+                new HxTranslator(out, err);
             case "h2" ->
-                new HxTranslator(out);
+                new HxTranslator(out, err);
             case "h3" ->
-                new HxTranslator(out);
+                new HxTranslator(out, err);
             case "h4" ->
-                new HxTranslator(out);
+                new HxTranslator(out, err);
             case "h5" ->
-                new HxTranslator(out);
+                new HxTranslator(out, err);
             case "h6" ->
-                new HxTranslator(out);
+                new HxTranslator(out, err);
             case "ul" ->
-                new UlTranslator(out);
+                new UlTranslator(out, err);
             case "ol" ->
-                new OlTranslator(out);
+                new OlTranslator(out, err);
             case "li" ->
-                new LiTranslator(out);
+                new LiTranslator(out, err);
             case "table" ->
-                new TableTranslator(out);
+                new TableTranslator(out, err);
             case "tbody" ->
-                new IgnoredTranslator(out);
+                new IgnoredTranslator(out, err);
             case "tr" ->
-                new TrTranslator(out);
+                new TrTranslator(out, err);
             case "td" ->
-                new TdTranslator(out);
+                new TdTranslator(out, err);
             case "u" ->
-                new UTranslator(out);
+                new UTranslator(out, err);
             default ->
-                new UnknownTranslator(out);
+                new UnknownTranslator(out, err);
         };
     }
 
@@ -90,18 +91,25 @@ public abstract class TextileElementTranslator {
 
     public abstract void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException;
 
+    void bracket(String bracket, Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        out.write(bracket);
+        checkNoAttributes(element);
+        translator.processChildrenInTerminatorContext(element);
+        out.write(bracket);
+    }
+
     void checkNoAttributes(Element element) throws IOException {
         NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
-            UserReporting.warning("Html to Textile conversion", "Unexpected attribute observed - will be ignored (" + attributes.item(i).getNodeName() + ")");
+            err.println("Warning: unexpected attribute observed - will be ignored (" + attributes.item(i).getNodeName() + ")");
         }
     }
 
     String getAttribute(Element element, String attributeName) {
         String attribute = element.getAttribute(attributeName);
         if (attribute == null) {
-            UserReporting.error("Html to Textile conversion", "Error: Expected attribute not present (" + attributeName + " in " + element.getTagName() + ")");
-            return "**MISSING " + attributeName + " ATTRIBUTE**";
+            err.println("Error: expected attribute not present (" + attributeName + " in " + element.getTagName() + ")");
+            return "MISSING " + attributeName + " ATTRIBUTE";
         }
         return attribute;
     }
@@ -137,7 +145,7 @@ public abstract class TextileElementTranslator {
                 }
             }
             if (!match) {
-                UserReporting.error("Html to Textile conversion", "Unexpected attribute observed - will be ignored (" + attributeName + ")");
+                err.println("Warning: unexpected attribute observed - will be ignored (" + attributeName + ")");
             }
         }
     }

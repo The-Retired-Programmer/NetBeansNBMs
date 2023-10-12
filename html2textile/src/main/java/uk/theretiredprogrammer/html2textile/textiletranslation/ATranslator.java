@@ -23,8 +23,8 @@ public class ATranslator extends TextileElementTranslator {
 
     private final static String RELATIVE_PREFIX = "https://exe-sailing-club.org/";
 
-    public ATranslator(PrintWriter out) {
-        super(out);
+    public ATranslator(PrintWriter out, PrintWriter err) {
+        super(out, err);
     }
 
     public String[] allowedAttributes() {

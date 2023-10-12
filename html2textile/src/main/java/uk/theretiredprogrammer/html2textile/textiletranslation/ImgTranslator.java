@@ -18,12 +18,11 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import uk.theretiredprogrammer.util.UserReporting;
 
 public class ImgTranslator extends TextileElementTranslator {
 
-    public ImgTranslator(PrintWriter out) {
-        super(out);
+    public ImgTranslator(PrintWriter out, PrintWriter err) {
+        super(out, err);
     }
 
     private final static String ASSET_PREFIX = "https://exe-sailing-club.org/";
@@ -47,7 +46,7 @@ public class ImgTranslator extends TextileElementTranslator {
         if (srcvalue.startsWith("https://")) {
             return srcvalue;
         }
-        UserReporting.error("Html to Textile conversion", "Unexpected src URL - will be used but needs to be checked (" + srcvalue + ")");
+        err.println("Warning: unexpected src URL - will be used but needs to be checked (" + srcvalue + ")");
         return srcvalue;
     }
 

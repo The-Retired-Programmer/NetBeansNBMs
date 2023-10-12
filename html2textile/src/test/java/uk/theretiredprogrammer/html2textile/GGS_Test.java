@@ -34,8 +34,8 @@ public class GGS_Test {
 
     @Test
     public void testGGSConversion() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerException {
-        try ( Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/girlsgosailing.html");  PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/girlsgosailing.textile"))) {
-            Html2Textile.convert(from, to);
+        try ( Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/girlsgosailing.html");  PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/girlsgosailing.textile")); PrintWriter err = new PrintWriter(System.err)) {
+            Html2Textile.convert(from, to, err);
         }
     }
 }

@@ -28,14 +28,14 @@ import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 
 public class Html2Textile {
 
-    public static void convert(Reader from, PrintWriter textilewriter) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+    public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
         TransformText texttransformer = new TransformText(from);
         texttransformer.rootWrap("html");
         texttransformer.replace("&nbsp;", " ");
         try ( Reader wrapped = texttransformer.transform()) {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();
-            TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textilewriter);
+            TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textilewriter, err);
             translator.translate();
         }
     }

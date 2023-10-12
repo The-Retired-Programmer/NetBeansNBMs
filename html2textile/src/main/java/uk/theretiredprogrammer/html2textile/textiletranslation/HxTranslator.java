@@ -21,8 +21,8 @@ import org.w3c.dom.Element;
 
 public class HxTranslator extends TextileElementTranslator {
 
-    public HxTranslator(PrintWriter out) {
-        super(out);
+    public HxTranslator(PrintWriter out, PrintWriter err) {
+        super(out, err);
     }
 
     public String[] allowedAttributes() {

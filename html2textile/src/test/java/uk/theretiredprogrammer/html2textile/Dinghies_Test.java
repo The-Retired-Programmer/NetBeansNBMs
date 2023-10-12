@@ -34,8 +34,8 @@ public class Dinghies_Test {
 
     @Test
     public void testDinghiesConversion() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerException {
-        try ( Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/dinghies.html");  PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/dinghies.textile"))) {
-            Html2Textile.convert(from, to);
+        try ( Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/dinghies.html");  PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/dinghies.textile")); PrintWriter err = new PrintWriter(System.err)) {
+            Html2Textile.convert(from, to, err);
         }
     }
 

@@ -21,8 +21,8 @@ import org.w3c.dom.Element;
 
 public class SpanTranslator extends TextileElementTranslator {
 
-    public SpanTranslator(PrintWriter out) {
-        super(out);
+    public SpanTranslator(PrintWriter out, PrintWriter err) {
+        super(out, err);
     }
 
     public String[] allowedAttributes() {
@@ -30,9 +30,6 @@ public class SpanTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        out.write("%");
-        writeClassStyleId(element);
-        translator.processChildrenInTerminatorContext(element);
-        out.write("%");
+        bracket("%", element, isParentTerminatorContext, translator);
     }
 }

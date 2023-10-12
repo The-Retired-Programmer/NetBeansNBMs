@@ -34,9 +34,12 @@ public class Race_officers_briefing_Test {
 
     @Test
     public void testDinghiesConversion() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException, TransformerException {
-        try (Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/race-officers-briefing.html");
-        PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/race-officers-briefing.textile"))){
-            Html2Textile.convert(from, to);
+        try (
+                Reader from = new FileReader("/home/richard/PRODUCTSTESTDATA/html2textile/race-officers-briefing.html");
+            PrintWriter to = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/html2textile/race-officers-briefing.textile"));
+            PrintWriter err = new PrintWriter(System.err)
+                ){
+            Html2Textile.convert(from, to, err);
         }
     }
     

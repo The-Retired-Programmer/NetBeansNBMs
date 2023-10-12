@@ -35,7 +35,6 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.util.SaveSelfBeforeAction;
-import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Build",
@@ -62,13 +61,16 @@ public final class ActionHtml2Textile implements ActionListener, Runnable {
 
     @Override
     public void run() {
+        // fix this later
+        //PrintWriter err = UserReporting.getErrorWriter();
+        PrintWriter err = new PrintWriter(System.err);
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
             SaveSelfBeforeAction.saveIfModified(dataObject);
-            try ( Reader rdr = getReader(input);  PrintWriter wtr = getWriter(input)) {
-                Html2Textile.convert(rdr, wtr);
+            try ( Reader rdr = getReader(input);  PrintWriter wtr = getWriter(input); err) {
+                Html2Textile.convert(rdr, wtr, err);
             } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
-                UserReporting.exception("Html to Textile conversion", ex);
+                err.println(ex.getLocalizedMessage());
             }
         }
     }
