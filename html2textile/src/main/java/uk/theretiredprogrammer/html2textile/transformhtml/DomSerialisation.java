@@ -26,10 +26,10 @@ public class DomSerialisation extends DomModifications {
     private static final String INDENTTEXT = "    ";
 
     @Override
-    public SubsequentWalkAction testElementAndModify(Element element, int level){
+    public SubsequentWalkAction testElementAndModify(Element element, int level) {
         write(INDENTTEXT.repeat(level));
         write(element.getTagName());
-        
+
         NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
             Node attribute = attributes.item(i);

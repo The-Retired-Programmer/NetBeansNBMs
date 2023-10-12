@@ -61,6 +61,7 @@ public class TransformHtml {
         transform(new NullAttributeRemoval());
         transform(new ElementTrailingSpaceRemoval());
         transform(new ReplaceWithHeadings());
+        transform(new BlankElementRemoval());
     }
 
     public void writeHtml(Writer output) throws TransformerException {
@@ -77,7 +78,7 @@ public class TransformHtml {
         transform(rules);
         return rules.getContent();
     }
-    
+
     public Element getRoot() {
         return root;
     }

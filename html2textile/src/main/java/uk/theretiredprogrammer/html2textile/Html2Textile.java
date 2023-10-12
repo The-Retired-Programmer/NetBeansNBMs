@@ -32,7 +32,7 @@ public class Html2Textile {
         TransformText texttransformer = new TransformText(from);
         texttransformer.rootWrap("html");
         texttransformer.replace("&nbsp;", " ");
-        try (Reader wrapped = texttransformer.transform()) {
+        try ( Reader wrapped = texttransformer.transform()) {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();
             TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textilewriter);
@@ -40,4 +40,3 @@ public class Html2Textile {
         }
     }
 }
- 

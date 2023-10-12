@@ -21,8 +21,8 @@ import static org.w3c.dom.Node.ELEMENT_NODE;
 import static org.w3c.dom.Node.TEXT_NODE;
 
 public class ElementTrailingSpaceRemoval extends DomModifications {
-    
-    public SubsequentWalkAction testElementAndModify(Element element, int level){
+
+    public SubsequentWalkAction testElementAndModify(Element element, int level) {
         if (isTrailingSpaceRemovalElement(element)) {
             Node trailingNode = element.getLastChild();
             if (trailingNode != null && trailingNode.getNodeType() == TEXT_NODE && trailingNode.getNodeValue().isBlank()) {
@@ -31,7 +31,7 @@ public class ElementTrailingSpaceRemoval extends DomModifications {
         }
         return SubsequentWalkAction.CONTINUE_WALK;
     }
-    
+
     private boolean isTrailingSpaceRemovalElement(Node node) {
         if (isBlockElement(node)) {
             return true;
@@ -39,7 +39,7 @@ public class ElementTrailingSpaceRemoval extends DomModifications {
         if (node.getNodeType() == ELEMENT_NODE) {
             String name = node.getNodeName();
             return name.equals("strong") || name.equals("u") || name.equals("span") || name.equals("sub")
-                    || name.equals("sup") || name.equals("td")|| name.equals("b") || name.equals("a");
+                    || name.equals("sup") || name.equals("td") || name.equals("b") || name.equals("a");
         } else {
             return false;
         }

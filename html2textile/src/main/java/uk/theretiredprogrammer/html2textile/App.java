@@ -15,7 +15,6 @@
  */
 package uk.theretiredprogrammer.html2textile;
 
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -34,10 +33,10 @@ public class App {
         PrintWriter wtr = new PrintWriter(System.out);
         PrintWriter err = new PrintWriter(System.err);
         //
-        try ( rdr ; wtr ; err) {
+        try (rdr; wtr; err) {
             Html2Textile.convert(rdr, wtr);
-        } catch(IOException | ParserConfigurationException | TransformerException | SAXException ex) {
-            err.println("Html2Textile: failed -"+ex.getLocalizedMessage());
+        } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
+            err.println("Html2Textile: failed -" + ex.getLocalizedMessage());
             System.exit(4);
         }
     }

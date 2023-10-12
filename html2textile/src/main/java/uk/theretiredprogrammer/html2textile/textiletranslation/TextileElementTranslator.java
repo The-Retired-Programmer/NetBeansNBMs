@@ -19,20 +19,18 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import uk.theretiredprogrammer.util.UserReporting;
 
 public abstract class TextileElementTranslator {
 
     final PrintWriter out;
-    
+
     TextileElementTranslator(PrintWriter out) {
         this.out = out;
     }
 
-    public static TextileElementTranslator factory(String name, PrintWriter out) {
-        return switch (name.toLowerCase()) {
+    public static TextileElementTranslator factory(Element element, PrintWriter out) {
+        return switch (element.getTagName().toLowerCase()) {
             case "html" ->
                 new IgnoredTranslator(out);
             case "div" ->
@@ -90,44 +88,46 @@ public abstract class TextileElementTranslator {
 
     public abstract String[] allowedAttributes();
 
-    public abstract void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException;
+    public abstract void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException;
 
-    void checkNoAttributes(NamedNodeMap attributes) throws IOException {
+    void checkNoAttributes(Element element) throws IOException {
+        NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
             UserReporting.warning("Html to Textile conversion", "Unexpected attribute observed - will be ignored (" + attributes.item(i).getNodeName() + ")");
         }
     }
 
-    String isAttribute(String elementName, String attributeName, NamedNodeMap attributes) {
-        Node attribute = attributes.getNamedItem(attributeName);
+    String getAttribute(Element element, String attributeName) {
+        String attribute = element.getAttribute(attributeName);
         if (attribute == null) {
-            UserReporting.error("Html to Textile conversion", "Error: Expected attribute not present (" + attributeName + " in " + elementName + ")");
+            UserReporting.error("Html to Textile conversion", "Error: Expected attribute not present (" + attributeName + " in " + element.getTagName() + ")");
             return "**MISSING " + attributeName + " ATTRIBUTE**";
         }
-        return attribute.getNodeValue();
+        return attribute;
     }
 
-    void writeClassStyleId(NamedNodeMap attributes) throws IOException {
-        checkAttributes(attributes, allowedAttributes());
-        Node classAttribute = attributes.getNamedItem("class");
-        Node idAttribute = attributes.getNamedItem("id");
+    void writeClassStyleId(Element element) throws IOException {
+        checkAttributes(element, allowedAttributes());
+        String classAttribute = element.getAttribute("class");
+        String idAttribute = element.getAttribute("id");
         if (classAttribute != null || idAttribute != null) {
             out.write("(");
             if (classAttribute != null) {
-                out.write(classAttribute.getNodeValue());
+                out.write(classAttribute);
             }
             if (idAttribute != null) {
-                out.write("#" + idAttribute.getNodeValue());
+                out.write("#" + idAttribute);
             }
             out.write(")");
         }
-        Node styleAttribute = attributes.getNamedItem("style");
+        String styleAttribute = element.getAttribute("style");
         if (styleAttribute != null) {
-            out.write("{" + styleAttribute.getNodeValue() + "}");
+            out.write("{" + styleAttribute + "}");
         }
     }
 
-    private void checkAttributes(NamedNodeMap attributes, String[] allowedAttributes) {
+    private void checkAttributes(Element element, String[] allowedAttributes) {
+        NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
             boolean match = false;
             String attributeName = attributes.item(i).getNodeName();

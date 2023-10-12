@@ -18,13 +18,13 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import org.w3c.dom.Element;
 
 public class DivReduction extends DomModifications {
-    
-    public SubsequentWalkAction testElementAndModify(Element element, int level){
-        if (element.getTagName().equals("div") && (element.getAttributes().getLength()==0)){
+
+    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+        if (element.getTagName().equals("div") && (element.getAttributes().getLength() == 0)) {
             if (areAllChildrenBlockElements(element)) {
                 removeElement(element);
-            }else {
-                replaceElement(element,"p");
+            } else {
+                replaceElement(element, "p");
             }
             return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
         } else {

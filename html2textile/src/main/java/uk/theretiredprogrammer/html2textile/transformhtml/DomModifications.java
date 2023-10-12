@@ -40,7 +40,7 @@ public abstract class DomModifications {
         Node attribute = attributes.getNamedItem(attributename);
         return attributes.getLength() == 1 && attribute != null ? attribute.getNodeValue() : null;
     }
-    
+
     Element getOnlyChildSpanElement(Element element) {
         NodeList children = element.getChildNodes();
         if (children.getLength() != 1) {
@@ -48,16 +48,16 @@ public abstract class DomModifications {
         }
         Node child = children.item(0);
         return child.getNodeType() == ELEMENT_NODE && child.getNodeName().equals("span")
-                ?  (Element) child : null;
+                ? (Element) child : null;
     }
-    
+
     Element getOnlyChildElement(Element element) {
         NodeList children = element.getChildNodes();
         if (children.getLength() != 1) {
             return null;
         }
         Node child = children.item(0);
-        return child.getNodeType() == ELEMENT_NODE ?  (Element) child : null;
+        return child.getNodeType() == ELEMENT_NODE ? (Element) child : null;
     }
 
     boolean areAllChildrenBlockElements(Element element) {
@@ -83,7 +83,7 @@ public abstract class DomModifications {
             return false;
         }
     }
-    
+
     void removeElement(Element element) {
         Node parent = element.getParentNode();
         if (element.hasChildNodes()) {
@@ -103,7 +103,7 @@ public abstract class DomModifications {
         parent.insertBefore(newElement, element);
         parent.removeChild(element);
     }
-    
+
     void replaceElement(Element element, String newname, Element elementwithchildren) {
         Element newElement = createElementNode(element.getOwnerDocument(), newname, element.getAttributes(), elementwithchildren.getChildNodes());
         Node parent = element.getParentNode();
@@ -140,11 +140,11 @@ public abstract class DomModifications {
     void removeNode(Node node) {
         node.getParentNode().removeChild(node);
     }
-    
+
     void removeAttribute(Element element, String attributename) {
         element.removeAttribute(attributename);
     }
-    
+
     void replaceAttributeValue(Element element, String attributename, String newvalue) {
         element.setAttribute(attributename, newvalue);
     }

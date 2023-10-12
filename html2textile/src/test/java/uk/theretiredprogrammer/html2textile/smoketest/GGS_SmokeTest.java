@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,6 +27,7 @@ import javax.xml.transform.TransformerException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 import uk.theretiredprogrammer.html2textile.tranformtext.TransformText;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 
@@ -46,9 +48,15 @@ public class GGS_SmokeTest {
             transformer.transform();
             transformer.writeHtml(new FileWriter("/home/richard/GGS_SMOKE_TEST.html"));
             serialised = transformer.getSerialisedDOM();
+            //
+            try ( PrintWriter out = new PrintWriter(new FileWriter("/home/richard/GGS_SMOKE_TEST.textile"))) {
+                TextileTranslator translator = new TextileTranslator(transformer.getRoot(), out);
+                translator.translate();
+            }
         }
         //System.out.println(serialised);
         assertEquals(expected(), serialised);
+        
     }
 
     private String expected() {
@@ -115,13 +123,11 @@ public class GGS_SmokeTest {
                                "Friday 2nd February 2024, "
                            "7pm, Topic - Health and Well Being on the Water and looking after each other."
                            br
-                           strong
                        li
                            strong
                                "Friday 8th March 2024"
                            ", 7pm, Topic - Sailing Kit; What to wear and new developments in sailing clothing for dinghies and yachts. Opportunities to buy pre loved kit."
                            br
-                           strong
                        li
                            strong
                                "Friday 12th April 2024"

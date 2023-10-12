@@ -18,8 +18,6 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
 
 public class TableTranslator extends TextileElementTranslator {
 
@@ -31,14 +29,13 @@ public class TableTranslator extends TextileElementTranslator {
         return new String[]{"style", "class", "id"};
     }
 
-    public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException {
-        if (attributes.getLength() != 0) {
+    public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        if (element.hasAttributes()) {
             out.write("table");
-            writeClassStyleId(attributes);
+            writeClassStyleId(element);
             out.write(".\n");
         }
-        translator.processChildren(children);
+        translator.processChildren(element);
         out.write("\n");
     }
-
 }

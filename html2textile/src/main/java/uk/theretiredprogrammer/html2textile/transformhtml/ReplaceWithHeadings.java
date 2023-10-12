@@ -51,13 +51,12 @@ public class ReplaceWithHeadings extends DomModifications {
         }
         return headername == null ? SubsequentWalkAction.CONTINUE_WALK : SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
     }
-    
+
     private boolean isHeaderReductionElement(Element element) {
-        String name=element.getTagName();
+        String name = element.getTagName();
         return name.equals("p") || name.equals("strong") || name.equals("u") || name.equals("span");
     }
 
-    
     private void removefontsizestylerule(Element element) {
         Node style = element.getAttributeNode("style");
         if (style == null) {
@@ -68,9 +67,9 @@ public class ReplaceWithHeadings extends DomModifications {
         for (String rule : rules) {
             if (!rule.isBlank()) {
                 if (!rule.startsWith("font-size:")) {
-                    newrules = newrules+rule+";";
+                    newrules = newrules + rule + ";";
                 }
-            } 
+            }
         }
         if (newrules.isBlank()) {
             removeAttribute(element, "style");
@@ -89,13 +88,20 @@ public class ReplaceWithHeadings extends DomModifications {
         flags = flags | scanforelement(elements, "u", 4);
         flags = flags | scanforfontsize(elements);
         return switch (flags) {
-            case 8 -> "h6";
-            case 9 -> "h4";
-            case 10, 11 -> "h3";
-            case 12 -> "h5";
-            case 13 -> "h4";
-            case 14, 15 -> "h3";
-            default -> null;
+            case 8 ->
+                "h6";
+            case 9 ->
+                "h4";
+            case 10, 11 ->
+                "h3";
+            case 12 ->
+                "h5";
+            case 13 ->
+                "h4";
+            case 14, 15 ->
+                "h3";
+            default ->
+                null;
         };
     }
 
@@ -111,10 +117,10 @@ public class ReplaceWithHeadings extends DomModifications {
     private int scanforfontsize(List<Element> elements) {
         int fontgroup = 0;
         for (var element : elements) {
-           int fntgrp = getFontSizeGroup(element);
-           if (fntgrp != -1) {
-               fontgroup = fntgrp;
-           }
+            int fntgrp = getFontSizeGroup(element);
+            if (fntgrp != -1) {
+                fontgroup = fntgrp;
+            }
         }
         return fontgroup;
     }

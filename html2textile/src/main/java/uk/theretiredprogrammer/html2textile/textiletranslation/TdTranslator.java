@@ -18,9 +18,6 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class TdTranslator extends TextileElementTranslator {
 
@@ -32,23 +29,22 @@ public class TdTranslator extends TextileElementTranslator {
         return new String[]{"style", "class", "id", "rowspan", "colspan"};
     }
 
-    public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException {
-        if (attributes.getLength() != 0) {
-            writeColOrRowSpan(attributes, "rowspan", '/');
-            writeColOrRowSpan(attributes, "colspan", '\\');
-            writeClassStyleId(attributes);
+    public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        if (element.hasAttributes()) {
+            writeColOrRowSpan(element, "rowspan", '/');
+            writeColOrRowSpan(element, "colspan", '\\');
+            writeClassStyleId(element);
             out.write(". ");
         }
-        translator.processChildren(children);
+        translator.processChildren(element);
         out.write("|");
     }
 
-    private void writeColOrRowSpan(NamedNodeMap attributes, String attributename, char outSymbol) throws IOException {
-        Node attribute = attributes.getNamedItem(attributename);
-        if (attribute == null) {
-            return;
+    private void writeColOrRowSpan(Element element, String attributename, char outSymbol) throws IOException {
+        String attribute = element.getAttribute(attributename);
+        if (attribute != null) {
+            out.write(outSymbol);
+            out.write(attribute);
         }
-        out.write(outSymbol);
-        out.write(attribute.getNodeValue());
     }
 }

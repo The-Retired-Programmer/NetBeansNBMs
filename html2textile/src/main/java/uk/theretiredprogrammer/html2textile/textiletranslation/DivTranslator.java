@@ -18,26 +18,22 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
 
 public class DivTranslator extends TextileElementTranslator {
-    
+
     public DivTranslator(PrintWriter out) {
         super(out);
     }
 
-    public String[] allowedAttributes(){
-        return new String[]{"style","class","id"};
+    public String[] allowedAttributes() {
+        return new String[]{"style", "class", "id"};
     }
-    
-    public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException{
-       out.write("<div");
-       translator.writeAttributes(attributes);
-       out.write(">\n");
-       translator.processChildren(children);
-       out.write("</div>\n");
+
+    public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        out.write("<div");
+        translator.writeAttributes(element);
+        out.write(">\n");
+        translator.processChildren(element);
+        out.write("</div>\n");
     }
-    
 }

@@ -18,26 +18,21 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-
 
 public class StrongTranslator extends TextileElementTranslator {
-    
+
     public StrongTranslator(PrintWriter out) {
         super(out);
     }
 
-    
-    public String[] allowedAttributes(){
+    public String[] allowedAttributes() {
         return new String[0];
     }
-    
-    public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException{
-       out.write("*");
-       checkNoAttributes(attributes);
-       translator.processChildren(children);
-       out.write("*");
+
+    public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        out.write("*");
+        checkNoAttributes(element);
+        translator.processChildrenInTerminatorContext(element);
+        out.write("*");
     }
-    
 }

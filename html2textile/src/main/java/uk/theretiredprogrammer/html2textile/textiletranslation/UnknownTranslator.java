@@ -18,8 +18,6 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
 import uk.theretiredprogrammer.util.UserReporting;
 
 public class UnknownTranslator extends TextileElementTranslator {
@@ -32,7 +30,8 @@ public class UnknownTranslator extends TextileElementTranslator {
         return new String[0];
     }
 
-    public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException {
+    public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        String name = element.getTagName();
         out.write(" **UNKNOWN ELEMENT (" + name + ")** ");
         UserReporting.error("Html to Textile conversion", "Failed to create Textile output - unknown Element found (" + name + ")");
     }

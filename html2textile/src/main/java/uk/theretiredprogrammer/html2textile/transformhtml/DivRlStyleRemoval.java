@@ -18,11 +18,11 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import org.w3c.dom.Element;
 
 public class DivRlStyleRemoval extends DomModifications {
-    
-    public SubsequentWalkAction testElementAndModify(Element element, int level){
-        if (element.getTagName().equals("div") &&
-                "margin:20px20px20px20px;font-family:arial,helvetica,sans-serif;font-size:12pt;line-height:1.5em;color:#000000;"
-                        .equals(getOnlyAttribute(element,"style"))){
+
+    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+        if (element.getTagName().equals("div")
+                && "margin:20px20px20px20px;font-family:arial,helvetica,sans-serif;font-size:12pt;line-height:1.5em;color:#000000;"
+                        .equals(getOnlyAttribute(element, "style"))) {
             removeElement(element);
             return SubsequentWalkAction.RESTART_WALK_FROM_ROOT;
         } else {

@@ -22,7 +22,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import static org.w3c.dom.Node.TEXT_NODE;
-import org.w3c.dom.NodeList;
 import uk.theretiredprogrammer.util.UserReporting;
 
 public class TextileTranslator {
@@ -31,61 +30,58 @@ public class TextileTranslator {
     private final Element root;
 
     // STAGE 3 - Translate the html file to Textile markup.
-    
     public TextileTranslator(Element root, PrintWriter out) {
         this.out = out;
         this.root = root;
     }
-    
+
     public void translate() throws IOException {
         translate(root);
     }
-    
+
     void translate(Element element) throws IOException {
-        TextileElementTranslator translator = TextileElementTranslator.factory(element.getTagName(), out);
-        translator.write(element, element.getTagName(), element.getAttributes(), element.getChildNodes(),this);
+        TextileElementTranslator translator = TextileElementTranslator.factory(element, out);
+        translator.write(element, false, this);
     }
-    
-    void writeAttributes(NamedNodeMap attributes) throws IOException {
+
+    private void translate(Element element, boolean isParentTerminatorContext) throws IOException {
+        TextileElementTranslator translator = TextileElementTranslator.factory(element, out);
+        translator.write(element, isParentTerminatorContext, this);
+    }
+
+    void writeAttributes(Element element) throws IOException {
+        NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
             Node attribute = attributes.item(i);
             out.write(" " + attribute.getNodeName() + "=\"" + attribute.getNodeValue() + "\" ");
         }
     }
 
-    void processChildren(NodeList children) throws IOException {
-        for (int i = 0; i < children.getLength(); i++) {
-            Node child = children.item(i);
+    void processChildren(Element element) throws IOException {
+        Node child = element.getFirstChild();
+        while (child != null) {
             if (child.getNodeType() == TEXT_NODE) {
-                String text = child.getNodeValue();
-                if (!isFilterable(text)) {
-                    out.write(applytailfilter(text));
-                }
+                out.write(child.getNodeValue());
             }
             if (child.getNodeType() == ELEMENT_NODE) {
                 translate((Element) child);
             }
+            child = child.getNextSibling();
         }
     }
 
-    private boolean isFilterable(String text) {
-        return text.contains("\n")
-                ? text.replace("\n", " ").replace("\t", " ").strip().equals("")
-                : false;
-    }
-
-    private String applytailfilter(String text) {
-        boolean nlseen = false;
-        for (int i = text.length() - 1; i > -1; i--) {
-            char c = text.charAt(i);
-            if (c == '\n') {
-                nlseen = true;
+    void processChildrenInTerminatorContext(Element element) throws IOException {
+        Node child = element.getFirstChild();
+        while (child != null) {
+            Node nextchild = child.getNextSibling();
+            if (child.getNodeType() == TEXT_NODE) {
+                out.write(child.getNodeValue());
             }
-            if (!(c == '\n' || c == ' ' || c == '\t')) {
-                return nlseen ? text.substring(0, i + 1) + "\n" : text;
+            if (child.getNodeType() == ELEMENT_NODE) {
+                translate((Element) child, nextchild == null);
             }
+            child = nextchild;
         }
-        return nlseen ? "\n" : "";
     }
 
     int findlistdepth(Element element) {

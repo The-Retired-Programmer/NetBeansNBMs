@@ -21,12 +21,12 @@ import org.w3c.dom.Node;
 public class IndentAndReturnsRemoval extends DomModifications {
 
     @Override
-    public SubsequentWalkAction testElementAndModify(Element element, int level){
+    public SubsequentWalkAction testElementAndModify(Element element, int level) {
         return SubsequentWalkAction.CONTINUE_WALK;
     }
-    
+
     @Override
-    public SubsequentWalkAction testTextAndModify(Node textnode, int level){
+    public SubsequentWalkAction testTextAndModify(Node textnode, int level) {
         if (isFilterable(textnode.getNodeValue())) {
             removeNode(textnode);
             return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;

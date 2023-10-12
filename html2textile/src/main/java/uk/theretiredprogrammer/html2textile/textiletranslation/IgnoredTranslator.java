@@ -20,33 +20,31 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import uk.theretiredprogrammer.util.UserReporting;
 
-
 public class IgnoredTranslator extends TextileElementTranslator {
-    
+
     public IgnoredTranslator(PrintWriter out) {
         super(out);
     }
 
-    public String[] allowedAttributes(){
+    public String[] allowedAttributes() {
         return new String[0];
     }
-    
-    public void write(Element element, String name, NamedNodeMap attributes, NodeList children, TextileTranslator translator) throws IOException{
-       if (attributes.getLength()!=0) {
-           String message = name+" ignored but has attributes: ";
-           for (int i = 0; i< attributes.getLength();i++){
-               Node attr = attributes.item(i);
-               message += attr.getNodeName()+"="+attr.getNodeValue();
-               if (i!= attributes.getLength()-1) {
-                   message += ", ";
-               }
-           }
-           UserReporting.warning("Html to Textile conversion", message);
-       }
-       translator.processChildren(children);
+
+    public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        NamedNodeMap attributes = element.getAttributes();
+        if (attributes.getLength() != 0) {
+            String message = element.getTagName() + " ignored but has attributes: ";
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attr = attributes.item(i);
+                message += attr.getNodeName() + "=" + attr.getNodeValue();
+                if (i != attributes.getLength() - 1) {
+                    message += ", ";
+                }
+            }
+            UserReporting.warning("Html to Textile conversion", message);
+        }
+        translator.processChildren(element);
     }
-    
 }
