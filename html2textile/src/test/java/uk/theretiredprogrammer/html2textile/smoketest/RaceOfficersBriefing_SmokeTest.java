@@ -217,9 +217,7 @@ public class RaceOfficersBriefing_SmokeTest {
                    p
                        "Take photo of sign on/off sheet and timings record sheet for each race and send photos to results secretary. Place originals in the black ‘club post box’ in entrance hall."
                    p
-                   p
                        "Dinghy Committee Feb 23"
-                   p
                    h3
                        "Appendices"
                    h6 style="text-align:center;"
@@ -415,7 +413,6 @@ public class RaceOfficersBriefing_SmokeTest {
                                    " 3"
                                td style="background-color:#e9ae6d;text-align:center;"
                                    " W"
-                   p
                    p
                        " Notes:"
                    p style="padding-left:30px;"

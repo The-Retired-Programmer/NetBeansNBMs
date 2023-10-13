@@ -86,8 +86,6 @@ public class GGS_SmokeTest {
                        "About Girls Go Sailing"
                    p
                        "In 2018 we saw a great revival of our Girls Go Sailing scheme, which we have run intermittently for a few years. By making it a member lead activity, we have seen increased numbers of women participating and welcome new members at any time throughout the year."
-                   p
-                   p
                    h6
                        "What do we do?"
                    ul
@@ -143,7 +141,6 @@ public class GGS_SmokeTest {
                                "Girls Go Sailing Seminars"
                        " "
                        "page!"
-                   p
                    h4
                        "Getting afloat"
                    h5 dir="auto"
@@ -161,7 +158,6 @@ public class GGS_SmokeTest {
                        a href="training.html"
                            "Training"
                        " for more details."
-                   p
                    h5 dir="auto"
                        "Dinghies"
                    h6 dir="auto"
@@ -171,7 +167,6 @@ public class GGS_SmokeTest {
                        a href="training.html"
                            "Training"
                        " for more information."
-                   p
                    h5
                        "Powerboat Training & Experience"
                    p
@@ -179,7 +174,6 @@ public class GGS_SmokeTest {
                        a href="training.html"
                            "Training"
                        " Section of the web site for more information."
-                   p
                """;
     }
 }

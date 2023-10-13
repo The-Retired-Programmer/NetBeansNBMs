@@ -65,6 +65,7 @@ public class TransformHtml {
         transform(new ReplaceWithHeadings());
         transform(new ListConcatonation());
         transform(new RemoveTrailingBr());
+        transform(new EmptyParaRemoval());
     }
 
     public void writeHtml(Writer output) throws TransformerException {

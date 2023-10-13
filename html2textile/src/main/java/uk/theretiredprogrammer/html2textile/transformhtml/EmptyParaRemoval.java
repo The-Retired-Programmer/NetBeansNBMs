@@ -17,18 +17,13 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class DivReduction extends DomModifications {
+public class EmptyParaRemoval extends DomModifications {
 
     public SubsequentWalkAction testElementAndModify(Element element, int level) {
-        if (element.getTagName().equals("div") && (!element.hasAttributes())) {
-            if (areAllChildrenBlockElements(element)) {
+        if (element.getTagName().equals("p") && (!element.hasChildNodes())) {
                 removeElement(element);
-            } else {
-                replaceElement(element, "p");
-            }
             return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
-        } else {
-            return SubsequentWalkAction.CONTINUE_WALK;
         }
+        return SubsequentWalkAction.CONTINUE_WALK;
     }
 }
