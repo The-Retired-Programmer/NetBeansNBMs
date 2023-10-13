@@ -102,6 +102,18 @@ public abstract class DomModifications {
         }
         parent.removeChild(element);
     }
+    
+    void removeElementMoveChildrenTo(Element toremove, Element toinsert){
+        if (toremove.hasChildNodes()) {
+            Node child = toremove.getFirstChild();
+            while (child != null) {
+                Node nextchild = child.getNextSibling();
+                toinsert.appendChild(child);
+                child = nextchild;
+            }
+        }
+        toremove.getParentNode().removeChild(toremove);
+    }
 
     void replaceElement(Element element, String newname) {
         Element newElement = createElementNode(element.getOwnerDocument(), newname, element.getAttributes(), element.getChildNodes());

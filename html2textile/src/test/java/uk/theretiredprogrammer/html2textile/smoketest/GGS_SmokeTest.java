@@ -114,23 +114,19 @@ public class GGS_SmokeTest {
                                "Thursday 7th December"
                            " -"
                            " Christmas Dinner, meet at 6.30. Hear some experiences from the 2023 season.  Christmas dinner at 7.30pm."
-                   ul
                        li
                            strong
                                "Friday 19th January 2024"
                            ", 7pm,Topic - Staying Safe on the Water whilst sailing a dinghy or yacht.  Using a VHF radio, ‘Tide, Wind, Approach’, having a Plan B."
-                   ul
                        li
                            strong
                                "Friday 2nd February 2024,"
                            " "
                            "7pm, Topic - Health and Well Being on the Water and looking after each other."
-                           br
                        li
                            strong
                                "Friday 8th March 2024"
                            ", 7pm, Topic - Sailing Kit; What to wear and new developments in sailing clothing for dinghies and yachts. Opportunities to buy pre loved kit."
-                           br
                        li
                            strong
                                "Friday 12th April 2024"

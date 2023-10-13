@@ -63,6 +63,8 @@ public class TransformHtml {
         transform(new RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements());
         transform(new BlockElementTrailingSpaceRemoval());
         transform(new ReplaceWithHeadings());
+        transform(new ListConcatonation());
+        transform(new RemoveTrailingBr());
     }
 
     public void writeHtml(Writer output) throws TransformerException {
