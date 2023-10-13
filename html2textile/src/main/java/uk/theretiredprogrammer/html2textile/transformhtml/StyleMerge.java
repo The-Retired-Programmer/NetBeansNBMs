@@ -28,7 +28,7 @@ public class StyleMerge extends DomModifications {
             Element span = getOnlyChildSpanElement(element);
             if (span != null) {
                 mergeAttributes(element, span);
-                return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
+                return SubsequentWalkAction.RESTART_WALK_FROM_SELF;
             }
         }
         return SubsequentWalkAction.CONTINUE_WALK;

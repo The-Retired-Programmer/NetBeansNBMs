@@ -32,6 +32,8 @@ public class Html2Textile {
         TransformText texttransformer = new TransformText(from);
         texttransformer.rootWrap("html");
         texttransformer.replace("&nbsp;", " ");
+        texttransformer.replace("&lsquo;", "'");
+        texttransformer.replace("&rsquo;", "'");
         try ( Reader wrapped = texttransformer.transform()) {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();

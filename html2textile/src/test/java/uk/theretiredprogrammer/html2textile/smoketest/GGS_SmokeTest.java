@@ -43,6 +43,8 @@ public class GGS_SmokeTest {
         TransformText texttransformer = new TransformText(new InputStreamReader(is));
         texttransformer.rootWrap("html");
         texttransformer.replace("&nbsp;", " ");
+        texttransformer.replace("&lsquo;", "'");
+        texttransformer.replace("&rsquo;", "'");
         try ( Reader wrapped = texttransformer.transform()) {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();
@@ -111,7 +113,7 @@ public class GGS_SmokeTest {
                            strong
                                "Thursday 7th December"
                            " -"
-                           " Christmas Dinner, meet at 6.30. Hear some experiences from the 2023 season.  Christmas dinner at 7.30pm. "
+                           " Christmas Dinner, meet at 6.30. Hear some experiences from the 2023 season.  Christmas dinner at 7.30pm."
                    ul
                        li
                            strong
@@ -120,7 +122,8 @@ public class GGS_SmokeTest {
                    ul
                        li
                            strong
-                               "Friday 2nd February 2024, "
+                               "Friday 2nd February 2024,"
+                           " "
                            "7pm, Topic - Health and Well Being on the Water and looking after each other."
                            br
                        li
@@ -141,7 +144,8 @@ public class GGS_SmokeTest {
                        "If you would like more information or interested in our previous seminars please go to our "
                        strong
                            a href="index.php?option=com_content&view=article&id=267:girls-go-sailing-seminars&catid=2:uncategorised"
-                               "Girls Go Sailing Seminars "
+                               "Girls Go Sailing Seminars"
+                       " "
                        "page!"
                    p
                    h4
@@ -155,7 +159,8 @@ public class GGS_SmokeTest {
                        " - specific to our club written by Tink!"
                    p dir="auto"
                        strong
-                           "Cruiser Training & Qualifications - "
+                           "Cruiser Training & Qualifications -"
+                       " "
                        "Lots of opportunities to take part in RYA cruiser courses throughout summer on Zephyr with Karen Melling - go to "
                        a href="training.html"
                            "Training"
@@ -169,7 +174,7 @@ public class GGS_SmokeTest {
                        "The Club also runs various RYA dinghy courses through the season, go to "
                        a href="training.html"
                            "Training"
-                       " for more information. "
+                       " for more information."
                    p
                    h5
                        "Powerboat Training & Experience"

@@ -25,9 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class ElementTrailingSpaceRemoval_Test {
+public class BlockElementTrailingSpaceRemoval_Test {
 
-    public ElementTrailingSpaceRemoval_Test() {
+    public BlockElementTrailingSpaceRemoval_Test() {
     }
 
     @Test
@@ -38,7 +38,7 @@ public class ElementTrailingSpaceRemoval_Test {
         transformer.transform(new IndentAndReturnsRemoval());
         transformer.transform(new StyleNormalisation());
         //
-        transformer.transform(new ElementTrailingSpaceRemoval());
+        transformer.transform(new BlockElementTrailingSpaceRemoval());
         //
         String result = transformer.getSerialisedDOM();
         //System.out.println(result);
@@ -89,6 +89,20 @@ public class ElementTrailingSpaceRemoval_Test {
                    h3
                        b
                            "test"
+                   p
+                       " "
+                       u
+                           " "
+                           b
+                               "text"
+                           " "
+                       "abc"
+                   ul
+                       li
+                           strong
+                               "abc"
+                           "def"
+                           br
                """;
     }
 }

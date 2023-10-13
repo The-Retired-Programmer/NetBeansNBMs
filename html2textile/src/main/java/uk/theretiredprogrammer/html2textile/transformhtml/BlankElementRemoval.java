@@ -23,19 +23,13 @@ import org.w3c.dom.NodeList;
 public class BlankElementRemoval extends DomModifications {
 
     public SubsequentWalkAction testElementAndModify(Element element, int level) {
-        if (isBlankElementRemovalElement(element)) {
+        if (isBracketingElement(element)) {
             if (isNoChildOrOnlyChildBlankText(element)) {
                 removeElement(element);
                 return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
             }
         }
         return SubsequentWalkAction.CONTINUE_WALK;
-    }
-
-    private boolean isBlankElementRemovalElement(Element element) {
-        String name = element.getTagName();
-        return name.equals("strong") || name.equals("u") || name.equals("span") || name.equals("sub")
-                || name.equals("sup") || name.equals("b");
     }
 
     private boolean isNoChildOrOnlyChildBlankText(Element element) {

@@ -42,7 +42,7 @@ public class TdTranslator extends TextileElementTranslator {
 
     private void writeColOrRowSpan(Element element, String attributename, char outSymbol) throws IOException {
         String attribute = element.getAttribute(attributename);
-        if (attribute != null) {
+        if (!attribute.isEmpty()) {
             out.write(outSymbol);
             out.write(attribute);
         }

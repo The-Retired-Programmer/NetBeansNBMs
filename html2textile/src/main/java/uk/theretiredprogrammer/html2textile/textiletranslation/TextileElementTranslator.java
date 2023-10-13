@@ -107,7 +107,7 @@ public abstract class TextileElementTranslator {
 
     String getAttribute(Element element, String attributeName) {
         String attribute = element.getAttribute(attributeName);
-        if (attribute == null) {
+        if (attribute.isEmpty()) {
             err.println("Error: expected attribute not present (" + attributeName + " in " + element.getTagName() + ")");
             return "MISSING " + attributeName + " ATTRIBUTE";
         }
@@ -118,18 +118,18 @@ public abstract class TextileElementTranslator {
         checkAttributes(element, allowedAttributes());
         String classAttribute = element.getAttribute("class");
         String idAttribute = element.getAttribute("id");
-        if (classAttribute != null || idAttribute != null) {
+        if (!classAttribute.isEmpty() || !idAttribute.isEmpty()) {
             out.write("(");
-            if (classAttribute != null) {
+            if (!classAttribute.isEmpty()) {
                 out.write(classAttribute);
             }
-            if (idAttribute != null) {
+            if (!idAttribute.isEmpty()) {
                 out.write("#" + idAttribute);
             }
             out.write(")");
         }
         String styleAttribute = element.getAttribute("style");
-        if (styleAttribute != null) {
+        if (!styleAttribute.isEmpty()) {
             out.write("{" + styleAttribute + "}");
         }
     }

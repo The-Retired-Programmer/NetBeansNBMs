@@ -25,7 +25,7 @@ import org.w3c.dom.NodeList;
 public abstract class DomModifications {
 
     public enum SubsequentWalkAction {
-        RESTART_WALK_FROM_ROOT, RESTART_WALK_FROM_PARENT, CONTINUE_WALK
+        RESTART_WALK_FROM_ROOT, RESTART_WALK_FROM_SELF, RESTART_WALK_FROM_PARENT, CONTINUE_WALK
     };
 
     public abstract SubsequentWalkAction testElementAndModify(Element element, int level);
@@ -84,6 +84,12 @@ public abstract class DomModifications {
         }
     }
 
+    boolean isBracketingElement(Element element) {
+        String name = element.getTagName();
+        return name.equals("strong") || name.equals("u") || name.equals("span") || name.equals("sub")
+                || name.equals("sup") || name.equals("b") || name.equals("a");
+    }
+
     void removeElement(Element element) {
         Node parent = element.getParentNode();
         if (element.hasChildNodes()) {
@@ -135,6 +141,14 @@ public abstract class DomModifications {
             }
         }
         return element;
+    }
+
+    void insertTextBefore(Node element, String text) {
+        element.getParentNode().insertBefore(element.getOwnerDocument().createTextNode(text), element);
+    }
+
+    void insertTextAfter(Node element, String text) {
+        element.getParentNode().insertBefore(element.getOwnerDocument().createTextNode(text), element.getNextSibling());
     }
 
     void removeNode(Node node) {

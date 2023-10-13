@@ -59,9 +59,10 @@ public class TransformHtml {
         transform(new NullSpanRemoval());
         transform(new StyleMerge());
         transform(new NullAttributeRemoval());
-        transform(new ElementTrailingSpaceRemoval());
-        transform(new ReplaceWithHeadings());
         transform(new BlankElementRemoval());
+        transform(new RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements());
+        transform(new BlockElementTrailingSpaceRemoval());
+        transform(new ReplaceWithHeadings());
     }
 
     public void writeHtml(Writer output) throws TransformerException {
@@ -107,6 +108,8 @@ public class TransformHtml {
             case RESTART_WALK_FROM_ROOT:
                 level = 0;
                 return root;
+            case RESTART_WALK_FROM_SELF:
+                return node;
             case RESTART_WALK_FROM_PARENT:
                 level--;
                 return parentnode;
@@ -133,6 +136,8 @@ public class TransformHtml {
             case RESTART_WALK_FROM_ROOT:
                 level = 0;
                 return root;
+            case RESTART_WALK_FROM_SELF:
+                return node;
             case RESTART_WALK_FROM_PARENT:
                 level--;
                 return parentnode;
