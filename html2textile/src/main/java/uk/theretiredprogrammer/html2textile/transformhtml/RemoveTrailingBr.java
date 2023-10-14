@@ -21,13 +21,13 @@ import static org.w3c.dom.Node.ELEMENT_NODE;
 
 public class RemoveTrailingBr extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         if (isBlockElement(element)) {
             Node trailingNode = element.getLastChild();
             if (trailingNode != null && trailingNode.getNodeType() == ELEMENT_NODE  && trailingNode.getNodeName().equals("br")) {
                 removeElement((Element)trailingNode);
             }
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 }

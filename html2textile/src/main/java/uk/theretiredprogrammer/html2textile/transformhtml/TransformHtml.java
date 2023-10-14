@@ -29,10 +29,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
-import static org.w3c.dom.Node.TEXT_NODE;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.transformhtml.DomModifications.SubsequentWalkAction;
 
 public class TransformHtml {
 
@@ -42,7 +40,6 @@ public class TransformHtml {
 //              remove usage patterns whish are redundent or poorly inserted by cut & paste of other formats
 //
     private final Element root;
-    private int level = 0;
 
     public TransformHtml(Reader input) throws IOException, ParserConfigurationException, SAXException {
         root = newInstance().newDocumentBuilder().parse(new InputSource(input)).getDocumentElement();
@@ -82,73 +79,99 @@ public class TransformHtml {
     }
 
     void transform(DomModifications transformrules) {
-        Node next = root;
-        level = 0;
-        while ((next = processNode(next, transformrules, level)) != null) {
+        State state =new State();
+        do {
+            switch (transformrules.testElementAndModify(state.current)){
+                case RESUME_FROM_ROOT -> state.root();
+                //case RESUME_FROM_SELF - no state change
+                case RESUME_FROM_PARENT -> state.parent();
+                case RESUME_FROM_FIRST_SIBLING -> state.firstSibling();
+                case RESUME_FROM_PREVIOUS -> state.previous();
+                case RESUME_FROM_NEXT -> state.next();
+            }
+        } while (state.current != null);
+    }
+
+    private class State {
+
+        private final Element root;
+        private Element parent;
+        private Element previous;
+        private Element current;
+        
+        public State() {
+            root = TransformHtml.this.root;
+            root();
         }
-    }
-
-    private Node processNode(Node node, DomModifications transformrules, int level) {
-        Node parentnode = node.getParentNode();
-        return switch (node.getNodeType()) {
-            case TEXT_NODE ->
-                nextSiblingNode(node, parentnode, transformrules.testTextAndModify(node, level));
-            case ELEMENT_NODE ->
-                nextChildNode(node, parentnode, transformrules.testElementAndModify((Element) node, level));
-            default ->
-                nextSiblingNode(node, parentnode, SubsequentWalkAction.CONTINUE_WALK);
-        };
-    }
-
-    private Node nextSiblingNode(Node node, Node parentnode, SubsequentWalkAction SubsequentWalkAction) {
-        switch (SubsequentWalkAction) {
-            case RESTART_WALK_FROM_ROOT:
-                level = 0;
-                return root;
-            case RESTART_WALK_FROM_SELF:
-                return node;
-            case RESTART_WALK_FROM_PARENT:
-                level--;
-                return parentnode;
-            case CONTINUE_WALK:
-            default:
-                return findSiblingNode(node);
+            
+        public final boolean root() {
+            current = root;
+            parent = null;
+            previous = null;
+            return current != null;
         }
-    }
 
-    private Node findSiblingNode(Node node) {
-        Node next;
-        while ((next = node.getNextSibling()) == null) {
-            node = node.getParentNode();
-            level--;
-            if (level == 0 || node == null) {
-                return null;
+        public boolean next() {
+            previous = current;
+            setCurrentToNext();
+            setParent();
+            return current != null;
+        }
+
+        public boolean previous() {
+            current = previous;
+            previous = null;
+            setParent();
+            return current != null;
+        }
+        
+        public boolean firstSibling() {
+            previous = parent;
+            current = findFirstSiblingElement(current);
+            setParent();
+            return current != null;
+        }
+
+        public boolean parent() {
+            previous = null;
+            current = parent;
+            setParent();
+            return current != null;
+        }
+
+        private void setParent() {
+            if (current == null) {
+                parent = null;
+            } else {
+                Node p = current.getParentNode();
+                parent = p.getNodeType() == ELEMENT_NODE ? (Element) p : null;
             }
         }
-        return next;
-    }
-
-    private Node nextChildNode(Node node, Node parentnode, SubsequentWalkAction SubsequentWalkAction) {
-        switch (SubsequentWalkAction) {
-            case RESTART_WALK_FROM_ROOT:
-                level = 0;
-                return root;
-            case RESTART_WALK_FROM_SELF:
-                return node;
-            case RESTART_WALK_FROM_PARENT:
-                level--;
-                return parentnode;
-            case CONTINUE_WALK:
-            default:
-                Node next = node.getFirstChild();
-                if (next == null) {
-                    return findSiblingNode(node);
+        
+        private void setCurrentToNext() {
+            Element parentofnextSiblings = current.hasChildNodes() ? current : parent;
+            Element next = findNextSiblingElement(current.hasChildNodes() ? current.getFirstChild() : current.getNextSibling());
+            while (next == null && parentofnextSiblings != null) {
+                Node p = parentofnextSiblings.getParentNode();
+                if (p.getNodeType() != ELEMENT_NODE) {
+                    parentofnextSiblings = null;
                 } else {
-                    level++;
-                    return next;
+                    next = findNextSiblingElement(parentofnextSiblings.getNextSibling());
+                    parentofnextSiblings = (Element) p;
                 }
+            }
+            current = next;
+        }
+    
+        private Element findNextSiblingElement(Node node) {
+            while (node != null && node.getNodeType() != ELEMENT_NODE) {
+                node = node.getNextSibling();
+            }
+            return (Element) node;
+        }
+        
+        private Element findFirstSiblingElement(Element element) {
+            return findNextSiblingElement(element.getParentNode().getFirstChild());
         }
     }
-    
-    
 }

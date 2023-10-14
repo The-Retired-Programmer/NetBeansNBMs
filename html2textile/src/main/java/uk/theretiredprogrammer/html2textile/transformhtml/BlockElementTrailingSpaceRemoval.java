@@ -21,14 +21,14 @@ import static org.w3c.dom.Node.TEXT_NODE;
 
 public class BlockElementTrailingSpaceRemoval extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         if (isBlockElement(element)) {
             Node trailingNode = element.getLastChild();
             if (trailingNode != null && trailingNode.getNodeType() == TEXT_NODE) {
                 String text = trailingNode.getNodeValue();
                 if (text.isBlank()) {
                     removeNode(trailingNode);
-                    return SubsequentWalkAction.RESTART_WALK_FROM_SELF;
+                    return ResumeAction.RESUME_FROM_SELF;
                 }
                 String trailingstrippedtext = text.stripTrailing();
                 int textlength = text.length();
@@ -39,6 +39,6 @@ public class BlockElementTrailingSpaceRemoval extends DomModifications {
                 }
             }
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 }

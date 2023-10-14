@@ -23,15 +23,15 @@ import org.w3c.dom.Node;
 
 public class StyleMerge extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         if (isBlockElement(element)) {
             Element span = getOnlyChildSpanElement(element);
             if (span != null) {
                 mergeAttributes(element, span);
-                return SubsequentWalkAction.RESTART_WALK_FROM_SELF;
+                return ResumeAction.RESUME_FROM_SELF;
             }
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 
     private void mergeAttributes(Element parent, Element child) {

@@ -19,16 +19,16 @@ import org.w3c.dom.Element;
 
 public class DivReduction extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("div") && (!element.hasAttributes())) {
             if (areAllChildrenBlockElements(element)) {
                 removeElement(element);
             } else {
                 replaceElement(element, "p");
             }
-            return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
+            return ResumeAction.RESUME_FROM_PARENT;
         } else {
-            return SubsequentWalkAction.CONTINUE_WALK;
+            return ResumeAction.RESUME_FROM_NEXT;
         }
     }
 }

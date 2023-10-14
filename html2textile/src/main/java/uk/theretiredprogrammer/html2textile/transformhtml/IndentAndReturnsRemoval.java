@@ -17,21 +17,21 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import static org.w3c.dom.Node.TEXT_NODE;
 
 public class IndentAndReturnsRemoval extends DomModifications {
 
     @Override
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
-        return SubsequentWalkAction.CONTINUE_WALK;
-    }
-
-    @Override
-    public SubsequentWalkAction testTextAndModify(Node textnode, int level) {
-        if (isFilterable(textnode.getNodeValue())) {
-            removeNode(textnode);
-            return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
+    public ResumeAction testElementAndModify(Element element) {
+        Node child = element.getFirstChild();
+        while (child != null) {
+            Node next = child.getNextSibling();
+            if (child.getNodeType() == TEXT_NODE && isFilterable(child.getNodeValue())) {
+                removeNode(child);
+            }
+            child = next;
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 
     private boolean isFilterable(String text) {

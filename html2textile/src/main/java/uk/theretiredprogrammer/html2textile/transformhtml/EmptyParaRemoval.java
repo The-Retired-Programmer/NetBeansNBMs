@@ -19,11 +19,11 @@ import org.w3c.dom.Element;
 
 public class EmptyParaRemoval extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("p") && (!element.hasChildNodes())) {
                 removeElement(element);
-            return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
+            return ResumeAction.RESUME_FROM_PARENT;
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 }

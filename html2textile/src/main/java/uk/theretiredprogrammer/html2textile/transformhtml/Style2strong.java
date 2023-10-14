@@ -21,7 +21,7 @@ import org.w3c.dom.Node;
 
 public class Style2strong extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         NamedNodeMap attributes = element.getAttributes();
         Node style = attributes.getNamedItem("style");
         if (style != null) {
@@ -29,7 +29,7 @@ public class Style2strong extends DomModifications {
                 insertChildElement(element, "strong");
             }
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 
     private boolean removeStyleItem(Node style, String removeme) {

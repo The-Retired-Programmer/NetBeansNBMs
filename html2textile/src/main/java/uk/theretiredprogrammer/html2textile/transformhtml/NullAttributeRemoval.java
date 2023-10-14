@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
 
 public class NullAttributeRemoval extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         if (element.hasAttributes()) {
             List<String> namestoremove = new ArrayList<>();
             NamedNodeMap attributes = element.getAttributes();
@@ -37,6 +37,6 @@ public class NullAttributeRemoval extends DomModifications {
                 element.removeAttribute(name);
             }
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 }

@@ -21,13 +21,13 @@ import static org.w3c.dom.Node.TEXT_NODE;
 
 public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         if (isBracketingElement(element)) {
             if (adjustWS(element)) {
-                return SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
+                return ResumeAction.RESUME_FROM_PARENT;
             }
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 
     private boolean adjustWS(Element element) {

@@ -21,7 +21,7 @@ import org.w3c.dom.Node;
 
 public class StyleReduction extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         NamedNodeMap attributes = element.getAttributes();
         Node style = attributes.getNamedItem("style");
         if (style != null) {
@@ -35,7 +35,7 @@ public class StyleReduction extends DomModifications {
                             "font-size:10pt;")
             );
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 
     private String remove(String from, String... removethese) {

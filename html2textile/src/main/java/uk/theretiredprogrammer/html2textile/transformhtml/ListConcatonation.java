@@ -21,23 +21,23 @@ import static org.w3c.dom.Node.ELEMENT_NODE;
 
 public class ListConcatonation extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
-        if (checkListAndConcatonate("ul", element) == SubsequentWalkAction.RESTART_WALK_FROM_SELF) {
-            return SubsequentWalkAction.RESTART_WALK_FROM_SELF;
+    public ResumeAction testElementAndModify(Element element) {
+        if (checkListAndConcatonate("ul", element) == ResumeAction.RESUME_FROM_SELF) {
+            return ResumeAction.RESUME_FROM_SELF;
         }
         return checkListAndConcatonate("ol", element);
     }
 
-    private SubsequentWalkAction checkListAndConcatonate(String listtag, Element element) {
+    private ResumeAction checkListAndConcatonate(String listtag, Element element) {
         if (element.getTagName().equals(listtag)) {
             Node sibling = element.getNextSibling();
             if (sibling != null && sibling.getNodeType() == ELEMENT_NODE && sibling.getNodeName().equals(listtag)) {
                 if (!element.hasAttributes() && !sibling.hasAttributes()) {
                     removeElementMoveChildrenTo((Element) sibling, element);
-                    return SubsequentWalkAction.RESTART_WALK_FROM_SELF;
+                    return ResumeAction.RESUME_FROM_SELF;
                 }
             }
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 }

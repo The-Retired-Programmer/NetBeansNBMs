@@ -22,14 +22,14 @@ import org.w3c.dom.Node;
 
 public class ReplaceWithHeadings extends DomModifications {
 
-    public SubsequentWalkAction testElementAndModify(Element element, int level) {
+    public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("p")) {
             return scanthroughotherformatting(element);
         }
-        return SubsequentWalkAction.CONTINUE_WALK;
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 
-    private SubsequentWalkAction scanthroughotherformatting(Element element) {
+    private ResumeAction scanthroughotherformatting(Element element) {
         List<Element> elements = new ArrayList<>();
         elements.add(element);
         Element nextlevelelement = element;
@@ -49,7 +49,7 @@ public class ReplaceWithHeadings extends DomModifications {
             removefontsizestylerule(element);
             replaceElement(element, headername, nextlevelelement);
         }
-        return headername == null ? SubsequentWalkAction.CONTINUE_WALK : SubsequentWalkAction.RESTART_WALK_FROM_PARENT;
+        return headername == null ? ResumeAction.RESUME_FROM_NEXT : ResumeAction.RESUME_FROM_PARENT;
     }
 
     private boolean isHeaderReductionElement(Element element) {

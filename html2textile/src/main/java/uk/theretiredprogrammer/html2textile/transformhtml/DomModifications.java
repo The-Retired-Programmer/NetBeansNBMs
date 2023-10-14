@@ -24,15 +24,11 @@ import org.w3c.dom.NodeList;
 
 public abstract class DomModifications {
 
-    public enum SubsequentWalkAction {
-        RESTART_WALK_FROM_ROOT, RESTART_WALK_FROM_SELF, RESTART_WALK_FROM_PARENT, CONTINUE_WALK
+    public enum ResumeAction {
+        RESUME_FROM_ROOT, RESUME_FROM_SELF, RESUME_FROM_PARENT, RESUME_FROM_NEXT, RESUME_FROM_PREVIOUS, RESUME_FROM_FIRST_SIBLING
     };
 
-    public abstract SubsequentWalkAction testElementAndModify(Element element, int level);
-
-    public SubsequentWalkAction testTextAndModify(Node textnode, int level) {
-        return SubsequentWalkAction.CONTINUE_WALK;
-    }
+    public abstract ResumeAction testElementAndModify(Element element);
 
     // ===========================================================================
     String getOnlyAttribute(Element element, String attributename) {
