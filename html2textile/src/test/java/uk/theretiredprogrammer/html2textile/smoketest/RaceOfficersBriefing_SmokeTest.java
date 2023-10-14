@@ -186,8 +186,7 @@ public class RaceOfficersBriefing_SmokeTest {
                    p
                        "Run the start sequence (RRS 26). Call the line, if boats are over and you can identify them raise the X flag with one sound signal. If there are too many over the line for you to identify then signal a general recall 1st substitute and 2 sound signals."
                    p
-                       "Record the time each boat crosses the line on each lap. "
-                       " "
+                       "Record the time each boat crosses the line on each lap.  "
                        strong
                            "If using Course 1 this includes the first time the boats pass No 11 buoy after going out to No 10"
                        "."
@@ -481,8 +480,7 @@ public class RaceOfficersBriefing_SmokeTest {
                                    p
                                        strong
                                            "Example"
-                                       " "
-                                       "The example on the right would be a triangular course beginning with the start line (S/L), Y to Port (Y on a red background), 17 to Port (17 on a red background), Y to Port (Y on a red background), and back through the finish line. The start line and finish line is between the RIB and a Yellow mark and the race consists of 3 laps."
+                                       " The example on the right would be a triangular course beginning with the start line (S/L), Y to Port (Y on a red background), 17 to Port (17 on a red background), Y to Port (Y on a red background), and back through the finish line. The start line and finish line is between the RIB and a Yellow mark and the race consists of 3 laps."
                    """;
     }
 }

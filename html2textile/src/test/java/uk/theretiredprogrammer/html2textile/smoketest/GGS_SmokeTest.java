@@ -105,14 +105,12 @@ public class GGS_SmokeTest {
                        " for the article."
                    h6
                        a href="assets/documents/GGS_2022/GGS_WinterSeminars2023.pdf"
-                           "Winter"
-                           " 2024 Seminars now published"
+                           "Winter 2024 Seminars now published"
                    ul
                        li
                            strong
                                "Thursday 7th December"
-                           " -"
-                           " Christmas Dinner, meet at 6.30. Hear some experiences from the 2023 season.  Christmas dinner at 7.30pm."
+                           " - Christmas Dinner, meet at 6.30. Hear some experiences from the 2023 season.  Christmas dinner at 7.30pm."
                        li
                            strong
                                "Friday 19th January 2024"
@@ -120,8 +118,7 @@ public class GGS_SmokeTest {
                        li
                            strong
                                "Friday 2nd February 2024,"
-                           " "
-                           "7pm, Topic - Health and Well Being on the Water and looking after each other."
+                           " 7pm, Topic - Health and Well Being on the Water and looking after each other."
                        li
                            strong
                                "Friday 8th March 2024"
@@ -129,8 +126,7 @@ public class GGS_SmokeTest {
                        li
                            strong
                                "Friday 12th April 2024"
-                           ", 7p"
-                           "m, Start of Season Meal and social event."
+                           ", 7pm, Start of Season Meal and social event."
                    p
                        "We will also be practicing some knot tying and will adjourn to the bar after the seminars for some refreshment."
                    p
@@ -140,8 +136,7 @@ public class GGS_SmokeTest {
                        strong
                            a href="index.php?option=com_content&view=article&id=267:girls-go-sailing-seminars&catid=2:uncategorised"
                                "Girls Go Sailing Seminars"
-                       " "
-                       "page!"
+                       " page!"
                    h4
                        "Getting afloat"
                    h5 dir="auto"
@@ -154,8 +149,7 @@ public class GGS_SmokeTest {
                    p dir="auto"
                        strong
                            "Cruiser Training & Qualifications -"
-                       " "
-                       "Lots of opportunities to take part in RYA cruiser courses throughout summer on Zephyr with Karen Melling - go to "
+                       " Lots of opportunities to take part in RYA cruiser courses throughout summer on Zephyr with Karen Melling - go to "
                        a href="training.html"
                            "Training"
                        " for more details."

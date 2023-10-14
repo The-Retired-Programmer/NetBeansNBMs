@@ -16,15 +16,26 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import static org.w3c.dom.Node.TEXT_NODE;
 
-public class DivRlStyleRemoval extends DomModifications {
+public class MergeTextSegments extends DomModifications {
 
+    @Override
     public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("div")
-                && "margin:20px20px20px20px;font-family:arial,helvetica,sans-serif;font-size:12pt;line-height:1.5em;color:#000000;"
-                        .equals(getOnlyAttribute(element, "style"))) {
-            removeElement(element);
-            return ResumeAction.RESUME_FROM_ROOT;
+        Node child = element.getFirstChild();
+        while (child != null) {
+            Node next = child.getNextSibling();
+            if (next != null) {
+                if (child.getNodeType() == TEXT_NODE) {
+                    if (next.getNodeType() == TEXT_NODE) {
+                        child.setNodeValue(child.getNodeValue()+next.getNodeValue());
+                        removeNode(next);
+                        return ResumeAction.RESUME_FROM_SELF;
+                    }
+                }
+            }
+            child = next;
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }

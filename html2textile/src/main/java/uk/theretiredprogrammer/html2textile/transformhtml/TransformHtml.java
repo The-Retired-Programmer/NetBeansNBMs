@@ -63,6 +63,7 @@ public class TransformHtml {
         transform(new ListConcatonation());
         transform(new RemoveTrailingBr());
         transform(new EmptyParaRemoval());
+        transform(new MergeTextSegments());
     }
 
     public void writeHtml(Writer output) throws TransformerException {
