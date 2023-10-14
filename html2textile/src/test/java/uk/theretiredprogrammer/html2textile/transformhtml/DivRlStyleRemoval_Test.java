@@ -37,7 +37,7 @@ public class DivRlStyleRemoval_Test {
         //
         transformer.transform(new DivRlStyleRemoval());
         //
-        String result = transformer.getSerialisedDOM();
+        String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
     }

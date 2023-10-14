@@ -40,7 +40,7 @@ public class StyleMerge_Test {
         //
         transformer.transform(new StyleMerge());
         //
-        String result = transformer.getSerialisedDOM();
+        String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
     }

@@ -40,7 +40,7 @@ public class Style2u_Test {
         //
         transformer.transform(new Style2u());
         //
-        String result = transformer.getSerialisedDOM();
+        String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
     }

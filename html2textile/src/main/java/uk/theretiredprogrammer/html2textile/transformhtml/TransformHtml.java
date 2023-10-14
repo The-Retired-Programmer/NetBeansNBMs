@@ -77,12 +77,6 @@ public class TransformHtml {
         transformer.transform(new DOMSource(root.getOwnerDocument()), new StreamResult(output));
     }
 
-    public String getSerialisedDOM() {
-        DomSerialisation rules = new DomSerialisation();
-        transform(rules);
-        return rules.getContent();
-    }
-
     public Element getRoot() {
         return root;
     }
@@ -155,4 +149,6 @@ public class TransformHtml {
                 }
         }
     }
+    
+    
 }

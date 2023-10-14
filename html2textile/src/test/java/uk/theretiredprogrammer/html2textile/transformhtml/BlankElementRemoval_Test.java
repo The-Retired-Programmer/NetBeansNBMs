@@ -40,7 +40,7 @@ public class BlankElementRemoval_Test {
         //
         transformer.transform(new BlankElementRemoval());
         //
-        String result = transformer.getSerialisedDOM();
+        String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
     }

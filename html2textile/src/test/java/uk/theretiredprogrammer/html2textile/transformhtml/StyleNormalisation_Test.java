@@ -39,7 +39,7 @@ public class StyleNormalisation_Test {
         //
         transformer.transform(new StyleNormalisation());
         //
-        String result = transformer.getSerialisedDOM();
+        String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
     }

@@ -40,8 +40,8 @@ public class EmptyParaRemoval_Test {
         //
         transformer.transform(new EmptyParaRemoval());
         //
-        String result = transformer.getSerialisedDOM();
-        System.out.println(result);
+        String result = SerialiseDom.serialise(transformer.getRoot());
+        //System.out.println(result);
         assertEquals(expected(), result);
     }
 

@@ -36,7 +36,7 @@ public class DomSerialisation_Test {
         Reader in = new InputStreamReader(is);
         TransformHtml transformer = new TransformHtml(in);
         //
-        String result = transformer.getSerialisedDOM();
+        String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
     }

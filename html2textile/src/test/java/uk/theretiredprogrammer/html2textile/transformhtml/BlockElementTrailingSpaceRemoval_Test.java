@@ -40,7 +40,7 @@ public class BlockElementTrailingSpaceRemoval_Test {
         //
         transformer.transform(new BlockElementTrailingSpaceRemoval());
         //
-        String result = transformer.getSerialisedDOM();
+        String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
     }

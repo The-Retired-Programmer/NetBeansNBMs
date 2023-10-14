@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 import uk.theretiredprogrammer.html2textile.tranformtext.TransformText;
+import uk.theretiredprogrammer.html2textile.transformhtml.SerialiseDom;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 
 public class GGS_SmokeTest {
@@ -49,9 +50,9 @@ public class GGS_SmokeTest {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();
             transformer.writeHtml(new FileWriter("/home/richard/GGS_SMOKE_TEST.html"));
-            serialised = transformer.getSerialisedDOM();
+            serialised = SerialiseDom.serialise(transformer.getRoot());
             //
-            try ( PrintWriter out = new PrintWriter(new FileWriter("/home/richard/GGS_SMOKE_TEST.textile")); PrintWriter err = new PrintWriter(System.err)) {
+            try ( PrintWriter out = new PrintWriter(new FileWriter("/home/richard/GGS_SMOKE_TEST.textile"));  PrintWriter err = new PrintWriter(System.err)) {
                 TextileTranslator translator = new TextileTranslator(transformer.getRoot(), out, err);
                 translator.translate();
             }

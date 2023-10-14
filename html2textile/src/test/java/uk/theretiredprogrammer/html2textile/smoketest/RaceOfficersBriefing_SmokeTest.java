@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.tranformtext.TransformText;
+import uk.theretiredprogrammer.html2textile.transformhtml.SerialiseDom;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 
 public class RaceOfficersBriefing_SmokeTest {
@@ -45,7 +46,7 @@ public class RaceOfficersBriefing_SmokeTest {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();
             transformer.writeHtml(new FileWriter("/home/richard/RaceOfficersBriefing_SMOKE_TEST.html"));
-            serialised = transformer.getSerialisedDOM();
+            serialised = SerialiseDom.serialise(transformer.getRoot());
         }
         //System.out.println(serialised);
         assertEquals(expected(), serialised);

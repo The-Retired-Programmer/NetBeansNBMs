@@ -40,7 +40,7 @@ public class StyleReduction_Test {
         //
         transformer.transform(new StyleReduction());
         //
-        String result = transformer.getSerialisedDOM();
+        String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
     }
