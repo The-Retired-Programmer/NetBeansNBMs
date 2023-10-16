@@ -23,6 +23,8 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,7 +40,6 @@ public class SmokeTest {
     public SmokeTest() {
     }
 
-    
     public void transformation(
             String inputresourcefilename,
             String outputhtmlfilename,
@@ -46,7 +47,7 @@ public class SmokeTest {
             String expected
     ) throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
         String serialised;
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/"+inputresourcefilename);
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/" + inputresourcefilename);
         TransformHtmlText texttransformer = new TransformHtmlText(new InputStreamReader(is));
         texttransformer.rootWrap("html");
         texttransformer.replace("&nbsp;", " ");
@@ -55,7 +56,7 @@ public class SmokeTest {
         try ( Reader wrapped = texttransformer.transform()) {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();
-            transformer.writeHtml(new FileWriter("/home/richard/"+outputhtmlfilename));
+            transformer.writeHtml(new FileWriter("/home/richard/" + outputhtmlfilename));
             serialised = SerialiseDom.serialise(transformer.getRoot());
             //
             StringWriter swriter = new StringWriter();
@@ -63,10 +64,10 @@ public class SmokeTest {
                 TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
                 translator.translate();
             }
-            PrintWriter out = new PrintWriter(new FileWriter("/home/richard/"+outputtextilefilename));
-            TransformTextileText textiletransformer = new TransformTextileText(swriter, out);
-            InputStream tis = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformtextiletext/rules");
-            textiletransformer.setTransforms(tis);
+            PrintWriter out = new PrintWriter(new FileWriter("/home/richard/" + outputtextilefilename));
+            List<InputStream> rules = new ArrayList<>();
+            rules.add(this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformtextiletext/rules"));
+            TransformTextileText textiletransformer = new TransformTextileText(swriter, out, rules);
             textiletransformer.transform();
             textiletransformer.save();
         }

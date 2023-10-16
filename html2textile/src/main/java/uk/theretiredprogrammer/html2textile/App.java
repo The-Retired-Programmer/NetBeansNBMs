@@ -16,9 +16,12 @@
 package uk.theretiredprogrammer.html2textile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
@@ -32,12 +35,18 @@ public class App {
         Reader rdr = new InputStreamReader(System.in);
         PrintWriter wtr = new PrintWriter(System.out);
         PrintWriter err = new PrintWriter(System.err);
+        List<InputStream> rules = new ArrayList<>();
         //
-        try (rdr; wtr; err) {
-            Html2Textile.convert(rdr, wtr, err);
-        } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
-            err.println("Exception: " + ex.getLocalizedMessage());
-            System.exit(4);
+        try {
+            try (rdr; wtr; err) {
+                Html2Textile.convert(rdr, wtr, err, rules);
+            } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
+                err.println("Exception: " + ex.getLocalizedMessage());
+                System.exit(4);
+            }
+        } catch (Throwable ex) {
+            err.println("System Exception: " + ex.getLocalizedMessage());
+            System.exit(8);
         }
     }
 }

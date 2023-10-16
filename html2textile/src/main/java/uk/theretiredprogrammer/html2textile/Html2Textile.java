@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
@@ -31,15 +32,15 @@ import uk.theretiredprogrammer.html2textile.transformtextiletext.TransformTextil
 
 public class Html2Textile {
     
-    public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        new Html2Textile().converter(from,textilewriter,err);
+    public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err, List<InputStream> rules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        new Html2Textile().converter(from,textilewriter,err, rules);
     }
     
     
     private Html2Textile() {
     }
 
-    public void converter(Reader from, PrintWriter textilewriter, PrintWriter err) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+    public void converter(Reader from, PrintWriter textilewriter, PrintWriter err, List<InputStream> rules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
         TransformHtmlText texttransformer = new TransformHtmlText(from);
         texttransformer.rootWrap("html");
         texttransformer.replace("&nbsp;", " ");
@@ -52,9 +53,8 @@ public class Html2Textile {
             TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
             translator.translate();
         }
-        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter);
-        InputStream tis = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformtextiletext/rules");
-        textiletransformer.setTransforms(tis);
+        rules.add(this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformtextiletext/rules"));
+        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter, rules);
         textiletransformer.transform();
         textiletransformer.save();
     }

@@ -33,19 +33,18 @@ public class TransformTextileText {
 //
     private final String[] lines;
     private final PrintWriter output;
-    private final List<String>transformations = new ArrayList<>();
+    private final List<Rule>transformations = new ArrayList<>();
 
-    public TransformTextileText(StringWriter input, PrintWriter output) {
+    public TransformTextileText(StringWriter input, PrintWriter output, List<InputStream> rules) throws IOException {
         lines = getLines(input);
         this.output = output;
-    }
-    
-    public void setTransforms(InputStream definitions) throws IOException{
-        try (BufferedReader definitionreader = new BufferedReader(new InputStreamReader(definitions))) {
-            String line;
-            while ((line=definitionreader.readLine()) != null) {
-                if (!(line.startsWith("#") || line.isBlank()) ){
-                    transformations.add(line);
+        for (InputStream ruleset: rules) {
+            try ( BufferedReader rulesreader = new BufferedReader(new InputStreamReader(ruleset))) {
+                String line;
+                while ((line = rulesreader.readLine()) != null) {
+                    if (!(line.startsWith("#") || line.isBlank())) {
+                        transformations.add(new Rule(line));
+                    }
                 }
             }
         }
@@ -71,11 +70,21 @@ public class TransformTextileText {
     }
 
     private String transform(String line) {
-        for (String rule: transformations) {
-            String[]parts = rule.split("<===>");
-            line = line.replaceAll(parts[0], parts[1]);
+        for (Rule rule: transformations) {
+            line = line.replaceAll(rule.match, rule.result);
         }
         return line;
-//        return line.replaceAll("^h(\\d)\\{text-align:center;\\}\\. (.*)$","h$1=. $2");
+    }
+    
+    private class Rule {
+        
+        public final String match;
+        public final String result;
+        
+        public Rule(String rule) {
+            String[]parts = rule.split("<===>");
+            match = parts[0];
+            result = parts[1];
+        }
     }
 }
