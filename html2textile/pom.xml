@@ -94,7 +94,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>uk.theretiredprogrammer.html2textile.App</mainClass>
+                            <mainClass>uk.theretiredprogrammer.html2textile.Html2TextileApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
