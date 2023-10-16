@@ -15,41 +15,21 @@
  */
 package uk.theretiredprogrammer.html2textile.smoketest;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.tranformtext.TransformText;
-import uk.theretiredprogrammer.html2textile.transformhtml.SerialiseDom;
-import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 
-public class Dinghies_SmokeTest {
+public class Dinghies_SmokeTest extends SmokeTest {
 
     public Dinghies_SmokeTest() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
-        String serialised;
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/sample_dinghies.html");
-        TransformText texttransformer = new TransformText(new InputStreamReader(is));
-        texttransformer.rootWrap("html");
-        texttransformer.replace("&nbsp;", " ");
-        try (Reader wrapped = texttransformer.transform()) {
-            TransformHtml transformer = new TransformHtml(wrapped);
-            transformer.transform();
-            transformer.writeHtml(new FileWriter("/home/richard/DINGHIES_SMOKE_TEST.html"));
-            serialised = SerialiseDom.serialise(transformer.getRoot());
-        }
-        //System.out.println(serialised);
-        assertEquals(expected(), serialised);
+        transformation("sample_dinghies.html","DINGHIES_SMOKE_TEST.html","DINGHIES_SMOKE_TEST.textile", expected());
     }
 
     private String expected() {

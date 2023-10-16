@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.tranformtext;
+package uk.theretiredprogrammer.html2textile.tranformhtmltext;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -22,7 +22,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TransformText {
+public class TransformHtmlText {
 
 //
 // STAGE 1 - textual transforms
@@ -34,7 +34,7 @@ public class TransformText {
     private String rootname = "";
     private final Map<String, String> replacements = new HashMap<>();
 
-    public TransformText(Reader original) {
+    public TransformHtmlText(Reader original) {
         this.original = original;
     }
 

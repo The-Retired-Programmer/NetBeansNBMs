@@ -1,0 +1,40 @@
+#
+# Regex rules for final processing of Textile files
+# =================================================
+#
+
+#
+# process the three text-align styles to native Textile
+#
+# handle the style having only text-align
+#
+^h(\d)\{text-align:center;\}\. (.*)$<===>h$1=. $2
+^h(\d)\{text-align:left;\}\. (.*)$<===>h$1<. $2
+^h(\d)\{text-align:right;\}\. (.*)$<===>h$1>. $2
+#
+# handle the style containing more css rules
+#
+^h(\d)\{(.*)text-align:center;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
+^h(\d)\{(.*)text-align:left;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
+^h(\d)\{(.*)text-align:right;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
+
+#
+# process paragraph formatting
+#
+# indents - very temporary at moment - only one depth supported
+#
+^p\{padding-left:\d*px;\}\. (.*)$<===>p((. $1
+#
+# alignments - single style rule only
+#
+^p\{text-align:center;\}\. (.*)$<===>p=. $1
+^p\{text-align:left;\}\. (.*)$<===>p<. $1
+^p\{text-align:right;\}\. (.*)$<===>p>. $1
+^p\{text-align:justify;\}\. (.*)$<===>p<>. $1
+#
+# alignments - possible multiple rules
+#
+^p\{(.*)text-align:center;(.*)\}\. (.*)$<===>p{$1$2}=. $3
+^p\{(.*)text-align:left;(.*)\}\. (.*)$<===>p{$1$2}<. $3
+^p\{(.*)text-align:right;(.*)\}\. (.*)$<===>p{$1$2}>. $3
+^p\{(.*)text-align:justify;(.*)\}\. (.*)$<===>p{$1$2}<>. $3

@@ -15,51 +15,21 @@
  */
 package uk.theretiredprogrammer.html2textile.smoketest;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
-import uk.theretiredprogrammer.html2textile.tranformtext.TransformText;
-import uk.theretiredprogrammer.html2textile.transformhtml.SerialiseDom;
-import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 
-public class GGS_SmokeTest {
+public class GGS_SmokeTest extends SmokeTest {
 
     public GGS_SmokeTest() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
-        String serialised;
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/sample_girlsgosailing.html");
-        TransformText texttransformer = new TransformText(new InputStreamReader(is));
-        texttransformer.rootWrap("html");
-        texttransformer.replace("&nbsp;", " ");
-        texttransformer.replace("&lsquo;", "'");
-        texttransformer.replace("&rsquo;", "'");
-        try ( Reader wrapped = texttransformer.transform()) {
-            TransformHtml transformer = new TransformHtml(wrapped);
-            transformer.transform();
-            transformer.writeHtml(new FileWriter("/home/richard/GGS_SMOKE_TEST.html"));
-            serialised = SerialiseDom.serialise(transformer.getRoot());
-            //
-            try ( PrintWriter out = new PrintWriter(new FileWriter("/home/richard/GGS_SMOKE_TEST.textile"));  PrintWriter err = new PrintWriter(System.err)) {
-                TextileTranslator translator = new TextileTranslator(transformer.getRoot(), out, err);
-                translator.translate();
-            }
-        }
-        //System.out.println(serialised);
-        assertEquals(expected(), serialised);
-
+        transformation("sample_girlsgosailing.html","GGS_SMOKE_TEST.html","GGS_SMOKE_TEST.textile", expected());
     }
 
     private String expected() {

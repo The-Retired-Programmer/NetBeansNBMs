@@ -18,27 +18,44 @@ package uk.theretiredprogrammer.html2textile;
 import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.tranformtext.TransformText;
+import uk.theretiredprogrammer.html2textile.tranformhtmltext.TransformHtmlText;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
+import uk.theretiredprogrammer.html2textile.transformtextiletext.TransformTextileText;
 
 public class Html2Textile {
-
+    
     public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        TransformText texttransformer = new TransformText(from);
+        new Html2Textile().converter(from,textilewriter,err);
+    }
+    
+    
+    private Html2Textile() {
+    }
+
+    public void converter(Reader from, PrintWriter textilewriter, PrintWriter err) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        TransformHtmlText texttransformer = new TransformHtmlText(from);
         texttransformer.rootWrap("html");
         texttransformer.replace("&nbsp;", " ");
         texttransformer.replace("&lsquo;", "'");
         texttransformer.replace("&rsquo;", "'");
-        try ( Reader wrapped = texttransformer.transform()) {
+        StringWriter swriter = new StringWriter();
+        try ( Reader wrapped = texttransformer.transform(); PrintWriter textileout = new PrintWriter(swriter)) {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();
-            TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textilewriter, err);
+            TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
             translator.translate();
         }
+        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter);
+        InputStream tis = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformtextiletext/rules");
+        textiletransformer.setTransforms(tis);
+        textiletransformer.transform();
+        textiletransformer.save();
     }
 }
