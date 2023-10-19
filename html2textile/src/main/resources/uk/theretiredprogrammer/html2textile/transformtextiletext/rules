@@ -4,15 +4,7 @@
 #
 
 #
-# process the three text-align styles to native Textile
-#
-# handle the style having only text-align
-#
-^h(\d)\{text-align:center;\}\. (.*)$<===>h$1=. $2
-^h(\d)\{text-align:left;\}\. (.*)$<===>h$1<. $2
-^h(\d)\{text-align:right;\}\. (.*)$<===>h$1>. $2
-#
-# handle the style containing more css rules
+# process the three text-align styles associated with headings to native Textile
 #
 ^h(\d)\{(.*)text-align:center;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
 ^h(\d)\{(.*)text-align:left;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
@@ -23,18 +15,29 @@
 #
 # indents - very temporary at moment - only one depth supported
 #
-^p\{padding-left:\d*px;\}\. (.*)$<===>p((. $1
+^p\{(.*)padding-left:\d*px;(.*)\}\. (.*)$<===>p{$1$2}((. $3
 #
-# alignments - single style rule only
-#
-^p\{text-align:center;\}\. (.*)$<===>p=. $1
-^p\{text-align:left;\}\. (.*)$<===>p<. $1
-^p\{text-align:right;\}\. (.*)$<===>p>. $1
-^p\{text-align:justify;\}\. (.*)$<===>p<>. $1
-#
-# alignments - possible multiple rules
+# alignments 
 #
 ^p\{(.*)text-align:center;(.*)\}\. (.*)$<===>p{$1$2}=. $3
 ^p\{(.*)text-align:left;(.*)\}\. (.*)$<===>p{$1$2}<. $3
 ^p\{(.*)text-align:right;(.*)\}\. (.*)$<===>p{$1$2}>. $3
 ^p\{(.*)text-align:justify;(.*)\}\. (.*)$<===>p{$1$2}<>. $3
+
+#
+#   standard style replacement with classes
+#
+
+^(.*)\{margin:020px10px0px;float:left;width:50%;\}(.*)$<===>$1(float-left-50)$2
+^(.*)\{margin:50px00100px;padding:0;float:right;width:20%;line-height:12pt;\}.*\. (.*)$<===>$1(float-right-20). $2
+^(.*)\{width:100%;margin:0;padding:0;\}(.*)$<===>$1$2
+
+#
+# finally remove any empty style definitions
+#
+
+^p\{\h*\}(.*)\. (.*)$<===>p$1. $2
+^h(\d)\{\h*\}(.*)\. (.*)$<===>h$1$2. $3
+
+# and any redundant para definitions
+^p\. (.*)$<===>$1

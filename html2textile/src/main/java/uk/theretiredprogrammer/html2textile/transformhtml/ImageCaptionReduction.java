@@ -17,27 +17,16 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class DivReduction extends DomModifications {
+public class ImageCaptionReduction extends DomModifications {
 
     public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("div")) {
-            if (element.hasAttributes()) {
-                Element child = getOnlyChildElement(element);
-                if (child== null) {
-                    return ResumeAction.RESUME_FROM_NEXT;
-                }
-                mergeElementsRemovingElement(element,child);
-                return ResumeAction.RESUME_FROM_PARENT;
-            } else {
-                if (areAllChildrenBlockElements(element)) {
-                    removeElement(element);
-                } else {
-                    replaceElement(element, "p");
-                }
-                return ResumeAction.RESUME_FROM_PARENT;
+        if (element.getTagName().equals("img")) {
+            Element next = nextSiblingIsElement(element, "br");
+            if (next != null && nextSiblingIsText(next)) {
+                removeElement(next);
+                return ResumeAction.RESUME_FROM_SELF;
             }
-        } else {
-            return ResumeAction.RESUME_FROM_NEXT;
         }
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 }

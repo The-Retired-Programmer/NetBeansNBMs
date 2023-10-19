@@ -76,11 +76,9 @@ public class Dinghies_SmokeTest extends SmokeTest {
                     a href="open-events.html"
                         "Open Meetings"
                     " and National Championships are staged each year and the club has an excellent reputation amongst the racing fleets for the quality of the sailing on offer and the welcome and hospitality shown to visiting sailors."
-                div style="margin:50px00100px;padding:0;float:right;width:20%;"
-                    p style="text-align:center;line-height:12pt;"
-                        img alt="Rob Vince" src="assets/images/Dinghies2/Rob_Vince_2.jpg" style="width:100%;margin:0;padding:0;"
-                        br
-                        "Rob Vince"
+                p style="margin:50px00100px;padding:0;float:right;width:20%;text-align:center;line-height:12pt;"
+                    img alt="Rob Vince" src="assets/images/Dinghies2/Rob_Vince_2.jpg" style="width:100%;margin:0;padding:0;"
+                    "Rob Vince"
                 p
                     "Dinghy sailing at Exe SC is organised by the Dinghy Committee led by the Dinghy Captain Rob Vince. He is supported by committee members representing the main classes of dinghy sailed and activities undertaken."
                 p

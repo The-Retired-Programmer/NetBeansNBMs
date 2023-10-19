@@ -64,6 +64,7 @@ public class TransformHtml {
         transform(new RemoveTrailingBr());
         transform(new EmptyParaRemoval());
         transform(new MergeTextSegments());
+        transform(new ImageCaptionReduction());
     }
 
     public void writeHtml(Writer output) throws TransformerException {

@@ -73,11 +73,10 @@ public class DivReduction_Test {
                     li
                         span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
                             "We are also planning some social evenings throughout the year."
-                div style="margin:50px00100px;padding:0;float:right;width:20%;"
-                    p style="text-align:center;line-height:12pt;"
-                        img alt="Rob Vince" src="assets/images/Dinghies2/Rob_Vince_2.jpg" style="width:100%;margin:0;padding:0;"
-                        br
-                        "Rob Vince"
+                p style="margin:50px00100px;padding:0;float:right;width:20%;text-align:center;line-height:12pt;"
+                    img alt="Rob Vince" src="assets/images/Dinghies2/Rob_Vince_2.jpg" style="width:100%;margin:0;padding:0;"
+                    br
+                    "Rob Vince"
                 p
                     "para1"
                 p

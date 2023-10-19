@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
+import static org.w3c.dom.Node.TEXT_NODE;
 import org.w3c.dom.NodeList;
 
 public abstract class DomModifications {
@@ -86,6 +87,81 @@ public abstract class DomModifications {
                 || name.equals("sup") || name.equals("b") || name.equals("a");
     }
 
+    Element nextSiblingIsElement(Element element, String name) {
+        Node next = element.getNextSibling();
+        return next != null && next.getNodeType() == ELEMENT_NODE && next.getNodeName().equals(name)
+                ? (Element) next : null;
+    }
+
+    boolean nextSiblingIsText(Element element) {
+        Node next = element.getNextSibling();
+        return next != null && next.getNodeType() == TEXT_NODE;
+    }
+
+    //
+    // Dom manipulation methods
+    //
+    void mergeElementsRemovingChild(Element element, Element child) {
+        mergeAttributes(element, child);
+        removeElement(child);
+    }
+
+    void mergeElementsRemovingElement(Element element, Element child) {
+        mergeAttributes(element, child);
+        moveAttributes(element, child);
+        removeElement(element);
+    }
+
+    private void mergeAttributes(Element parent, Element child) {
+        if (child.hasAttributes()) {
+            NamedNodeMap attributes = child.getAttributes();
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attr = attributes.item(i);
+                String attrname = attr.getNodeName();
+                switch (attrname) {
+                    case "class" -> {
+                        if (parent.hasAttribute(attrname)) {
+                            parent.setAttribute(attrname, parent.getAttribute(attrname) + ' ' + attr.getNodeValue());
+                        } else {
+                            parent.setAttribute(attrname, attr.getNodeValue());
+                        }
+                    }
+                    case "style" -> {
+                        if (parent.hasAttribute(attrname)) {
+                            parent.setAttribute(attrname, parent.getAttribute(attrname) + attr.getNodeValue());
+                        } else {
+                            parent.setAttribute(attrname, attr.getNodeValue());
+                        }
+                    }
+                    default ->
+                        parent.setAttribute(attrname, attr.getNodeValue());
+                }
+            }
+        }
+    }
+
+    private void moveAttributes(Element from, Element to) {
+        clearAttributes(to);
+        copyAttributes(from, to);
+    }
+
+    private void clearAttributes(Element element) {
+        while (element.hasAttributes()) {
+            NamedNodeMap attributes = element.getAttributes();
+            attributes.removeNamedItem(attributes.item(0).getNodeName());
+        }
+    }
+
+    private void copyAttributes(Element from, Element to) {
+        if (from.hasAttributes()) {
+            NamedNodeMap attributes = from.getAttributes();
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attr = attributes.item(i);
+                to.setAttribute(attr.getNodeName(), attr.getNodeValue());
+            }
+        }
+    }
+
     void removeElement(Element element) {
         Node parent = element.getParentNode();
         if (element.hasChildNodes()) {
@@ -98,8 +174,8 @@ public abstract class DomModifications {
         }
         parent.removeChild(element);
     }
-    
-    void removeElementMoveChildrenTo(Element toremove, Element toinsert){
+
+    void removeElementMoveChildrenTo(Element toremove, Element toinsert) {
         if (toremove.hasChildNodes()) {
             Node child = toremove.getFirstChild();
             while (child != null) {
