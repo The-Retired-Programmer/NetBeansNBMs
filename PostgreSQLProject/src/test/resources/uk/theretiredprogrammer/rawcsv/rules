@@ -1,0 +1,15 @@
+#
+#   take the text from a MandS statement and create a csv file
+#  (PostgreSQL plugin rawcsv rules file)
+#
+
+# regex extractor to be used to extract column data
+
+^(\d\d ... \d\d)\s+(\d\d ... \d\d)\s+(.*)(£.*)$
+
+# the column definitions
+
+applieddate,$1,toISOdate
+transactiondate,$2,toISOdate
+description,$3,trim,quote
+amount,$4,toSignedCurrency
