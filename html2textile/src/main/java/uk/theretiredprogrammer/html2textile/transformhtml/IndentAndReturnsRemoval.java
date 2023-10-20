@@ -26,15 +26,17 @@ public class IndentAndReturnsRemoval extends DomModifications {
         Node child = element.getFirstChild();
         while (child != null) {
             Node next = child.getNextSibling();
-            if (child.getNodeType() == TEXT_NODE && isFilterable(child.getNodeValue())) {
-                removeNode(child);
+            if (child.getNodeType() == TEXT_NODE) {
+                if (isAllWhiteSpace(child.getNodeValue())) {
+                    removeNode(child);
+                }
             }
             child = next;
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }
 
-    private boolean isFilterable(String text) {
+    private boolean isAllWhiteSpace(String text) {
         return text.contains("\n") || text.contains("\r")
                 ? text.replace("\n", " ").replace("\r", " ").replace("\t", " ").strip().equals("")
                 : false;
