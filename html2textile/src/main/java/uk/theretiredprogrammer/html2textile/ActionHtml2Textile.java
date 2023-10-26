@@ -17,7 +17,6 @@ package uk.theretiredprogrammer.html2textile;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,20 +75,6 @@ public final class ActionHtml2Textile implements ActionListener, Runnable {
                 err.println(ex.getLocalizedMessage());
             }
         }
-    }
-
-    private List<InputStream> getRules(FileObject input) throws FileNotFoundException {
-        List<InputStream> rules = new ArrayList<>();
-        FileObject parent = input.getParent();
-        if (input.existsExt("rules")) {
-            FileObject rulesfo = parent.getFileObject(input.getName(), "rules");
-            rules.add(rulesfo.getInputStream());
-        }
-        FileObject commonfo = parent.getFileObject("common", "rules");
-        if (commonfo != null) {
-            rules.add(commonfo.getInputStream());
-        }
-        return rules;
     }
 
     private Reader getReader(FileObject input) throws FileNotFoundException {

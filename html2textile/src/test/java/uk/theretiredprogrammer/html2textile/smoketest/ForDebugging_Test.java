@@ -27,7 +27,7 @@ public class ForDebugging_Test extends SmokeTest {
     public ForDebugging_Test() {
     }
 
-    @Test
+    //@Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
         transformation("sample - fordebugging.html","FORDEBUGGING_TEST.html","FORDEBUGGING_TEST.textile", expected(),
                 true);

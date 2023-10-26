@@ -45,6 +45,11 @@ public class App {
     }
 
     public void go(String[] args) {
+        err.print("Html2Textile: ");
+        for ( String arg: args){
+            err.print(arg+" ");
+        }
+        err.println();
         System.exit(goInner(args));
     }
 
@@ -61,7 +66,7 @@ public class App {
     private int extractFromCLI(String[] args) {
         int l = args.length;
         if (l == 0) {
-            err.println(getHelp());
+            err.println(help);
             return 0;
         }
         int i = 0;
@@ -145,9 +150,7 @@ public class App {
         return new FileOutputStream(new File(filename));
     }
 
-    private String getHelp() {
-        return """
-               
+    private String help = """
             Html2Textile
             
             <command> <options> INPUTFILE
@@ -171,5 +174,4 @@ public class App {
                 
             and INPUTFILE is the source html file (html fragment) which is to be converted.
         """;
-    }
 }
