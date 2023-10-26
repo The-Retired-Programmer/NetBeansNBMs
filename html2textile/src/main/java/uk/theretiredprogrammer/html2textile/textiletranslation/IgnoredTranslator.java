@@ -18,8 +18,6 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 public class IgnoredTranslator extends TextileElementTranslator {
 
@@ -32,17 +30,8 @@ public class IgnoredTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        NamedNodeMap attributes = element.getAttributes();
-        if (attributes.getLength() != 0) {
-            String message = element.getTagName() + " ignored but has attributes: ";
-            for (int i = 0; i < attributes.getLength(); i++) {
-                Node attr = attributes.item(i);
-                message += attr.getNodeName() + "=" + attr.getNodeValue();
-                if (i != attributes.getLength() - 1) {
-                    message += ", ";
-                }
-            }
-            err.println("Warning: " + message);
+        if (element.hasAttributes()) {
+            warning("Element ignored but has attributes", element, err);
         }
         translator.processChildren(element);
     }

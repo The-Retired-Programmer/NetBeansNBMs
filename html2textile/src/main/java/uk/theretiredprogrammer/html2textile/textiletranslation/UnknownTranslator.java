@@ -32,6 +32,6 @@ public class UnknownTranslator extends TextileElementTranslator {
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         String name = element.getTagName();
         out.write(" UNKNOWN ELEMENT (" + name + ") ");
-        err.println("Error: failed to create Textile output - unknown Element found (" + name + ")");
+        error("Failed to create Textile output - unknown Element found (" + name + ")", element, err);
     }
 }

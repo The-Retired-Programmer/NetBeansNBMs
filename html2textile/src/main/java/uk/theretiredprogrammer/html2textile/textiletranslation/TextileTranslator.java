@@ -114,7 +114,7 @@ public class TextileTranslator {
             }
             node = node.getParentNode();
         }
-        err.println("Error: cannot find parent Ul/OL for this list element");
+        TextileElementTranslator.error("Cannot find parent Ul/OL for this list element", element, err);
         return false;
     }
 }

@@ -34,20 +34,28 @@ public class ImgTranslator extends TextileElementTranslator {
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         out.write("!");
         writeClassStyleId(element);
-        out.write(getURL(getAttribute(element, "src")));
-        out.write("(" + getAttribute(element, "alt") + ")");
+        out.write(getURL(element));
+        out.write("(" + getAlt(element) + ")");
         out.write("!");
     }
 
-    private String getURL(String srcvalue) {
+    private String getURL(Element element) {
+        String srcvalue = getAttribute(element, "src");
         if (srcvalue.startsWith("assets")) {
             return ASSET_PREFIX + srcvalue;
         }
         if (srcvalue.startsWith("https://") || srcvalue.startsWith("http://")) {
             return srcvalue;
         }
-        err.println("Warning: unexpected src URL - will be used but needs to be checked (" + srcvalue + ")");
+        warning("Warning: unexpected src URL - will be used but needs to be checked", element, err);
         return srcvalue;
     }
 
+    private String getAlt(Element element) {
+        String altvalue = getAttribute(element, "alt");
+        if (altvalue.isEmpty()) {
+            error("alt attribute missing", element, err);
+        }
+        return altvalue;
+    }
 }

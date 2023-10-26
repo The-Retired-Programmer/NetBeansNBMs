@@ -19,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 public abstract class TextileElementTranslator {
 
@@ -109,15 +110,15 @@ public abstract class TextileElementTranslator {
     void checkNoAttributes(Element element) throws IOException {
         NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
-            err.println("Warning: unexpected attribute observed - will be ignored (" + attributes.item(i).getNodeName() + ")");
+            warning("unexpected attribute observed - will be ignored (" + attributes.item(i).getNodeName() + ")", element, err);
         }
     }
 
     String getAttribute(Element element, String attributeName) {
         String attribute = element.getAttribute(attributeName);
         if (attribute.isEmpty()) {
-            err.println("Error: expected attribute not present (" + attributeName + " in " + element.getTagName() + ")");
-            return "MISSING " + attributeName + " ATTRIBUTE";
+            error("Expected attribute not present (" + attributeName + " in " + element.getTagName() + ")", element, err);
+            return "???";
         }
         return attribute;
     }
@@ -153,8 +154,37 @@ public abstract class TextileElementTranslator {
                 }
             }
             if (!match) {
-                err.println("Warning: unexpected attribute observed - will be ignored (" + attributeName + ")");
+                warning("Unexpected attribute observed - will be ignored (" + attributeName + ")",element,err);
             }
         }
+    }
+
+    static void warning(String message, Element element, PrintWriter err) {
+        err.println("Warning: " + message);
+        printcontext(element, err);
+    }
+
+    static void error(String message, Element element, PrintWriter err) {
+        err.println("Error: " + message);
+        printcontext(element, err);
+    }
+
+    private static final int  MAXCHILDCONTENTPRINTED = 60;
+    
+    private static void printcontext(Element element, PrintWriter err) {
+        NamedNodeMap attributes = element.getAttributes();
+        err.print("  "+ element.getTagName()+" ");
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Node attr = attributes.item(i);
+            err.print(attr.getNodeName() + "=" + attr.getNodeValue());
+            if (i != attributes.getLength() - 1) {
+                err.print(", ");
+            }
+        }
+        String childcontent = element.getTextContent();
+        if (childcontent.length() > MAXCHILDCONTENTPRINTED) {
+            childcontent = childcontent.substring(0,MAXCHILDCONTENTPRINTED - 3)+"...";
+        }
+        err.println(" \""+ childcontent+"\"");
     }
 }
