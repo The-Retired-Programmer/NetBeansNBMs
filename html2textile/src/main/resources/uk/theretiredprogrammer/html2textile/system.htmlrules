@@ -1,0 +1,11 @@
+#
+# Regex rules for initial processing of HTML files
+# =================================================
+#
+
+#
+# process any escaped characters
+#
+&nbsp;<===> 
+&lsquo;<===>'
+&rsquo;<===>'

@@ -29,7 +29,7 @@ public class GGS_SmokeTest extends SmokeTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
-        transformation("sample_girlsgosailing.html","GGS_SMOKE_TEST.html","GGS_SMOKE_TEST.textile", expected());
+        transformation("sample_girlsgosailing.html","GGS_SMOKE_TEST.html","GGS_SMOKE_TEST.textile", expected(), false);
     }
 
     private String expected() {

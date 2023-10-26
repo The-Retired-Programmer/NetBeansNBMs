@@ -15,14 +15,11 @@
  */
 package uk.theretiredprogrammer.html2textile.transformtextiletext;
 
-import java.io.BufferedReader;
+import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TransformTextileText {
 
@@ -33,21 +30,18 @@ public class TransformTextileText {
 //
     private final String[] lines;
     private final PrintWriter output;
-    private final List<Rule>transformations = new ArrayList<>();
+    private final RegexTransformationRuleSet ruleset;
 
-    public TransformTextileText(StringWriter input, PrintWriter output, List<InputStream> rules) throws IOException {
+    public TransformTextileText(StringWriter input, PrintWriter output, File datainput, boolean ignoresystemrules) throws IOException {
+        ruleset = new RegexTransformationRuleSet(datainput, "textilerules", ignoresystemrules);
         lines = getLines(input);
         this.output = output;
-        for (InputStream ruleset: rules) {
-            try ( BufferedReader rulesreader = new BufferedReader(new InputStreamReader(ruleset))) {
-                String line;
-                while ((line = rulesreader.readLine()) != null) {
-                    if (!(line.startsWith("#") || line.isBlank())) {
-                        transformations.add(new Rule(line));
-                    }
-                }
-            }
-        }
+    }
+    
+    public TransformTextileText(StringWriter input, PrintWriter output) throws IOException {
+        ruleset = new RegexTransformationRuleSet("textilerules");
+        lines = getLines(input);
+        this.output = output;
     }
 
     public void save() {
@@ -65,26 +59,7 @@ public class TransformTextileText {
 
     public void transform() throws IOException {
         for (int i = 0; i < lines.length; i++) {
-            lines[i] = transform(lines[i]);
-        }
-    }
-
-    private String transform(String line) {
-        for (Rule rule: transformations) {
-            line = line.replaceAll(rule.match, rule.result);
-        }
-        return line;
-    }
-    
-    private class Rule {
-        
-        public final String match;
-        public final String result;
-        
-        public Rule(String rule) {
-            String[]parts = rule.split("<===>");
-            match = parts[0];
-            result = parts[1];
+            lines[i] = ruleset.transform(lines[i]);
         }
     }
 }

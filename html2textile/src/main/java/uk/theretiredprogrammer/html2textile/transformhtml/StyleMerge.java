@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.w3c.dom.Element;
@@ -23,7 +24,7 @@ import org.w3c.dom.Node;
 
 public class StyleMerge extends DomModifications {
 
-    public ResumeAction testElementAndModify(Element element) {
+    public ResumeAction testElementAndModify(Element element) throws IOException {
         if (isBlockElement(element)) {
             Element span = getOnlyChildSpanElement(element);
             if (span != null) {
@@ -34,7 +35,7 @@ public class StyleMerge extends DomModifications {
         return ResumeAction.RESUME_FROM_NEXT;
     }
 
-    private void mergeAttributes(Element parent, Element child) {
+    private void mergeAttributes(Element parent, Element child) throws IOException {
         Map<String, String> attributes = new HashMap<>();
         Map<String, String> stylerules = new HashMap<>();
         loadAttributes(parent, attributes, stylerules);
@@ -43,7 +44,7 @@ public class StyleMerge extends DomModifications {
         removeElement(child);
     }
 
-    private void loadAttributes(Element element, Map<String, String> attributesmap, Map<String, String> stylerulesmap) {
+    private void loadAttributes(Element element, Map<String, String> attributesmap, Map<String, String> stylerulesmap) throws IOException {
         if (!element.hasAttributes()) {
             return;
         }
@@ -59,11 +60,18 @@ public class StyleMerge extends DomModifications {
         }
     }
 
-    private void loadStyleRules(String style, Map<String, String> stylerulesmap) {
-        String[] rules = style.split(";");
-        for (String rule : rules) {
-            String[] pair = rule.split(":");
-            stylerulesmap.put(pair[0], pair[1]);
+    private void loadStyleRules(String style, Map<String, String> stylerulesmap) throws IOException {
+        if (!style.isBlank()) {
+            String[] rules = style.split(";");
+            for (String rule : rules) {
+                if (!rule.isBlank()) {
+                    String[] pair = rule.split(":");
+                    if (pair.length != 2) {
+                        throw new IOException("Badly formatted style attribute=" + style);
+                    }
+                    stylerulesmap.put(pair[0], pair[1]);
+                }
+            }
         }
     }
 

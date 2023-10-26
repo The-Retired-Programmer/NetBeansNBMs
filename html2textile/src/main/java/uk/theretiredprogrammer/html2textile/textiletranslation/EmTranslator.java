@@ -19,32 +19,17 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
 
-public class ATranslator extends TextileElementTranslator {
+public class EmTranslator extends TextileElementTranslator {
 
-    private final static String RELATIVE_PREFIX = "https://exe-sailing-club.org/";
-
-    public ATranslator(PrintWriter out, PrintWriter err) {
+    public EmTranslator(PrintWriter out, PrintWriter err) {
         super(out, err);
     }
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id", "href"};
+        return new String[0];
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        out.write("\"");
-        writeClassStyleId(element);
-        translator.processChildren(element);
-        out.write("\":");
-        out.write(getURL(getAttribute(element, "href")));
-        if (!isParentTerminatorContext) {
-            out.write(" ");
-        }
-    }
-
-    private String getURL(String hrefvalue) {
-        return hrefvalue.startsWith("https://") || hrefvalue.startsWith("http://")
-                || hrefvalue.startsWith("mailto:") || hrefvalue.startsWith("tel:")
-                ? hrefvalue : RELATIVE_PREFIX + hrefvalue;
+        bracket("_", element, isParentTerminatorContext, translator);
     }
 }

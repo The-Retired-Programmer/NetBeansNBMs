@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 public class App_Test {
-    
+
     public static final String SANDBOX = "/home/richard/SANDBOX/";
 
     public App_Test() {
@@ -29,132 +29,73 @@ public class App_Test {
     public void testApp1() {
         System.out.println("test1");
         App app = new App();
-        int rc = app.goInner(new String[]{SANDBOX+"dinghies.html"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghies.html"});
         assertEquals(0, rc);
     }
-    
+
     @Test
     public void testApp2() {
         System.out.println("test2");
         App app = new App();
-        int rc = app.goInner(new String[]{"-o", SANDBOX+"dinghies.t", SANDBOX+"dinghies.html"});
+        int rc = app.goInner(new String[]{"-o", SANDBOX + "dinghies.t", SANDBOX + "dinghies.html"});
         assertEquals(0, rc);
     }
-    
+
     @Test
     public void testApp3() {
         System.out.println("test3");
         App app = new App();
-        int rc = app.goInner(new String[]{"-r", SANDBOX+"rules", SANDBOX+"dinghies.html"});
+        int rc = app.goInner(new String[]{"-x", SANDBOX + "dinghies.html"});
         assertEquals(0, rc);
     }
-    
+
     @Test
     public void testApp4() {
         System.out.println("test4");
         App app = new App();
-        int rc = app.goInner(new String[]{"-ur", SANDBOX+"dinghies.html"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghiesCopy.html"});
         assertEquals(0, rc);
     }
-    
+
     @Test
     public void testApp5() {
         System.out.println("test5");
         App app = new App();
-        int rc = app.goInner(new String[]{"-uc", SANDBOX+"dinghies.html"});
+        int rc = app.goInner(new String[]{"-x", SANDBOX + "dinghiesCopy.html"});
         assertEquals(0, rc);
     }
-    
-    @Test
-    public void testApp6() {
-        System.out.println("test6");
-        App app = new App();
-        int rc = app.goInner(new String[]{"-uc", "-ur", SANDBOX+"dinghies.html"});
-        assertEquals(0, rc);
-    }
-    
-     @Test
-    public void testApp7() {
-        System.out.println("test7");
-        App app = new App();
-        int rc = app.goInner(new String[]{"-uc", SANDBOX+"dinghiesCopy.html"});
-        assertEquals(0, rc);
-    }
-    
+
     // failure modes
-    
     @Test
     public void testApp11() {
         System.out.println("test11");
         App app = new App();
-        int rc = app.goInner(new String[]{SANDBOX+"dinghiesx.html"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghiesx.html"});
         assertEquals(4, rc);
     }
-    
-    @Test
-    public void testApp13() {
-        System.out.println("test13");
-        App app = new App();
-        int rc = app.goInner(new String[]{"-r", "rulesx", SANDBOX+"dinghies.html"});
-        assertEquals(4, rc);
-    }
-    
-    @Test
-    public void testApp14() {
-        System.out.println("test14");
-        App app = new App();
-        int rc = app.goInner(new String[]{"-o", "dinghies.t","-ur", SANDBOX+"dinghiesCopy.html"});
-        assertEquals(4, rc);
-    }
-    
-    @Test
-    public void testApp16() {
-        System.out.println("test16");
-        App app = new App();
-        int rc = app.goInner(new String[]{"-uc", "-ur", SANDBOX+"dinghiesCopy.html"});
-        assertEquals(4, rc);
-    }
-    
+
     // parameter line failures
-    
     @Test
     public void testApp21() {
         System.out.println("test21");
         App app = new App();
-        int rc = app.goInner(new String[]{SANDBOX+"dinghiesx.html", "junk"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghiesx.html", "junk"});
         assertEquals(4, rc);
     }
-    
+
     @Test
     public void testApp22() {
         System.out.println("test22");
         App app = new App();
-        int rc = app.goInner(new String[]{"-o", SANDBOX+"dinghies.html"});
+        int rc = app.goInner(new String[]{"-o", SANDBOX + "dinghies.html"});
         assertEquals(4, rc);
     }
-    
-    @Test
-    public void testApp23() {
-        System.out.println("test23");
-        App app = new App();
-        int rc = app.goInner(new String[]{"-r", "rulesx", SANDBOX+"dinghies.html"});
-        assertEquals(4, rc);
-    }
-    
-    @Test
-    public void testApp24() {
-        System.out.println("test24");
-        App app = new App();
-        int rc = app.goInner(new String[]{"-o", "dinghiesx.t","-ur", SANDBOX+"dinghiesCopy.html"});
-        assertEquals(4, rc);
-    }
-    
-    
+
     @Test
     public void testApp26() {
         System.out.println("test26");
         App app = new App();
-        int rc = app.goInner(new String[]{"-uc", "true", "ur", SANDBOX+"dinghiesCopy.html"});
+        int rc = app.goInner(new String[]{"-x", "true", SANDBOX + "dinghiesCopy.html"});
         assertEquals(4, rc);
     }
 }

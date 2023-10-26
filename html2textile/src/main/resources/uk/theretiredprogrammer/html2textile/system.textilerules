@@ -29,8 +29,11 @@
 #
 
 ^(.*)\{margin:020px10px0px;float:left;width:50%;\}(.*)$<===>$1(float-left-50)$2
+^(.*)\(halfWidthImg\)\{float:left;\}(.*)$<===>$1(float-left-50)$2
+^(.*)\(halfWidthImg\)\{float:right;\}(.*)$<===>$1(float-right-50)$2
 ^(.*)\{margin:50px00100px;padding:0;float:right;width:20%;line-height:12pt;\}.*\. (.*)$<===>$1(float-right-20). $2
 ^(.*)\{width:100%;margin:0;padding:0;\}(.*)$<===>$1$2
+^(.*)\(photoleft\)\{float:left;border-width:10px;\}(.*)$<===>$1(float-left-50)$2
 
 #
 # finally remove any empty style definitions

@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -45,13 +46,21 @@ public class TransformHtml {
         root = newInstance().newDocumentBuilder().parse(new InputSource(input)).getDocumentElement();
     }
 
-    public void transform() {
+    public void transform() throws IOException {
+        transform((File) null, false);
+    }
+
+    public void transform(File inputfile, boolean ignoresystemrules) throws IOException {
         transform(new IndentAndReturnsRemoval());
         transform(new IndentAndReturnsChildTextReduction());
         transform(new StyleNormalisation());
         transform(new DivRlStyleRemoval());
         transform(new DivReduction());
-        transform(new StyleReduction());
+        if (inputfile == null) {
+            transform(new StyleReduction("stylerules"));
+        } else {
+            transform(new StyleReduction(inputfile, "stylerules", ignoresystemrules));
+        }
         transform(new Style2u());
         transform(new Style2strong());
         transform(new NullSpanRemoval());
@@ -66,6 +75,7 @@ public class TransformHtml {
         transform(new EmptyParaRemoval());
         transform(new MergeTextSegments());
         transform(new ImageCaptionReduction());
+        transform(new ImageWidthConcatonation());
     }
 
     public void writeHtml(Writer output) throws TransformerException {
@@ -81,16 +91,21 @@ public class TransformHtml {
         return root;
     }
 
-    void transform(DomModifications transformrules) {
-        State state =new State();
+    void transform(DomModifications transformrules) throws IOException {
+        State state = new State();
         do {
-            switch (transformrules.testElementAndModify(state.current)){
-                case RESUME_FROM_ROOT -> state.root();
+            switch (transformrules.testElementAndModify(state.current)) {
+                case RESUME_FROM_ROOT ->
+                    state.root();
                 //case RESUME_FROM_SELF - no state change
-                case RESUME_FROM_PARENT -> state.parent();
-                case RESUME_FROM_FIRST_SIBLING -> state.firstSibling();
-                case RESUME_FROM_PREVIOUS -> state.previous();
-                case RESUME_FROM_NEXT -> state.next();
+                case RESUME_FROM_PARENT ->
+                    state.parent();
+                case RESUME_FROM_FIRST_SIBLING ->
+                    state.firstSibling();
+                case RESUME_FROM_PREVIOUS ->
+                    state.previous();
+                case RESUME_FROM_NEXT ->
+                    state.next();
             }
         } while (state.current != null);
     }
@@ -101,12 +116,12 @@ public class TransformHtml {
         private Element parent;
         private Element previous;
         private Element current;
-        
+
         public State() {
             root = TransformHtml.this.root;
             root();
         }
-            
+
         public final boolean root() {
             current = root;
             parent = null;
@@ -127,7 +142,7 @@ public class TransformHtml {
             setParent();
             return current != null;
         }
-        
+
         public boolean firstSibling() {
             previous = parent;
             current = findFirstSiblingElement(current);
@@ -150,7 +165,7 @@ public class TransformHtml {
                 parent = p.getNodeType() == ELEMENT_NODE ? (Element) p : null;
             }
         }
-        
+
         private void setCurrentToNext() {
             Element parentofnextSiblings = current.hasChildNodes() ? current : parent;
             Element next = findNextSiblingElement(current.hasChildNodes() ? current.getFirstChild() : current.getNextSibling());
@@ -165,14 +180,14 @@ public class TransformHtml {
             }
             current = next;
         }
-    
+
         private Element findNextSiblingElement(Node node) {
             while (node != null && node.getNodeType() != ELEMENT_NODE) {
                 node = node.getNextSibling();
             }
             return (Element) node;
         }
-        
+
         private Element findFirstSiblingElement(Element element) {
             return findNextSiblingElement(element.getParentNode().getFirstChild());
         }

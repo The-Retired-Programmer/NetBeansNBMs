@@ -23,8 +23,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,15 +42,13 @@ public class SmokeTest {
             String inputresourcefilename,
             String outputhtmlfilename,
             String outputtextilefilename,
-            String expected
+            String expected,
+            boolean noTextileRules
     ) throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
         String serialised;
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/" + inputresourcefilename);
         TransformHtmlText texttransformer = new TransformHtmlText(new InputStreamReader(is));
         texttransformer.rootWrap("html");
-        texttransformer.replace("&nbsp;", " ");
-        texttransformer.replace("&lsquo;", "'");
-        texttransformer.replace("&rsquo;", "'");
         try ( Reader wrapped = texttransformer.transform()) {
             TransformHtml transformer = new TransformHtml(wrapped);
             transformer.transform();
@@ -65,13 +61,16 @@ public class SmokeTest {
                 translator.translate();
             }
             PrintWriter out = new PrintWriter(new FileWriter("/home/richard/" + outputtextilefilename));
-            List<InputStream> rules = new ArrayList<>();
-            rules.add(this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformtextiletext/rules"));
-            TransformTextileText textiletransformer = new TransformTextileText(swriter, out, rules);
-            textiletransformer.transform();
+            TransformTextileText textiletransformer = new TransformTextileText(swriter, out);
+            if (!noTextileRules) {
+                textiletransformer.transform();
+            }
             textiletransformer.save();
         }
-        //System.out.println(serialised);
-        assertEquals(expected, serialised);
+        if (expected == null) {
+            System.out.println(serialised);
+        } else {
+            assertEquals(expected, serialised);
+        }
     }
 }

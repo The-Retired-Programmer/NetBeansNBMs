@@ -17,6 +17,7 @@ package uk.theretiredprogrammer.html2textile;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import org.xml.sax.SAXException;
@@ -69,7 +71,7 @@ public final class ActionHtml2Textile implements ActionListener, Runnable {
             FileObject input = dataObject.getPrimaryFile();
             SaveSelfBeforeAction.saveIfModified(dataObject);
             try ( Reader rdr = getReader(input);  PrintWriter wtr = getWriter(input); err) {
-                Html2Textile.convert(rdr, wtr, err, getRules(input));
+                Html2Textile.convert(rdr, wtr, err, FileUtil.toFile(input));
             } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
                 err.println(ex.getLocalizedMessage());
             }

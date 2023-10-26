@@ -18,26 +18,23 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import java.io.File;
 import java.io.IOException;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
-public class StyleReduction extends DomModificationsWithRules {
+public abstract class DomModificationsWithRules extends DomModifications {
 
-    public StyleReduction(File input, String name, boolean ignoresystemrules) throws IOException {
-        super(input, name, ignoresystemrules);
+    private final RegexTransformationRuleSet ruleset;
+
+    public DomModificationsWithRules(File datainput, String rulesname, boolean ignoresystemrules) throws IOException {
+        ruleset = new RegexTransformationRuleSet(datainput, rulesname, ignoresystemrules);
     }
     
-    public StyleReduction(String name) throws IOException {
-        super(name);
+    public DomModificationsWithRules(String rulesname) throws IOException {
+        ruleset = new RegexTransformationRuleSet(rulesname);
     }
 
-    public ResumeAction testElementAndModify(Element element, RegexTransformationRuleSet ruleset) {
-        NamedNodeMap attributes = element.getAttributes();
-        Node style = attributes.getNamedItem("style");
-        if (style != null) {
-            style.setNodeValue(ruleset.transform(style.getNodeValue()));
-        }
-        return ResumeAction.RESUME_FROM_NEXT;
+    public abstract ResumeAction testElementAndModify(Element element, RegexTransformationRuleSet ruleset) throws IOException;
+
+    public ResumeAction testElementAndModify(Element element) throws IOException {
+        return testElementAndModify(element, ruleset);
     }
 }

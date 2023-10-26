@@ -38,7 +38,7 @@ public class StyleReduction_Test {
         transformer.transform(new IndentAndReturnsRemoval());
         transformer.transform(new StyleNormalisation());
         //
-        transformer.transform(new StyleReduction());
+        transformer.transform(new StyleReduction("stylerules"));
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);

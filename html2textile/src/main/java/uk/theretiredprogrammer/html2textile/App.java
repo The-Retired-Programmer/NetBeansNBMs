@@ -25,19 +25,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
+import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_ALL_SYSTEM_RULES;
+import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_HTML_SYSTEM_RULES;
+import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_NO_SYSTEM_RULES;
+import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_STYLE_SYSTEM_RULES;
+import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_TEXTILE_SYSTEM_RULES;
 
 public class App {
 
     private final PrintWriter err = new PrintWriter(System.err);
-    private String rulesfilename = null;
-    private String commonrulesfilename = null;
-    private boolean usecommonrules = false;
-    private boolean usepairedrules = false;
+    private int ignoresystemrules = IGNORE_NO_SYSTEM_RULES;
     private String outputfilename = null;
     private String filename = null;
 
@@ -68,18 +68,15 @@ public class App {
 
         while (i < l) {
             switch (args[i]) {
-                case "-r" -> {
-                    if (i++ < l) {
-                        rulesfilename = args[i];
-                    } else {
-                        err.println("missing argument after -r");
-                        return 4;
-                    }
-                }
-                case "-uc" ->
-                    usecommonrules = true;
-                case "-ur" ->
-                    usepairedrules = true;
+                
+                case "-x" ->
+                    ignoresystemrules = IGNORE_ALL_SYSTEM_RULES;
+                case "-xh" ->
+                    ignoresystemrules |= IGNORE_HTML_SYSTEM_RULES;
+                case "-xs" ->
+                    ignoresystemrules |= IGNORE_STYLE_SYSTEM_RULES;
+                case "-xt" ->
+                    ignoresystemrules |= IGNORE_TEXTILE_SYSTEM_RULES;
                 case "-o" -> {
                     if (i++ < l) {
                         outputfilename = args[i];
@@ -105,22 +102,8 @@ public class App {
         if (outputfilename == null) {
             outputfilename = getfilenoext() + ".textile";
         }
-        if (rulesfilename == null && usepairedrules) {
-            rulesfilename = getfilenoext() + ".rules";
-        }
-        if (usecommonrules) {
-            commonrulesfilename = getfileparent() + "common.rules";
-        }
         if (!new File(filename).canRead()) {
             err.println("INPUTFILE is not available to read");
-            return 4;
-        }
-        if (rulesfilename != null && !new File(rulesfilename).canRead()) {
-            err.println("Rules File is not available to read");
-            return 4;
-        }
-        if (commonrulesfilename != null && !new File(commonrulesfilename).canRead()) {
-            err.println("Rules File is not available to read");
             return 4;
         }
         return -1;
@@ -131,15 +114,10 @@ public class App {
         return pos == -1 ? filename : filename.substring(0, pos);
     }
 
-    private String getfileparent() {
-        int pos = filename.lastIndexOf("/");
-        return pos == -1 ? "" : filename.substring(0, pos + 1);
-    }
-
     private int run() {
         try {
             try ( Reader rdr = getInputReader();  PrintWriter wtr = getOutputWriter()) {
-                Html2Textile.convert(rdr, wtr, err, getRules());
+                Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile(),ignoresystemrules);
                 return 0;
             } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
                 err.println("Exception: " + ex.getLocalizedMessage());
@@ -159,23 +137,12 @@ public class App {
         return new PrintWriter(getOutputStream(outputfilename));
     }
 
-    private List<InputStream> getRules() throws FileNotFoundException {
-        List<InputStream> rules = new ArrayList<>();
-        if (rulesfilename != null) {
-            rules.add(getInputStream(rulesfilename));
-        }
-        if (commonrulesfilename != null) {
-            rules.add(getInputStream(commonrulesfilename));
-        }
-        return rules;
-    }
-    
     private InputStream getInputStream(String filename) throws FileNotFoundException {
-         return new FileInputStream(new File(filename));
+        return new FileInputStream(new File(filename));
     }
-    
+
     private OutputStream getOutputStream(String filename) throws FileNotFoundException {
-         return new FileOutputStream(new File(filename));
+        return new FileOutputStream(new File(filename));
     }
 
     private String getHelp() {
@@ -190,13 +157,15 @@ public class App {
                 "java -jar html2textile-n.n.n.jar" or its alias "html2textile"
                 
             options are:
+               
+                -x              do not use any of the system rules files
                 
-                -r  FILENAME    add this rule file (implies -xc and -xf)
-                
-                -xc             ignore the folder's common rules file (common.rule)
-                
-                -xf             ignore the INPUTFILE's pair rules file (<inputfilename without ext>.rules)
-                
+                -xh             do not use the Html system rules file
+                                
+                -xs             do not use the Style system rules file
+                                
+                -xt             do not use the Textile system rules file
+                                
                 -o              set the OUTPUTFILE (textile content).  If not present the OUTPUTFILE
                                 defaults to the INPUTFILE's pair textile file (<inputfilename without ext>.textile)
                 

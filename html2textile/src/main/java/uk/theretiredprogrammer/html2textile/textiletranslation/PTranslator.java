@@ -30,11 +30,9 @@ public class PTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        if (element.hasAttributes()) {
-            out.write("p");
-            writeClassStyleId(element);
-            out.write(". ");
-        }
+        out.write("p");
+        writeClassStyleId(element);
+        out.write(". ");
         translator.processChildren(element);
         out.write("\n\n");
     }

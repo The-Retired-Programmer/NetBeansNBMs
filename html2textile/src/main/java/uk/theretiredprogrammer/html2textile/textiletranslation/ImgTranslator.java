@@ -28,7 +28,7 @@ public class ImgTranslator extends TextileElementTranslator {
     private final static String ASSET_PREFIX = "https://exe-sailing-club.org/";
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id", "src", "alt"};
+        return new String[]{"style", "class", "id", "src", "alt", "height"};
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
@@ -43,7 +43,7 @@ public class ImgTranslator extends TextileElementTranslator {
         if (srcvalue.startsWith("assets")) {
             return ASSET_PREFIX + srcvalue;
         }
-        if (srcvalue.startsWith("https://")) {
+        if (srcvalue.startsWith("https://") || srcvalue.startsWith("http://")) {
             return srcvalue;
         }
         err.println("Warning: unexpected src URL - will be used but needs to be checked (" + srcvalue + ")");

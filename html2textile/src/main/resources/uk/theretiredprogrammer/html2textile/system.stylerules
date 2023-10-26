@@ -1,0 +1,13 @@
+#
+# Regex rules for processing of style attribute strings
+# =====================================================
+#
+
+#
+# remove css rules which as not to be transferred - ie will be handled via css definitions
+#
+font-family:[^;]*;
+font-size:12pt;
+font-size:10pt;
+color:#000000;
+background-color:inherit;

@@ -33,7 +33,7 @@ public class TableTranslator extends TextileElementTranslator {
         if (element.hasAttributes()) {
             out.write("table");
             writeClassStyleId(element);
-            out.write(".\n");
+            out.write(". \n");
         }
         translator.processChildren(element);
         out.write("\n");

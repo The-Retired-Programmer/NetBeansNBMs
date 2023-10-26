@@ -15,14 +15,13 @@
  */
 package uk.theretiredprogrammer.html2textile;
 
+import java.io.File;
 import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
@@ -31,30 +30,38 @@ import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 import uk.theretiredprogrammer.html2textile.transformtextiletext.TransformTextileText;
 
 public class Html2Textile {
-    
-    public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err, List<InputStream> rules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        new Html2Textile().converter(from,textilewriter,err, rules);
+
+    // ignore system rules
+    public final static int IGNORE_TEXTILE_SYSTEM_RULES = 1;
+    public final static int IGNORE_STYLE_SYSTEM_RULES = 2;
+    public final static int IGNORE_HTML_SYSTEM_RULES = 4;
+    //
+    public final static int IGNORE_NO_SYSTEM_RULES = 0;
+    public final static int IGNORE_ALL_SYSTEM_RULES = IGNORE_TEXTILE_SYSTEM_RULES | IGNORE_STYLE_SYSTEM_RULES | IGNORE_HTML_SYSTEM_RULES;
+
+    public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        new Html2Textile().converter(from, textilewriter, err, inputfile, IGNORE_NO_SYSTEM_RULES);
     }
-    
-    
+
+    public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err, File inputfile, int ignoresystemrules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        new Html2Textile().converter(from, textilewriter, err, inputfile, ignoresystemrules);
+    }
+
     private Html2Textile() {
     }
 
-    public void converter(Reader from, PrintWriter textilewriter, PrintWriter err, List<InputStream> rules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        TransformHtmlText texttransformer = new TransformHtmlText(from);
+    public void converter(Reader from, PrintWriter textilewriter, PrintWriter err, File inputfile, int ignoresystemrules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        TransformHtmlText texttransformer = new TransformHtmlText(from, inputfile, (ignoresystemrules & IGNORE_HTML_SYSTEM_RULES) > 0);
         texttransformer.rootWrap("html");
-        texttransformer.replace("&nbsp;", " ");
-        texttransformer.replace("&lsquo;", "'");
-        texttransformer.replace("&rsquo;", "'");
         StringWriter swriter = new StringWriter();
-        try ( Reader wrapped = texttransformer.transform(); PrintWriter textileout = new PrintWriter(swriter)) {
+        try ( Reader wrapped = texttransformer.transform();  PrintWriter textileout = new PrintWriter(swriter)) {
             TransformHtml transformer = new TransformHtml(wrapped);
-            transformer.transform();
+            transformer.transform(inputfile, (ignoresystemrules & IGNORE_STYLE_SYSTEM_RULES) > 0);
+            //
             TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
             translator.translate();
         }
-        rules.add(this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformtextiletext/rules"));
-        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter, rules);
+        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter, inputfile, (ignoresystemrules & IGNORE_TEXTILE_SYSTEM_RULES) > 0);
         textiletransformer.transform();
         textiletransformer.save();
     }

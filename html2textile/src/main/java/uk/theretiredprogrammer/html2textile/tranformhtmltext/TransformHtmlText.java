@@ -15,12 +15,12 @@
  */
 package uk.theretiredprogrammer.html2textile.tranformhtmltext;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
+import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
 public class TransformHtmlText {
 
@@ -32,18 +32,20 @@ public class TransformHtmlText {
 //
     private final Reader original;
     private String rootname = "";
-    private final Map<String, String> replacements = new HashMap<>();
+    private final RegexTransformationRuleSet ruleset;
 
-    public TransformHtmlText(Reader original) {
+    public TransformHtmlText(Reader original, File datainput, boolean ignoresystemrules) throws IOException {
         this.original = original;
+        ruleset = new RegexTransformationRuleSet(datainput, "htmlrules", ignoresystemrules);
+    }
+    
+    public TransformHtmlText(Reader original) throws IOException {
+        this.original = original;
+        ruleset = new RegexTransformationRuleSet("htmlrules");
     }
 
     public void rootWrap(String name) {
         this.rootname = name;
-    }
-
-    public void replace(String old, String with) {
-        replacements.put(old, with);
     }
 
     public Reader transform() throws IOException {
@@ -55,14 +57,6 @@ public class TransformHtmlText {
             original.transferTo(wrapped);
             wrapped.write("</" + rootname + ">\n");
         }
-        return new StringReader(applyreplacements(wrapped.toString()));
-    }
-
-    private String applyreplacements(String before) {
-        String text = before;
-        for (var replacement : replacements.entrySet()) {
-            text = text.replace(replacement.getKey(), replacement.getValue());
-        }
-        return text;
+        return new StringReader(ruleset.transform(wrapped.toString()));
     }
 }

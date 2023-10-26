@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.IOException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -29,9 +30,15 @@ public abstract class DomModifications {
         RESUME_FROM_ROOT, RESUME_FROM_SELF, RESUME_FROM_PARENT, RESUME_FROM_NEXT, RESUME_FROM_PREVIOUS, RESUME_FROM_FIRST_SIBLING
     };
 
-    public abstract ResumeAction testElementAndModify(Element element);
+    public abstract ResumeAction testElementAndModify(Element element) throws IOException;
 
     // ===========================================================================
+    
+    int extractValue(String value) {
+        String numeric = value.replaceAll("\\D*(\\d+).*","$1");
+        return numeric.isEmpty() ?0:Integer.parseInt(numeric);
+    }
+    
     String getOnlyAttribute(Element element, String attributename) {
         NamedNodeMap attributes = element.getAttributes();
         Node attribute = attributes.getNamedItem(attributename);
@@ -101,6 +108,12 @@ public abstract class DomModifications {
     //
     // Dom manipulation methods
     //
+    
+    void insertIntoStyle(Element element, String rule) {
+        String style = element.getAttribute("style");
+        element.setAttribute("style", style==null ? rule :style+rule);
+    }
+    
     void mergeElementsRemovingChild(Element element, Element child) {
         mergeAttributes(element, child);
         removeElement(child);

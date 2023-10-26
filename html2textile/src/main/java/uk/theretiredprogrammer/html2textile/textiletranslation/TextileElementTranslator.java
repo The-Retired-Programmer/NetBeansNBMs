@@ -44,12 +44,18 @@ public abstract class TextileElementTranslator {
                 new StrongTranslator(out, err);
             case "b" ->
                 new StrongTranslator(out, err);
+            case "em" ->
+                new EmTranslator(out, err);
+            case "i" ->
+                new EmTranslator(out, err);
             case "sup" ->
                 new SupTranslator(out, err);
             case "sub" ->
                 new SubTranslator(out, err);
             case "br" ->
                 new BrTranslator(out, err);
+            case "hr" ->
+                new HrTranslator(out, err);
             case "img" ->
                 new ImgTranslator(out, err);
             case "a" ->
@@ -82,6 +88,8 @@ public abstract class TextileElementTranslator {
                 new TdTranslator(out, err);
             case "u" ->
                 new UTranslator(out, err);
+            case "button" ->
+                new IgnoredTranslator(out, err);
             default ->
                 new UnknownTranslator(out, err);
         };
