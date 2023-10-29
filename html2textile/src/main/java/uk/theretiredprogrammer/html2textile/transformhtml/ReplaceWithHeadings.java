@@ -34,7 +34,7 @@ public class ReplaceWithHeadings extends DomModifications {
         elements.add(element);
         Element nextlevelelement = element;
         while (true) {
-            Element nextlevel = getOnlyChildElement(nextlevelelement);
+            Element nextlevel = getOnlyChildElementSkippingLine(nextlevelelement);
             if (nextlevel == null) {
                 break;
             }

@@ -17,14 +17,13 @@ package uk.theretiredprogrammer.html2textile;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -37,7 +36,11 @@ import org.openide.filesystems.FileUtil;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.RequestProcessor;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.activity.Activity;
+import uk.theretiredprogrammer.util.ActivitiesAndActionsFactory;
+import uk.theretiredprogrammer.util.ApplicationException;
 import uk.theretiredprogrammer.util.SaveSelfBeforeAction;
+import uk.theretiredprogrammer.util.UserReporting;
 
 @ActionID(
         category = "Build",
@@ -51,6 +54,7 @@ import uk.theretiredprogrammer.util.SaveSelfBeforeAction;
 public final class ActionHtml2Textile implements ActionListener, Runnable {
 
     private final List<DataObject> context;
+    private final static String IOTABNAME = "Convert to Textile";
 
     public ActionHtml2Textile(List<DataObject> context) {
         this.context = context;
@@ -64,16 +68,30 @@ public final class ActionHtml2Textile implements ActionListener, Runnable {
 
     @Override
     public void run() {
-        // fix this later
-        PrintWriter err = new PrintWriter(System.err);
+        ErrHandler err = new ErrHandler((s) -> UserReporting.error(IOTABNAME, s));
         for (DataObject dataObject : context) {
             FileObject input = dataObject.getPrimaryFile();
             SaveSelfBeforeAction.saveIfModified(dataObject);
-            try ( Reader rdr = getReader(input);  PrintWriter wtr = getWriter(input); err) {
-                Html2Textile.convert(rdr, wtr, err, FileUtil.toFile(input));
-            } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
-                err.println(ex.getLocalizedMessage());
+            Activity translate;
+            try {
+                Reader rdr = getReader(input);
+                PrintWriter wtr = getWriter(input);
+                translate = ActivitiesAndActionsFactory.createActivity()
+                        .setMethod(() -> convert2textile(rdr, wtr, err, FileUtil.toFile(input)))
+                        .needsIOTab(IOTABNAME);
+            } catch (IOException | ApplicationException ex) {
+                err.exception(ex);
+                return;
             }
+            translate.run("Converting " + input.getName() + ".html");
+        }
+    }
+
+    private void convert2textile(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) {
+        try (from; textilewriter) {
+            Html2Textile.convert(from, textilewriter, err, inputfile);
+        } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
+            err.exception(ex);
         }
     }
 

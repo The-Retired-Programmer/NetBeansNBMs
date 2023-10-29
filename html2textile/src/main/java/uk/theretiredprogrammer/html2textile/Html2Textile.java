@@ -25,7 +25,7 @@ import java.io.StringWriter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.tranformhtmltext.TransformHtmlText;
+import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 import uk.theretiredprogrammer.html2textile.transformtextiletext.TransformTextileText;
 
@@ -39,18 +39,18 @@ public class Html2Textile {
     public final static int IGNORE_NO_SYSTEM_RULES = 0;
     public final static int IGNORE_ALL_SYSTEM_RULES = IGNORE_TEXTILE_SYSTEM_RULES | IGNORE_STYLE_SYSTEM_RULES | IGNORE_HTML_SYSTEM_RULES;
 
-    public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+    public static void convert(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
         new Html2Textile().converter(from, textilewriter, err, inputfile, IGNORE_NO_SYSTEM_RULES);
     }
 
-    public static void convert(Reader from, PrintWriter textilewriter, PrintWriter err, File inputfile, int ignoresystemrules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+    public static void convert(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int ignoresystemrules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
         new Html2Textile().converter(from, textilewriter, err, inputfile, ignoresystemrules);
     }
 
     private Html2Textile() {
     }
 
-    public void converter(Reader from, PrintWriter textilewriter, PrintWriter err, File inputfile, int ignoresystemrules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+    public void converter(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int ignoresystemrules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
         TransformHtmlText texttransformer = new TransformHtmlText(from, inputfile, (ignoresystemrules & IGNORE_HTML_SYSTEM_RULES) > 0);
         texttransformer.rootWrap("html");
         StringWriter swriter = new StringWriter();

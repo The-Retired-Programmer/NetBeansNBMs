@@ -20,32 +20,18 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 import uk.theretiredprogrammer.html2textile.ErrHandler;
 
-public class ATranslator extends TextileElementTranslator {
+public class LineHandler extends TextileElementTranslator {
 
-    private final static String RELATIVE_PREFIX = "https://exe-sailing-club.org/";
-
-    public ATranslator(PrintWriter out, ErrHandler err) {
+    public LineHandler(PrintWriter out, ErrHandler err) {
         super(out, err);
     }
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id", "href"};
+        return new String[] { "number" };
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        out.write("\"");
-        writeClassStyleId(element);
-        translator.processChildren(element);
-        out.write("\":");
-        out.write(getURL(getAttribute(element, "href")));
-        if (!isParentTerminatorContext) {
-            out.write(" ");
-        }
-    }
-
-    private String getURL(String hrefvalue) {
-        return hrefvalue.startsWith("https://") || hrefvalue.startsWith("http://")
-                || hrefvalue.startsWith("mailto:") || hrefvalue.startsWith("tel:")
-                ? hrefvalue : RELATIVE_PREFIX + hrefvalue;
+        // not a translatable item - but update the line number in the errHandler
+        err.setlinenumber(Integer.parseInt(getAttribute(element, "number")));
     }
 }

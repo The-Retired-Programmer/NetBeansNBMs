@@ -19,20 +19,21 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 
 public abstract class TextileElementTranslator {
 
     final PrintWriter out;
-    final PrintWriter err;
+    final ErrHandler err;
 
-    TextileElementTranslator(PrintWriter out, PrintWriter err) {
+    TextileElementTranslator(PrintWriter out, ErrHandler err) {
         this.out = out;
         this.err = err;
     }
 
-    public static TextileElementTranslator factory(Element element, PrintWriter out, PrintWriter err) {
+    public static TextileElementTranslator factory(Element element, PrintWriter out, ErrHandler err) {
         return switch (element.getTagName().toLowerCase()) {
+            case "line" -> new LineHandler(out, err);
             case "html" ->
                 new IgnoredTranslator(out, err);
             case "div" ->
@@ -110,14 +111,14 @@ public abstract class TextileElementTranslator {
     void checkNoAttributes(Element element) throws IOException {
         NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
-            warning("unexpected attribute observed - will be ignored (" + attributes.item(i).getNodeName() + ")", element, err);
+            err.warning("unexpected attribute observed - will be ignored (" + attributes.item(i).getNodeName() + ")", element);
         }
     }
 
     String getAttribute(Element element, String attributeName) {
         String attribute = element.getAttribute(attributeName);
         if (attribute.isEmpty()) {
-            error("Expected attribute not present (" + attributeName + " in " + element.getTagName() + ")", element, err);
+            err.error("Expected attribute not present (" + attributeName + " in " + element.getTagName() + ")", element);
             return "???";
         }
         return attribute;
@@ -154,37 +155,8 @@ public abstract class TextileElementTranslator {
                 }
             }
             if (!match) {
-                warning("Unexpected attribute observed - will be ignored (" + attributeName + ")",element,err);
+                err.warning("Unexpected attribute observed - will be ignored (" + attributeName + ")",element);
             }
         }
-    }
-
-    static void warning(String message, Element element, PrintWriter err) {
-        err.println("Warning: " + message);
-        printcontext(element, err);
-    }
-
-    static void error(String message, Element element, PrintWriter err) {
-        err.println("Error: " + message);
-        printcontext(element, err);
-    }
-
-    private static final int  MAXCHILDCONTENTPRINTED = 60;
-    
-    private static void printcontext(Element element, PrintWriter err) {
-        NamedNodeMap attributes = element.getAttributes();
-        err.print("  "+ element.getTagName()+" ");
-        for (int i = 0; i < attributes.getLength(); i++) {
-            Node attr = attributes.item(i);
-            err.print(attr.getNodeName() + "=" + attr.getNodeValue());
-            if (i != attributes.getLength() - 1) {
-                err.print(", ");
-            }
-        }
-        String childcontent = element.getTextContent();
-        if (childcontent.length() > MAXCHILDCONTENTPRINTED) {
-            childcontent = childcontent.substring(0,MAXCHILDCONTENTPRINTED - 3)+"...";
-        }
-        err.println(" \""+ childcontent+"\"");
     }
 }

@@ -18,10 +18,11 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 
 public class ImgTranslator extends TextileElementTranslator {
 
-    public ImgTranslator(PrintWriter out, PrintWriter err) {
+    public ImgTranslator(PrintWriter out, ErrHandler err) {
         super(out, err);
     }
 
@@ -47,14 +48,14 @@ public class ImgTranslator extends TextileElementTranslator {
         if (srcvalue.startsWith("https://") || srcvalue.startsWith("http://")) {
             return srcvalue;
         }
-        warning("Warning: unexpected src URL - will be used but needs to be checked", element, err);
+        err.warning("Warning: unexpected src URL - will be used but needs to be checked", element);
         return srcvalue;
     }
 
     private String getAlt(Element element) {
         String altvalue = getAttribute(element, "alt");
         if (altvalue.isEmpty()) {
-            error("alt attribute missing", element, err);
+            err.error("alt attribute missing", element);
         }
         return altvalue;
     }

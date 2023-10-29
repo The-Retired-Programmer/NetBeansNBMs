@@ -16,26 +16,20 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class RemoveTrailingBr_Test {
+public class RemoveTrailingBr_Test extends TransformhtmlTest {
 
     public RemoveTrailingBr_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_removetrailingbr.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
-        transformer.transform(new IndentAndReturnsRemoval());
+        TransformHtml transformer = super.createtransformation("removetrailingbr");
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new RemoveTrailingBr());
@@ -48,6 +42,7 @@ public class RemoveTrailingBr_Test {
     private String expected() {
         return """
             html
+                line number="1"
                 p
                     "text"
                 p

@@ -18,10 +18,11 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 
 public class BrTranslator extends TextileElementTranslator {
 
-    public BrTranslator(PrintWriter out, PrintWriter err) {
+    public BrTranslator(PrintWriter out, ErrHandler err) {
         super(out, err);
     }
 

@@ -51,8 +51,6 @@ public class TransformHtml {
     }
 
     public void transform(File inputfile, boolean ignoresystemrules) throws IOException {
-        transform(new IndentAndReturnsRemoval());
-        transform(new IndentAndReturnsChildTextReduction());
         transform(new StyleNormalisation());
         transform(new DivRlStyleRemoval());
         transform(new DivReduction());

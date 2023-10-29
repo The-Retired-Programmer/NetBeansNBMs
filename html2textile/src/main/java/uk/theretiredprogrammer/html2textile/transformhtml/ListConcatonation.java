@@ -16,8 +16,6 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import static org.w3c.dom.Node.ELEMENT_NODE;
 
 public class ListConcatonation extends DomModifications {
 
@@ -30,8 +28,8 @@ public class ListConcatonation extends DomModifications {
 
     private ResumeAction checkListAndConcatonate(String listtag, Element element) {
         if (element.getTagName().equals(listtag)) {
-            Node sibling = element.getNextSibling();
-            if (sibling != null && sibling.getNodeType() == ELEMENT_NODE && sibling.getNodeName().equals(listtag)) {
+            Element sibling = nextElementSiblingSkippingLine(element);
+            if (sibling != null && sibling.getTagName().equals(listtag)) {
                 if (!element.hasAttributes() && !sibling.hasAttributes()) {
                     removeElementMoveChildrenTo((Element) sibling, element);
                     return ResumeAction.RESUME_FROM_SELF;

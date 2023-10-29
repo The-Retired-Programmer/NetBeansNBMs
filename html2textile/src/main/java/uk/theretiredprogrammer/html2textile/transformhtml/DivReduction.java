@@ -22,7 +22,7 @@ public class DivReduction extends DomModifications {
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("div")) {
             if (element.hasAttributes()) {
-                Element child = getOnlyChildElement(element);
+                Element child = getOnlyChildElementSkippingLine(element);
                 if (child== null) {
                     return ResumeAction.RESUME_FROM_NEXT;
                 }

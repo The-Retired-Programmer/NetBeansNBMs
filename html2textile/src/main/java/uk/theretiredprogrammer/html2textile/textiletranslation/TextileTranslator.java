@@ -22,15 +22,16 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import static org.w3c.dom.Node.TEXT_NODE;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 
 public class TextileTranslator {
 
     private final PrintWriter out;
     private final Element root;
-    private final PrintWriter err;
+    private final ErrHandler err;
 
     // STAGE 3 - Translate the html file to Textile markup.
-    public TextileTranslator(Element root, PrintWriter out, PrintWriter err) {
+    public TextileTranslator(Element root, PrintWriter out, ErrHandler err) {
         this.out = out;
         this.root = root;
         this.err = err;
@@ -114,7 +115,7 @@ public class TextileTranslator {
             }
             node = node.getParentNode();
         }
-        TextileElementTranslator.error("Cannot find parent Ul/OL for this list element", element, err);
+        err.error("Cannot find parent Ul/OL for this list element", element);
         return false;
     }
 }

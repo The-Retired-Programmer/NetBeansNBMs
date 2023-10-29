@@ -16,26 +16,20 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
+public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test extends TransformhtmlTest {
 
     public RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_restructurews.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
-        transformer.transform(new IndentAndReturnsRemoval());
+        TransformHtml transformer = super.createtransformation("restructurews");
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements());
@@ -48,33 +42,39 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
     private String expected() {
         return """
                html
+                   line number="1"
                    p
                        "start"
                        strong
                            "abcxyz"
                        "end"
+                   line number="2"
                    p
                        "start "
                        strong
                            "abcxyz"
                        "end"
+                   line number="3"
                    p
                        "start"
                        strong
                            "abcxyz"
                        " end"
+                   line number="4"
                    p
                        "start"
                        " "
                        strong
                            "abcxyz"
                        "end"
+                   line number="5"
                    p
                        "start"
                        strong
                            "abcxyz"
                        " "
                        "end"
+                   line number="6"
                    p
                        "start"
                        " "
@@ -82,6 +82,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                            "abcxyz"
                        " "
                        "end"
+                   line number="7"
                    p
                        "start "
                        " "
@@ -89,6 +90,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                            "abcxyz"
                        " "
                        " end"
+                   line number="8"
                    p
                        "start"
                        " "
@@ -96,6 +98,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                            "abcxyz"
                        " "
                        "end"
+                   line number="9"
                    p
                        "start"
                        " "
@@ -103,6 +106,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                            "abcxyz"
                        " "
                        "end"
+                   line number="10"
                    p
                        "start"
                        " "
@@ -110,6 +114,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                            "abcxyz"
                        " "
                        "end"
+                   line number="11"
                    p
                        "start"
                        " "
@@ -117,6 +122,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                            "abcxyz"
                        " "
                        "end"
+                   line number="12"
                    p
                        "start"
                        " "
@@ -124,6 +130,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                            "abcxyz"
                        " "
                        "end"
+                   line number="13"
                    p
                        "start"
                        " "
@@ -131,11 +138,13 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                            "abcxyz"
                        " "
                        "end"
+                   line number="14"
                    p
                        "start"
                        td
                            " abcxyz "
                        "end"
+                   line number="15"
                    p
                        "start"
                        " "
@@ -144,6 +153,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test {
                                "abcxyz"
                        " "
                        "end"
+                   line number="16"
                    p
                        "start"
                        " "

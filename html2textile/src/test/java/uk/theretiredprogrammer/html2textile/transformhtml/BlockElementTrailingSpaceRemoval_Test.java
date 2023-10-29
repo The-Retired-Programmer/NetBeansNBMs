@@ -16,26 +16,22 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class BlockElementTrailingSpaceRemoval_Test {
+public class BlockElementTrailingSpaceRemoval_Test extends TransformhtmlTest {
 
     public BlockElementTrailingSpaceRemoval_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_blocktrailingspaceremoval.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
-        transformer.transform(new IndentAndReturnsRemoval());
+        TransformHtml transformer = super.createtransformation("blocktrailingspaceremoval");
+        transformer.transform(new StyleNormalisation());
+        transformer.transform(new StyleReduction("stylerules"));
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new BlockElementTrailingSpaceRemoval());
@@ -48,47 +44,67 @@ public class BlockElementTrailingSpaceRemoval_Test {
     private String expected() {
         return """
                html
+                   line number="1"
                    p
                        u
                            "test"
+                   line number="2"
                    p
                        u
                            "test"
+                   line number="3"
                    p
                        u
                            "test"
+                   line number="4"
                    p
                        u
                            "test"
+                       line number="5"
+                   line number="6"
                    p
                        " "
                        u
                            " text "
+                   line number="7"
                    p
                        " "
                        u
                            " text "
+                   line number="8"
                    p
+                   line number="9"
                    ul
+                       line number="10"
                        li
                            u
                                "test"
+                       line number="11"
                        li
                            u
                                "test"
+                       line number="12"
+                   line number="13"
                    ul
+                   line number="14"
                    ul
+                   line number="15"
                    ul
                        li
-                           "test" 
+                           "test"
+                   line number="16"
                    ol
+                   line number="17"
                    ol
+                   line number="18"
                    ol
                        li
                            "test"
+                   line number="19"
                    h3
                        b
                            "test"
+                   line number="20"
                    p
                        " "
                        u
@@ -97,12 +113,15 @@ public class BlockElementTrailingSpaceRemoval_Test {
                                "text"
                            " "
                        "abc"
+                   line number="21"
                    ul
+                       line number="22"
                        li
                            strong
                                "abc"
                            "def"
                            br
+                       line number="23"
                """;
     }
 }

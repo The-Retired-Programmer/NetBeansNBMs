@@ -16,26 +16,20 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class StyleMerge_Test {
+public class StyleMerge_Test extends TransformhtmlTest {
 
     public StyleMerge_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_stylemerge.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
-        transformer.transform(new IndentAndReturnsRemoval());
+        TransformHtml transformer = super.createtransformation("stylemerge");
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new StyleMerge());
@@ -48,38 +42,53 @@ public class StyleMerge_Test {
     private String expected() {
         return """
                html
+                   line number="1"
                    p dir="auto"
+                   line number="2"
                    p dir="auto"
                        "abc"
+                   line number="3"
                    p
                        span dir="auto"
                            "abc"
                        "def"
+                   line number="4"
                    p dir="auto"
                        "abc"
                        strong
                            "def"
                        "ghi"
+                   line number="6"
                    p dir="auto"
                        "abc"
+                   line number="7"
                    p dir="auto"
                        "abc"
+                   line number="8"
                    p dir="auto"
                        "abc"
+                   line number="9"
                    p dir="auto"
                        "abc"
+                   line number="10"
                    p dir="auto" dir2="manual"
                        "abc"
+                   line number="12"
                    p style="font-size:14pt;"
                        "abc"
+                   line number="13"
                    p style="font-size:14pt;"
                        "abc"
+                   line number="14"
                    p style="font-size:14pt;"
                        "abc"
+                   line number="15"
                    p style="font-size:18pt;"
                        "abc"
+                   line number="16"
                    p style="font-size:14pt;text-align:center;"
                        "abc"
+                   line number="18"
                    p style="font-size:18pt;text-align:center;"
                        "abc"
                """;

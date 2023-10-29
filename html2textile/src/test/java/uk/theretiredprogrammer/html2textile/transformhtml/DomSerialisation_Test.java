@@ -16,25 +16,20 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class DomSerialisation_Test {
+public class DomSerialisation_Test extends TransformhtmlTest {
 
     public DomSerialisation_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_rldiv.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
+        TransformHtml transformer = super.createtransformation("rldiv");
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
@@ -44,19 +39,18 @@ public class DomSerialisation_Test {
     private String expected() {
         return """
                html
-                   "\\n    "
+                   line number="1"
                    div style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000;"
-                       "\\n        "
+                       line number="2"
                        p
                            "This is wrapped in an RL div"
-                       "\\n        "
+                       line number="3"
                        p
                            "and this"
-                       "\\n        "
+                       line number="4"
                        p
                            "and finally"
-                       "\\n    "
-                   "\\n"
+                       line number="5"
                """;
     }
 }

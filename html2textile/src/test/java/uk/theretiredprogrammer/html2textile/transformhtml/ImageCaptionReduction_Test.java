@@ -16,26 +16,20 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class ImageCaptionReduction_Test {
+public class ImageCaptionReduction_Test extends TransformhtmlTest {
 
     public ImageCaptionReduction_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_imagecaptionreduction.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
-        transformer.transform(new IndentAndReturnsRemoval());
+        TransformHtml transformer = super.createtransformation("imagecaptionreduction");
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new ImageCaptionReduction());
@@ -48,24 +42,41 @@ public class ImageCaptionReduction_Test {
     private String expected() {
         return """
             html
+                line number="1"
                 p
+                    line number="2"
                     img alt="image" src="image"
+                    line number="3"
                     "Hello World"
+                line number="4"
                 p
+                    line number="5"
                     img alt="image" src="image"
                     "dummy"
                     br
                     "Hello World"
+                line number="6"
                 p
+                    line number="7"
                     img alt="image" src="image"
+                    line number="8"
                     br
+                    line number="9"
                     b
                         "Hello World"
+                    line number="10"
+                line number="11"
                 p
+                    line number="12"
                     img alt="image" src="image"
+                    line number="13"
                     br
+                    line number="14"
+                line number="15"
                 p
+                    line number="16"
                     img alt="image" src="image"
+                    line number="17"
             """;
     }
 }

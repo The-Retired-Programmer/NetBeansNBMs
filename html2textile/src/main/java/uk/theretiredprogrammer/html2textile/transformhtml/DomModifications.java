@@ -33,12 +33,11 @@ public abstract class DomModifications {
     public abstract ResumeAction testElementAndModify(Element element) throws IOException;
 
     // ===========================================================================
-    
     int extractValue(String value) {
-        String numeric = value.replaceAll("\\D*(\\d+).*","$1");
-        return numeric.isEmpty() ?0:Integer.parseInt(numeric);
+        String numeric = value.replaceAll("\\D*(\\d+).*", "$1");
+        return numeric.isEmpty() ? 0 : Integer.parseInt(numeric);
     }
-    
+
     String getOnlyAttribute(Element element, String attributename) {
         NamedNodeMap attributes = element.getAttributes();
         Node attribute = attributes.getNamedItem(attributename);
@@ -55,13 +54,23 @@ public abstract class DomModifications {
                 ? (Element) child : null;
     }
 
-    Element getOnlyChildElement(Element element) {
-        NodeList children = element.getChildNodes();
-        if (children.getLength() != 1) {
+    Element getOnlyChildElementSkippingLine(Element element) {
+        if (!element.hasChildNodes()) {
             return null;
         }
-        Node child = children.item(0);
-        return child.getNodeType() == ELEMENT_NODE ? (Element) child : null;
+        NodeList children = element.getChildNodes();
+        int elementcount = 0;
+        Element el = null;
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeType() == ELEMENT_NODE) {
+                if (!child.getNodeName().equals("line")) {
+                    elementcount++;
+                    el = (Element) child;
+                }
+            }
+        }
+        return elementcount == 1 ? el : null;
     }
 
     boolean areAllChildrenBlockElements(Element element) {
@@ -82,7 +91,7 @@ public abstract class DomModifications {
                     || name.equals("h1") || name.equals("h2") || name.equals("h3")
                     || name.equals("h4") || name.equals("h5") || name.equals("h6")
                     || name.equals("table") || name.equals("tbody") || name.equals("tr")
-                    || name.equals("html") || name.equals("div");
+                    || name.equals("html") || name.equals("div") || name.equals("line");
         } else {
             return false;
         }
@@ -94,10 +103,30 @@ public abstract class DomModifications {
                 || name.equals("sup") || name.equals("b") || name.equals("a");
     }
 
-    Element nextSiblingIsElement(Element element, String name) {
-        Node next = element.getNextSibling();
-        return next != null && next.getNodeType() == ELEMENT_NODE && next.getNodeName().equals(name)
-                ? (Element) next : null;
+    Element nextSiblingIsElementSkippingLine(Element element, String name) {
+        Node next = element;
+        do {
+            next = next.getNextSibling();
+            if (next == null || next.getNodeType() != ELEMENT_NODE) {
+                return null;
+            }
+            if (next.getNodeName().equals(name)) {
+                return (Element) next;
+            }
+        } while (next.getNodeName().equals("line"));
+        return null;
+    }
+    
+    Element nextElementSiblingSkippingLine(Element element) {
+        Node next = element;
+        while ((next = next.getNextSibling())!= null) {
+            if (next.getNodeType() == ELEMENT_NODE) {
+                if (!next.getNodeName().equals("line")) {
+                    return (Element) next;
+                }
+            }
+        }
+        return null;
     }
 
     boolean nextSiblingIsText(Element element) {
@@ -108,12 +137,11 @@ public abstract class DomModifications {
     //
     // Dom manipulation methods
     //
-    
     void insertIntoStyle(Element element, String rule) {
         String style = element.getAttribute("style");
-        element.setAttribute("style", style==null ? rule :style+rule);
+        element.setAttribute("style", style == null ? rule : style + rule);
     }
-    
+
     void mergeElementsRemovingChild(Element element, Element child) {
         mergeAttributes(element, child);
         removeElement(child);

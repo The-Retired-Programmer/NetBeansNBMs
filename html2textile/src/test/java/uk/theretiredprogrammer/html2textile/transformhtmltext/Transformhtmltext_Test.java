@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.transformhtml;
+package uk.theretiredprogrammer.html2textile.transformhtmltext;
 
+import uk.theretiredprogrammer.html2textile.transformhtml.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,18 +25,21 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
 
-public class IndentAndReturnsChildTextReduction_Test {
+public class Transformhtmltext_Test {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_indentandreturnschildtext.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
-        //
-        transformer.transform(new IndentAndReturnsRemoval());
+        TransformHtml transformer;
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_transformhtmltext.html");
+        Reader from = new InputStreamReader(is);
+        TransformHtmlText texttransformer = new TransformHtmlText(from);
+        texttransformer.rootWrap("html");
         
-        transformer.transform(new IndentAndReturnsChildTextReduction());
+        try ( Reader transformed = texttransformer.transform()) {
+            transformer = new TransformHtml(transformed);
+        }
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
@@ -44,31 +48,14 @@ public class IndentAndReturnsChildTextReduction_Test {
 
     private String expected() {
         return """
-            html
-                p
-                    img
-                p
-                    "text hello world"
-                p
-                    "text hello world"
-                    img
-                    "text hello world"
-                p
-                    "text hello world"
-                    img
-                    "text hello world"
-                    img
-                    "text hello world"
-                p
-                    "text hello world"
-                    img
-                    "text hello world"
-                    img
-                p
-                    img
-                    "text hello world"
-                    img
-                    "text hello world"
-            """;
+               html
+                   line number="1"
+                   img
+                   line number="2"
+                   b
+                       "text"
+                   line number="4"
+                   img
+               """;
     }
 }

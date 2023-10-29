@@ -27,8 +27,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
-import uk.theretiredprogrammer.html2textile.tranformhtmltext.TransformHtmlText;
+import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
 import uk.theretiredprogrammer.html2textile.transformhtml.SerialiseDom;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 import uk.theretiredprogrammer.html2textile.transformtextiletext.TransformTextileText;
@@ -45,32 +46,35 @@ public class SmokeTest {
             String expected,
             boolean noTextileRules
     ) throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
-        String serialised;
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/" + inputresourcefilename);
-        TransformHtmlText texttransformer = new TransformHtmlText(new InputStreamReader(is));
-        texttransformer.rootWrap("html");
-        try ( Reader wrapped = texttransformer.transform()) {
-            TransformHtml transformer = new TransformHtml(wrapped);
-            transformer.transform();
-            transformer.writeHtml(new FileWriter("/home/richard/" + outputhtmlfilename));
-            serialised = SerialiseDom.serialise(transformer.getRoot());
-            //
-            StringWriter swriter = new StringWriter();
-            try ( PrintWriter textileout = new PrintWriter(swriter);  PrintWriter err = new PrintWriter(System.err)) {
-                TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
-                translator.translate();
+        try ( PrintWriter errwriter = new PrintWriter(System.err)) {
+            ErrHandler err = new ErrHandler((s) -> errwriter.println(s));
+            String serialised;
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/" + inputresourcefilename);
+            TransformHtmlText texttransformer = new TransformHtmlText(new InputStreamReader(is));
+            texttransformer.rootWrap("html");
+            try ( Reader wrapped = texttransformer.transform()) {
+                TransformHtml transformer = new TransformHtml(wrapped);
+                transformer.transform();
+                transformer.writeHtml(new FileWriter("/home/richard/" + outputhtmlfilename));
+                serialised = SerialiseDom.serialise(transformer.getRoot());
+                //
+                StringWriter swriter = new StringWriter();
+                try ( PrintWriter textileout = new PrintWriter(swriter)) {
+                    TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
+                    translator.translate();
+                }
+                PrintWriter out = new PrintWriter(new FileWriter("/home/richard/" + outputtextilefilename));
+                TransformTextileText textiletransformer = new TransformTextileText(swriter, out);
+                if (!noTextileRules) {
+                    textiletransformer.transform();
+                }
+                textiletransformer.save();
             }
-            PrintWriter out = new PrintWriter(new FileWriter("/home/richard/" + outputtextilefilename));
-            TransformTextileText textiletransformer = new TransformTextileText(swriter, out);
-            if (!noTextileRules) {
-                textiletransformer.transform();
+            if (expected == null) {
+                System.out.println(serialised);
+            } else {
+                assertEquals(expected, serialised);
             }
-            textiletransformer.save();
-        }
-        if (expected == null) {
-            System.out.println(serialised);
-        } else {
-            assertEquals(expected, serialised);
         }
     }
 }

@@ -18,10 +18,11 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 
 public class SpanTranslator extends TextileElementTranslator {
 
-    public SpanTranslator(PrintWriter out, PrintWriter err) {
+    public SpanTranslator(PrintWriter out, ErrHandler err) {
         super(out, err);
     }
 

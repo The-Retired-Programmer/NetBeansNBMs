@@ -18,10 +18,11 @@ package uk.theretiredprogrammer.html2textile.textiletranslation;
 import java.io.PrintWriter;
 import java.io.IOException;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 
 public class IgnoredTranslator extends TextileElementTranslator {
 
-    public IgnoredTranslator(PrintWriter out, PrintWriter err) {
+    public IgnoredTranslator(PrintWriter out, ErrHandler err) {
         super(out, err);
     }
 
@@ -31,7 +32,7 @@ public class IgnoredTranslator extends TextileElementTranslator {
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         if (element.hasAttributes()) {
-            warning("Element ignored but has attributes", element, err);
+            err.warning("Element ignored but has attributes", element);
         }
         translator.processChildren(element);
     }

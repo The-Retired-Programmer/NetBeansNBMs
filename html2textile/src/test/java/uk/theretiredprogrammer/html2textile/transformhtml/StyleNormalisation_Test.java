@@ -16,26 +16,20 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class StyleNormalisation_Test {
+public class StyleNormalisation_Test extends TransformhtmlTest {
 
     public StyleNormalisation_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_stylenormalisation.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
-        transformer.transform(new IndentAndReturnsRemoval());
+        TransformHtml transformer = super.createtransformation("stylenormalisation");
         //
         transformer.transform(new StyleNormalisation());
         //
@@ -47,29 +41,40 @@ public class StyleNormalisation_Test {
     private String expected() {
         return """
                html
+                   line number="1"
                    p style="text-align:center;"
                        span style="font-size:18pt;"
+                   line number="2"
                    p
                        span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
+                   line number="3"
                    p
                        span style="font-size:12pt;font-family:arial,helvetica,sans-serif;"
+                   line number="4"
                    div
                        span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
+                   line number="5"
                    div
                        span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
+                   line number="6"
                    p
                        span style="color:#000000;"
                            span style="font-size:10pt;"
                                span style="background-color:inherit;font-family:inherit;"
+                   line number="7"
                    p
                        span style="font-family:arial,helvetica,sans-serif;"
+                   line number="8"
                    p
                        span style="text-decoration:underline;"
                            span style="font-family:arial,helvetica,sans-serif;font-size:14pt;"
+                   line number="9"
                    p dir="auto"
                        span style="text-decoration:underline;font-family:arial,helvetica,sans-serif;font-size:12pt;"
+                   line number="10"
                    p
                        span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
+                   line number="11"
                    p
                        span style="text-decoration:underline;font-family:arial,helvetica,sans-serif;font-size:12pt;"
                """;

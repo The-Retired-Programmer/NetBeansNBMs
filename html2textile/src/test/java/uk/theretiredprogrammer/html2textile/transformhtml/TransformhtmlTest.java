@@ -21,29 +21,19 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
 
-public class IndentAndReturnsRemoval_Test {
+public class TransformhtmlTest {
 
-    @Test
-    public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_indentandreturns.html");
-        Reader in = new InputStreamReader(is);
-        TransformHtml transformer = new TransformHtml(in);
-        //
-        transformer.transform(new IndentAndReturnsRemoval());
-        //
-        String result = SerialiseDom.serialise(transformer.getRoot());
-        //System.out.println(result);
-        assertEquals(expected(), result);
-    }
-
-    private String expected() {
-        return """
-               html
-                   img
-               """;
+    public TransformHtml createtransformation(String inputname ) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_"+inputname+".html");
+        Reader from = new InputStreamReader(is);
+        TransformHtmlText texttransformer = new TransformHtmlText(from);
+        texttransformer.rootWrap("html");
+        
+        try ( Reader transformed = texttransformer.transform()) {
+            return new TransformHtml(transformed);
+        }
     }
 }

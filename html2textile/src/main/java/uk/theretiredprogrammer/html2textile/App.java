@@ -36,7 +36,7 @@ import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_TEXTILE_S
 
 public class App {
 
-    private final PrintWriter err = new PrintWriter(System.err);
+    private ErrHandler err;
     private int ignoresystemrules = IGNORE_NO_SYSTEM_RULES;
     private String outputfilename = null;
     private String filename = null;
@@ -45,17 +45,14 @@ public class App {
     }
 
     public void go(String[] args) {
-        err.print("Html2Textile: ");
-        for ( String arg: args){
-            err.print(arg+" ");
-        }
-        err.println();
         System.exit(goInner(args));
     }
 
     public int goInner(String[] args) {
         int rc;
-        try (err) {
+        try ( PrintWriter errwriter = new PrintWriter(System.err)) {
+            err = new ErrHandler((s) -> errwriter.println(s));
+            err.info(buildcommandline(args));
             if ((rc = extractFromCLI(args)) >= 0) {
                 return rc;
             }
@@ -63,17 +60,27 @@ public class App {
         }
     }
 
+    private String buildcommandline(String[] args) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Html2Textile: ");
+        for (String arg : args) {
+            sb.append(arg);
+            sb.append(" ");
+        }
+        return sb.toString();
+    }
+
     private int extractFromCLI(String[] args) {
         int l = args.length;
         if (l == 0) {
-            err.println(help);
+            err.info(help);
             return 0;
         }
         int i = 0;
 
         while (i < l) {
             switch (args[i]) {
-                
+
                 case "-x" ->
                     ignoresystemrules = IGNORE_ALL_SYSTEM_RULES;
                 case "-xh" ->
@@ -86,14 +93,14 @@ public class App {
                     if (i++ < l) {
                         outputfilename = args[i];
                     } else {
-                        err.println("missing argument after -o");
+                        err.error("missing argument after -o");
                         return 4;
                     }
                 }
                 default -> {
                     filename = args[i];
                     if (i != l - 1) {
-                        err.println("excess arguments after filename (" + filename + ")");
+                        err.error("excess arguments after filename (" + filename + ")");
                         return 4;
                     }
                 }
@@ -101,14 +108,14 @@ public class App {
             i++;
         }
         if (filename == null) {
-            err.println("INPUTFILE not defined on command line");
+            err.error("INPUTFILE not defined on command line");
             return 4;
         }
         if (outputfilename == null) {
             outputfilename = getfilenoext() + ".textile";
         }
         if (!new File(filename).canRead()) {
-            err.println("INPUTFILE is not available to read");
+            err.error("INPUTFILE is not available to read");
             return 4;
         }
         return -1;
@@ -122,14 +129,14 @@ public class App {
     private int run() {
         try {
             try ( Reader rdr = getInputReader();  PrintWriter wtr = getOutputWriter()) {
-                Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile(),ignoresystemrules);
+                Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile(), ignoresystemrules);
                 return 0;
             } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
-                err.println("Exception: " + ex.getLocalizedMessage());
+                err.error("Exception: " + ex.getLocalizedMessage());
                 return 4;
             }
         } catch (Throwable ex) {
-            err.println("System Exception: " + ex.getLocalizedMessage());
+            err.exception("", ex);
             return 8;
         }
     }
@@ -150,8 +157,8 @@ public class App {
         return new FileOutputStream(new File(filename));
     }
 
-    private String help = """
-            Html2Textile
+    private final String help = """
+        Html2Textile
             
             <command> <options> INPUTFILE
             
