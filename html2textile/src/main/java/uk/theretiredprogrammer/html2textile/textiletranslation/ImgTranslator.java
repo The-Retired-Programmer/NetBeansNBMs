@@ -26,7 +26,7 @@ public class ImgTranslator extends TextileElementTranslator {
         super(out, err);
     }
 
-    private final static String ASSET_PREFIX = "https://exe-sailing-club.org/";
+    private final static String ASSET_PREFIX = "https://files.exe-sailing-club.org/";
 
     public String[] allowedAttributes() {
         return new String[]{"style", "class", "id", "src", "alt", "height"};
@@ -43,7 +43,7 @@ public class ImgTranslator extends TextileElementTranslator {
     private String getURL(Element element) {
         String srcvalue = getAttribute(element, "src");
         if (srcvalue.startsWith("assets")) {
-            return ASSET_PREFIX + srcvalue;
+            return ASSET_PREFIX + srcvalue.substring(7);
         }
         if (srcvalue.startsWith("https://") || srcvalue.startsWith("http://")) {
             return srcvalue;

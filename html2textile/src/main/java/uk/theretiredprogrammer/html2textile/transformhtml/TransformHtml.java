@@ -61,6 +61,7 @@ public class TransformHtml {
         }
         transform(new Style2u());
         transform(new Style2strong());
+        transform(new SpanCloakRemoval());
         transform(new NullSpanRemoval());
         transform(new StyleMerge());
         transform(new NullAttributeRemoval());

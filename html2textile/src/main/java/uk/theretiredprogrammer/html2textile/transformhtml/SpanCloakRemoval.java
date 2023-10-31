@@ -17,18 +17,13 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class NullSpanRemoval extends DomModifications {
+public class SpanCloakRemoval extends DomModifications {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("span")) {
-            String stylevalue = getOnlyAttribute(element, "style");
-            if (stylevalue != null && stylevalue.isBlank()) {
-                removeElement(element);
-                return ResumeAction.RESUME_FROM_PARENT;
-            }
-            if (!element.hasAttributes()) {
-                removeElement(element);
-                return ResumeAction.RESUME_FROM_PARENT;
+            String idvalue = element.getAttribute("id");
+            if (!idvalue.isEmpty() && idvalue.startsWith("cloak")) {
+                removeAttribute(element,"id");
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;

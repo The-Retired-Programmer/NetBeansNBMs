@@ -22,7 +22,7 @@ import uk.theretiredprogrammer.html2textile.ErrHandler;
 
 public class ATranslator extends TextileElementTranslator {
 
-    private final static String RELATIVE_PREFIX = "https://exe-sailing-club.org/";
+    private final static String RELATIVE_PREFIX = "https://files.exe-sailing-club.org/";
 
     public ATranslator(PrintWriter out, ErrHandler err) {
         super(out, err);
@@ -37,15 +37,21 @@ public class ATranslator extends TextileElementTranslator {
         writeClassStyleId(element);
         translator.processChildren(element);
         out.write("\":");
-        out.write(getURL(getAttribute(element, "href")));
+        out.write(getURL(element));
         if (!isParentTerminatorContext) {
             out.write(" ");
         }
     }
 
-    private String getURL(String hrefvalue) {
-        return hrefvalue.startsWith("https://") || hrefvalue.startsWith("http://")
-                || hrefvalue.startsWith("mailto:") || hrefvalue.startsWith("tel:")
-                ? hrefvalue : RELATIVE_PREFIX + hrefvalue;
+    private String getURL(Element element) throws IOException {
+        String hrefvalue = getAttribute(element, "href");
+        if (hrefvalue.startsWith("https://") || hrefvalue.startsWith("http://")
+                || hrefvalue.startsWith("mailto:") || hrefvalue.startsWith("tel:") ){
+            return hrefvalue;
+        }
+        if (hrefvalue.startsWith("assets")) {
+            return RELATIVE_PREFIX + hrefvalue.substring(7);
+        }
+        return hrefvalue;
     }
 }

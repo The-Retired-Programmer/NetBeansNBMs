@@ -25,6 +25,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
@@ -38,8 +40,7 @@ public class App {
 
     private ErrHandler err;
     private int ignoresystemrules = IGNORE_NO_SYSTEM_RULES;
-    private String outputfilename = null;
-    private String filename = null;
+    private final List<String> inputfilenames = new ArrayList<>();
 
     public App() {
     }
@@ -52,22 +53,17 @@ public class App {
         int rc;
         try ( PrintWriter errwriter = new PrintWriter(System.err)) {
             err = new ErrHandler((s) -> errwriter.println(s));
-            err.info(buildcommandline(args));
             if ((rc = extractFromCLI(args)) >= 0) {
                 return rc;
             }
-            return run();
+            for (String filename : inputfilenames) {
+                err.info("/nHtml2Textile " + filename);
+                if ((rc = run(filename)) > 0) {
+                    return rc;
+                }
+            }
+            return rc;
         }
-    }
-
-    private String buildcommandline(String[] args) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Html2Textile: ");
-        for (String arg : args) {
-            sb.append(arg);
-            sb.append(" ");
-        }
-        return sb.toString();
     }
 
     private int extractFromCLI(String[] args) {
@@ -89,46 +85,25 @@ public class App {
                     ignoresystemrules |= IGNORE_STYLE_SYSTEM_RULES;
                 case "-xt" ->
                     ignoresystemrules |= IGNORE_TEXTILE_SYSTEM_RULES;
-                case "-o" -> {
-                    if (i++ < l) {
-                        outputfilename = args[i];
-                    } else {
-                        err.error("missing argument after -o");
-                        return 4;
-                    }
-                }
                 default -> {
-                    filename = args[i];
-                    if (i != l - 1) {
-                        err.error("excess arguments after filename (" + filename + ")");
-                        return 4;
+                    while (i < l) {
+                        inputfilenames.add(args[i++]);
                     }
                 }
             }
             i++;
         }
-        if (filename == null) {
-            err.error("INPUTFILE not defined on command line");
-            return 4;
-        }
-        if (outputfilename == null) {
-            outputfilename = getfilenoext() + ".textile";
-        }
-        if (!new File(filename).canRead()) {
-            err.error("INPUTFILE is not available to read");
+        if (inputfilenames.isEmpty()) {
+            err.error("INPUTFILE(S) not defined on command line");
             return 4;
         }
         return -1;
     }
 
-    private String getfilenoext() {
-        int pos = filename.lastIndexOf(".");
-        return pos == -1 ? filename : filename.substring(0, pos);
-    }
-
-    private int run() {
+    private int run(String filename) {
+        String outputfilename = getfilenoext(filename) + ".textile";
         try {
-            try ( Reader rdr = getInputReader();  PrintWriter wtr = getOutputWriter()) {
+            try ( Reader rdr = getInputReader(filename);  PrintWriter wtr = getOutputWriter(outputfilename)) {
                 Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile(), ignoresystemrules);
                 return 0;
             } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
@@ -141,12 +116,17 @@ public class App {
         }
     }
 
-    private Reader getInputReader() throws FileNotFoundException {
+    private String getfilenoext(String filename) {
+        int pos = filename.lastIndexOf(".");
+        return pos == -1 ? filename : filename.substring(0, pos);
+    }
+
+    private Reader getInputReader(String filename) throws FileNotFoundException {
         return new InputStreamReader(getInputStream(filename));
     }
 
-    private PrintWriter getOutputWriter() throws FileNotFoundException {
-        return new PrintWriter(getOutputStream(outputfilename));
+    private PrintWriter getOutputWriter(String filename) throws FileNotFoundException {
+        return new PrintWriter(getOutputStream(filename));
     }
 
     private InputStream getInputStream(String filename) throws FileNotFoundException {
@@ -158,9 +138,10 @@ public class App {
     }
 
     private final String help = """
+        
         Html2Textile
             
-            <command> <options> INPUTFILE
+            <command> <options> INPUTFILES...
             
             where command is:
                 
@@ -176,9 +157,7 @@ public class App {
                                 
                 -xt             do not use the Textile system rules file
                                 
-                -o              set the OUTPUTFILE (textile content).  If not present the OUTPUTFILE
-                                defaults to the INPUTFILE's pair textile file (<inputfilename without ext>.textile)
                 
-            and INPUTFILE is the source html file (html fragment) which is to be converted.
+            and INPUTFILES is the source html files (html fragment) which are to be converted.
         """;
 }

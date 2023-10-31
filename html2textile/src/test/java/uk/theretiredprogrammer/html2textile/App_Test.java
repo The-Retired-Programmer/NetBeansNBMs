@@ -32,12 +32,12 @@ public class App_Test {
         int rc = app.goInner(new String[]{SANDBOX + "dinghies.html"});
         assertEquals(0, rc);
     }
-
+    
     @Test
     public void testApp2() {
         System.out.println("test2");
         App app = new App();
-        int rc = app.goInner(new String[]{"-o", SANDBOX + "dinghies.t", SANDBOX + "dinghies.html"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghies.html",SANDBOX + "dinghiesCopy.html"});
         assertEquals(0, rc);
     }
 
@@ -75,21 +75,6 @@ public class App_Test {
     }
 
     // parameter line failures
-    @Test
-    public void testApp21() {
-        System.out.println("test21");
-        App app = new App();
-        int rc = app.goInner(new String[]{SANDBOX + "dinghiesx.html", "junk"});
-        assertEquals(4, rc);
-    }
-
-    @Test
-    public void testApp22() {
-        System.out.println("test22");
-        App app = new App();
-        int rc = app.goInner(new String[]{"-o", SANDBOX + "dinghies.html"});
-        assertEquals(4, rc);
-    }
 
     @Test
     public void testApp26() {

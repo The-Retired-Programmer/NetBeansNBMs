@@ -7,8 +7,8 @@
 # process the three text-align styles associated with headings to native Textile
 #
 ^h(\d)\{(.*)text-align:center;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
-^h(\d)\{(.*)text-align:left;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
-^h(\d)\{(.*)text-align:right;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
+^h(\d)\{(.*)text-align:left;(.*)\}\. (.*)$<===>h$1{$2$3}. $4
+^h(\d)\{(.*)text-align:right;(.*)\}\. (.*)$<===>h$1{$2$3}>. $4
 
 #
 # process paragraph formatting
@@ -43,4 +43,5 @@
 ^h(\d)\{\h*\}(.*)\. (.*)$<===>h$1$2. $3
 
 # and any redundant para definitions
+^p<\. (.*)$<===>$1
 ^p\. (.*)$<===>$1

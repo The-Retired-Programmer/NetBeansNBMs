@@ -102,6 +102,9 @@ public class NullSpanRemoval_Test extends TransformhtmlTest {
                        span style="text-decoration:underline;"
                            strong
                                "Powerboat Training & Experience"
+                   line number="12"
+                   p
+                       "text"
                """;
     }
 }
