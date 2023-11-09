@@ -43,25 +43,25 @@ public class Html2Textile {
         new Html2Textile().converter(from, textilewriter, err, inputfile, IGNORE_NO_SYSTEM_RULES);
     }
 
-    public static void convert(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int ignoresystemrules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        new Html2Textile().converter(from, textilewriter, err, inputfile, ignoresystemrules);
+    public static void convert(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int systemrulescontrols) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        new Html2Textile().converter(from, textilewriter, err, inputfile, systemrulescontrols);
     }
 
     private Html2Textile() {
     }
 
-    public void converter(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int ignoresystemrules) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        TransformHtmlText texttransformer = new TransformHtmlText(from, inputfile, (ignoresystemrules & IGNORE_HTML_SYSTEM_RULES) > 0);
+    public void converter(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int systemrulescontrols) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        TransformHtmlText texttransformer = new TransformHtmlText(from, inputfile, (systemrulescontrols & IGNORE_HTML_SYSTEM_RULES) > 0);
         texttransformer.rootWrap("html");
         StringWriter swriter = new StringWriter();
         try ( Reader wrapped = texttransformer.transform();  PrintWriter textileout = new PrintWriter(swriter)) {
             TransformHtml transformer = new TransformHtml(wrapped);
-            transformer.transform(inputfile, (ignoresystemrules & IGNORE_STYLE_SYSTEM_RULES) > 0);
+            transformer.transform(inputfile, (systemrulescontrols & IGNORE_STYLE_SYSTEM_RULES) > 0);
             //
             TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
             translator.translate();
         }
-        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter, inputfile, (ignoresystemrules & IGNORE_TEXTILE_SYSTEM_RULES) > 0);
+        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter, inputfile, (systemrulescontrols & IGNORE_TEXTILE_SYSTEM_RULES) > 0);
         textiletransformer.transform();
         textiletransformer.save();
     }

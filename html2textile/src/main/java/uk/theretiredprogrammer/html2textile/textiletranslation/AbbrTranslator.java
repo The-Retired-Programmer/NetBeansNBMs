@@ -20,18 +20,21 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 import uk.theretiredprogrammer.html2textile.ErrHandler;
 
-public class LineHandler extends TextileElementTranslator {
+public class AbbrTranslator extends TextileElementTranslator {
 
-    public LineHandler(PrintWriter out, ErrHandler err) {
+    public AbbrTranslator(PrintWriter out, ErrHandler err) {
         super(out, err);
     }
 
     public String[] allowedAttributes() {
-        return new String[] { "number" };
+        return new String[]{"title"};
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        // not a real translatable element - but updates the line number in the errHandler
-        err.setlinenumber(Integer.parseInt(element.getAttribute("number")));
+        checkAttributes(element,allowedAttributes());
+        translator.processChildren(element);
+        out.write("(");
+        out.write(element.getAttribute("title"));
+        out.write(")");
     }
 }

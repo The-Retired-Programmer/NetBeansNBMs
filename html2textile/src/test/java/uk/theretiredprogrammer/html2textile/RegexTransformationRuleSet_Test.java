@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 public class RegexTransformationRuleSet_Test {
     
-    public static final String SANDBOX_INPUT = "/home/richard/SANDBOX/dinghies.html";
+    public static final String SANDBOX_INPUT = "/home/richard/SANDBOX/SANDBOX/dinghies.html";
     
     public RegexTransformationRuleSet_Test() {
     }
@@ -40,7 +40,7 @@ public class RegexTransformationRuleSet_Test {
         System.out.println("test2 - htmlrules - with special files");
         RegexTransformationRuleSet rules = new RegexTransformationRuleSet(new File(SANDBOX_INPUT),"htmlrules",false);
         String res = rules.transform("abc|;|&nbsp;|&lsquo;|&rsquo;|&|xyz");
-        assertEquals("abc|;| |'|\"|&|xyz",res);
+        assertEquals("abc|;| |'|!!!|&|xyz",res);
     }
     
     @Test
@@ -80,7 +80,7 @@ public class RegexTransformationRuleSet_Test {
         System.out.println("test7 - textilerules - with special files");
         RegexTransformationRuleSet rules = new RegexTransformationRuleSet(new File(SANDBOX_INPUT),"textilerules", false);
         String res = rules.transform("h3{text-align:center;color:red;}. text-text-text\n");
-        assertEquals("h3{color:red;}CENTRE. text-text-text\n",res);
+        assertEquals("h3{color:red;}=. text-text-text\n",res);
     }
     
     @Test
@@ -96,15 +96,15 @@ public class RegexTransformationRuleSet_Test {
         System.out.println("test9 - htmlrules - with special files and NO system file");
         RegexTransformationRuleSet rules = new RegexTransformationRuleSet(new File(SANDBOX_INPUT),"htmlrules",true);
         String res = rules.transform("abc|;|&nbsp;|&lsquo;|&rsquo;|&|xyz");
-        assertEquals("abc|;|&nbsp;|&lsquo;|\"|&|xyz",res);
+        assertEquals("abc|;|&nbsp;|&lsquo;|!!!|&|xyz",res);
     }
     
     @Test
     public void test10() throws IOException {
         System.out.println("test10 - textilerules - with special files and NO system file");
         RegexTransformationRuleSet rules = new RegexTransformationRuleSet(new File(SANDBOX_INPUT),"textilerules", true);
-        String res = rules.transform("h3{text-align:center;color:red;}. text-text-text\n");
-        assertEquals("h3{color:red;}CENTRE. text-text-text\n",res);
+        String res = rules.transform("h3{text-align:left;color:red;}. text-text-text\n");
+        assertEquals("h3{text-align:left;color:red;}. text-text-text\n",res);
     }
     
     @Test
@@ -121,5 +121,13 @@ public class RegexTransformationRuleSet_Test {
         RegexTransformationRuleSet rules = new RegexTransformationRuleSet(new File(SANDBOX_INPUT),"textilerules", true);
         String res = rules.transform("p{width:100%;margin:0;padding:0;}. text-text-text\n");
         assertEquals("p{width:100%;margin:0;padding:0;}. text-text-text\n",res);
+    }
+    
+    @Test
+    public void test13() throws IOException {
+        System.out.println("test13 - htmlrules - with special files from parent");
+        RegexTransformationRuleSet rules = new RegexTransformationRuleSet(new File(SANDBOX_INPUT),"htmlrules",false);
+        String res = rules.transform("abc|;|&nbsp;|&lsquo;|&rsquo;|&|xyz");
+        assertEquals("abc|;| |'|!!!|&|xyz",res);
     }
 }

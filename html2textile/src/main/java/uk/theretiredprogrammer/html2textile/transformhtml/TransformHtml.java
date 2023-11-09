@@ -52,6 +52,8 @@ public class TransformHtml {
 
     public void transform(File inputfile, boolean ignoresystemrules) throws IOException {
         transform(new StyleNormalisation());
+        transform(new HeaderRemoval());
+        transform(new SectionRemoval());
         transform(new DivRlStyleRemoval());
         transform(new DivReduction());
         if (inputfile == null) {

@@ -27,7 +27,7 @@ public abstract class DomModificationsWithRules extends DomModifications {
     public DomModificationsWithRules(File datainput, String rulesname, boolean ignoresystemrules) throws IOException {
         ruleset = new RegexTransformationRuleSet(datainput, rulesname, ignoresystemrules);
     }
-    
+
     public DomModificationsWithRules(String rulesname) throws IOException {
         ruleset = new RegexTransformationRuleSet(rulesname);
     }

@@ -92,6 +92,8 @@ public abstract class TextileElementTranslator {
                 new UTranslator(out, err);
             case "button" ->
                 new IgnoredTranslator(out, err);
+            case "abbr" ->
+                new AbbrTranslator(out, err);
             default ->
                 new UnknownTranslator(out, err);
         };
@@ -115,15 +117,6 @@ public abstract class TextileElementTranslator {
         }
     }
 
-    String getAttribute(Element element, String attributeName) {
-        String attribute = element.getAttribute(attributeName);
-        if (attribute.isEmpty()) {
-            err.error("Expected attribute not present (" + attributeName + " in " + element.getTagName() + ")", element);
-            return "???";
-        }
-        return attribute;
-    }
-
     void writeClassStyleId(Element element) throws IOException {
         checkAttributes(element, allowedAttributes());
         String classAttribute = element.getAttribute("class");
@@ -144,7 +137,7 @@ public abstract class TextileElementTranslator {
         }
     }
 
-    private void checkAttributes(Element element, String[] allowedAttributes) {
+    void checkAttributes(Element element, String[] allowedAttributes) {
         NamedNodeMap attributes = element.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
             boolean match = false;

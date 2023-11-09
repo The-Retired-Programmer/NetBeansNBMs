@@ -29,7 +29,7 @@ public class ATranslator extends TextileElementTranslator {
     }
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id", "href"};
+        return new String[]{"style", "class", "id", "href", "rel", "target"};
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
@@ -44,7 +44,10 @@ public class ATranslator extends TextileElementTranslator {
     }
 
     private String getURL(Element element) throws IOException {
-        String hrefvalue = getAttribute(element, "href");
+        String hrefvalue = element.getAttribute("href");
+        if (hrefvalue.isEmpty()) {
+            throw new IOException("Missing href attribute in A element");
+        }
         if (hrefvalue.startsWith("https://") || hrefvalue.startsWith("http://")
                 || hrefvalue.startsWith("mailto:") || hrefvalue.startsWith("tel:") ){
             return hrefvalue;

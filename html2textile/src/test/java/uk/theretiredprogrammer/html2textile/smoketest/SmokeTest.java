@@ -30,7 +30,6 @@ import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
-import uk.theretiredprogrammer.html2textile.transformhtml.SerialiseDom;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 import uk.theretiredprogrammer.html2textile.transformtextiletext.TransformTextileText;
 
@@ -43,12 +42,11 @@ public class SmokeTest {
             String inputresourcefilename,
             String outputhtmlfilename,
             String outputtextilefilename,
-            String expected,
-            boolean noTextileRules
+            String expected
     ) throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
         try ( PrintWriter errwriter = new PrintWriter(System.err)) {
             ErrHandler err = new ErrHandler((s) -> errwriter.println(s));
-            String serialised;
+            String s2;
             InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/" + inputresourcefilename);
             TransformHtmlText texttransformer = new TransformHtmlText(new InputStreamReader(is));
             texttransformer.rootWrap("html");
@@ -56,24 +54,34 @@ public class SmokeTest {
                 TransformHtml transformer = new TransformHtml(wrapped);
                 transformer.transform();
                 transformer.writeHtml(new FileWriter("/home/richard/" + outputhtmlfilename));
-                serialised = SerialiseDom.serialise(transformer.getRoot());
                 //
                 StringWriter swriter = new StringWriter();
                 try ( PrintWriter textileout = new PrintWriter(swriter)) {
                     TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
                     translator.translate();
                 }
-                PrintWriter out = new PrintWriter(new FileWriter("/home/richard/" + outputtextilefilename));
+                //
+                StringWriter s2writer = new StringWriter();
+                PrintWriter out = new PrintWriter(s2writer);
                 TransformTextileText textiletransformer = new TransformTextileText(swriter, out);
-                if (!noTextileRules) {
-                    textiletransformer.transform();
-                }
+                textiletransformer.transform();
                 textiletransformer.save();
+
+                PrintWriter out2 = new PrintWriter(new FileWriter("/home/richard/" + outputtextilefilename));
+                s2 = s2writer.toString();
+                try (out2) {
+                    out2.print(s2);
+                }
             }
             if (expected == null) {
-                System.out.println(serialised);
+                System.out.println(s2);
             } else {
-                assertEquals(expected, serialised);
+                String[] expectedlines = expected.split("\n");
+                String[] actuallines = s2.split("\n");
+                assertEquals(expectedlines.length, actuallines.length);
+                for (int i = 0; i < expectedlines.length; i++) {
+                    assertEquals(expectedlines[i].stripTrailing(), actuallines[i].stripTrailing(), "line equality failed on line " + (i + 1));
+                }
             }
         }
     }

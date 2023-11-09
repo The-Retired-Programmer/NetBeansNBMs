@@ -1,47 +1,38 @@
 #
-# Regex rules for final processing of Textile files
+# Rules for final processing of Textile files
 # =================================================
-#
-
 #
 # process the three text-align styles associated with headings to native Textile
 #
-^h(\d)\{(.*)text-align:center;(.*)\}\. (.*)$<===>h$1{$2$3}=. $4
-^h(\d)\{(.*)text-align:left;(.*)\}\. (.*)$<===>h$1{$2$3}. $4
-^h(\d)\{(.*)text-align:right;(.*)\}\. (.*)$<===>h$1{$2$3}>. $4
-
+REPLACE PATTERN ^h(\d)\{(.*)text-align:center;(.*)\}\. (.*)$ WITH h$1{$2$3}=. $4
+REPLACE PATTERN ^h(\d)\{(.*)text-align:left;(.*)\}\. (.*)$ WITH h$1{$2$3}. $4
+REPLACE PATTERN ^h(\d)\{(.*)text-align:right;(.*)\}\. (.*)$ WITH h$1{$2$3}>. $4
 #
 # process paragraph formatting
-#
 # indents - very temporary at moment - only one depth supported
 #
-^p\{(.*)padding-left:\d*px;(.*)\}\. (.*)$<===>p{$1$2}((. $3
+REPLACE PATTERN ^p\{(.*)padding-left:\d*px;(.*)\}\. (.*)$ WITH p{$1$2}((. $3
 #
 # alignments 
 #
-^p\{(.*)text-align:center;(.*)\}\. (.*)$<===>p{$1$2}=. $3
-^p\{(.*)text-align:left;(.*)\}\. (.*)$<===>p{$1$2}<. $3
-^p\{(.*)text-align:right;(.*)\}\. (.*)$<===>p{$1$2}>. $3
-^p\{(.*)text-align:justify;(.*)\}\. (.*)$<===>p{$1$2}<>. $3
-
+REPLACE PATTERN ^p\{(.*)text-align:center;(.*)\}\. (.*)$ WITH p{$1$2}=. $3
+REPLACE PATTERN ^p\{(.*)text-align:left;(.*)\}\. (.*)$ WITH p{$1$2}<. $3
+REPLACE PATTERN ^p\{(.*)text-align:right;(.*)\}\. (.*)$ WITH p{$1$2}>. $3
+REPLACE PATTERN ^p\{(.*)text-align:justify;(.*)\}\. (.*)$ WITH p{$1$2}<>. $3
 #
 #   standard style replacement with classes
 #
-
-^(.*)\{margin:020px10px0px;float:left;width:50%;\}(.*)$<===>$1(float-left-50)$2
-^(.*)\(halfWidthImg\)\{float:left;\}(.*)$<===>$1(float-left-50)$2
-^(.*)\(halfWidthImg\)\{float:right;\}(.*)$<===>$1(float-right-50)$2
-^(.*)\{margin:50px00100px;padding:0;float:right;width:20%;line-height:12pt;\}.*\. (.*)$<===>$1(float-right-20). $2
-^(.*)\{width:100%;margin:0;padding:0;\}(.*)$<===>$1$2
-^(.*)\(photoleft\)\{float:left;border-width:10px;\}(.*)$<===>$1(float-left-50)$2
-
+REPLACE PATTERN ^(.*)\{margin:020px10px0px;float:left;width:50%;\}(.*)$ WITH $1(float-left-50)$2
+REPLACE PATTERN ^(.*)\(halfWidthImg\)\{float:left;\}(.*)$ WITH $1(float-left-50)$2
+REPLACE PATTERN ^(.*)\(halfWidthImg\)\{float:right;\}(.*)$ WITH $1(float-right-50)$2
+REPLACE PATTERN ^(.*)\{margin:50px00100px;padding:0;float:right;width:20%;line-height:12pt;\}.*\. (.*)$ WITH $1(float-right-20). $2
+REPLACE PATTERN ^(.*)\{width:100%;margin:0;padding:0;\}(.*)$ WITH $1$2
+REPLACE PATTERN ^(.*)\(photoleft\)\{float:left;border-width:10px;\}(.*)$ WITH $1(float-left-50)$2
 #
 # finally remove any empty style definitions
 #
-
-^p\{\h*\}(.*)\. (.*)$<===>p$1. $2
-^h(\d)\{\h*\}(.*)\. (.*)$<===>h$1$2. $3
-
+REPLACE PATTERN ^p\{\h*\}(.*)\. (.*)$ WITH p$1. $2
+REPLACE PATTERN ^h(\d)\{\h*\}(.*)\. (.*)$ WITH h$1$2. $3
 # and any redundant para definitions
-^p<\. (.*)$<===>$1
-^p\. (.*)$<===>$1
+REPLACE PATTERN ^p<\. (.*)$ WITH $1
+REPLACE PATTERN ^p\. (.*)$ WITH $1

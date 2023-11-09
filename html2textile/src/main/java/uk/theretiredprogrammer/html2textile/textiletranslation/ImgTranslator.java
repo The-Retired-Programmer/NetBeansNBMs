@@ -35,13 +35,17 @@ public class ImgTranslator extends TextileElementTranslator {
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         out.write("!");
         writeClassStyleId(element);
-        out.write(getURL(element));
-        out.write("(" + getAlt(element) + ")");
+        String url = getURL(element);
+        out.write(url);
+        out.write("(" + getAlt(element, url) + ")");
         out.write("!");
     }
 
-    private String getURL(Element element) {
-        String srcvalue = getAttribute(element, "src");
+    private String getURL(Element element) throws IOException {
+        String srcvalue = element.getAttribute("src");
+        if (srcvalue.isEmpty()) {
+            throw new IOException("Missing src attribute in img element");
+        }
         if (srcvalue.startsWith("assets")) {
             return ASSET_PREFIX + srcvalue.substring(7);
         }
@@ -52,11 +56,21 @@ public class ImgTranslator extends TextileElementTranslator {
         return srcvalue;
     }
 
-    private String getAlt(Element element) {
-        String altvalue = getAttribute(element, "alt");
+    private String getAlt(Element element, String url) {
+        String altvalue = element.getAttribute("alt");
         if (altvalue.isEmpty()) {
-            err.error("alt attribute missing", element);
+            altvalue = geturlname(url);
+            err.warning("alt attribute missing - has been set to \"" + altvalue + "\"", element);
         }
         return altvalue;
+    }
+
+    private String geturlname(String url) {
+        int dotpos = url.lastIndexOf('.');
+        if (dotpos == -1) {
+            dotpos = url.length();
+        }
+        int slashpos = url.lastIndexOf('/', dotpos);
+        return url.substring(++slashpos, dotpos);
     }
 }

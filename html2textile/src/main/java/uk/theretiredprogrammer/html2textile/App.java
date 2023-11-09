@@ -39,7 +39,7 @@ import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_TEXTILE_S
 public class App {
 
     private ErrHandler err;
-    private int ignoresystemrules = IGNORE_NO_SYSTEM_RULES;
+    private int systemrulescontrols = IGNORE_NO_SYSTEM_RULES;
     private final List<String> inputfilenames = new ArrayList<>();
 
     public App() {
@@ -57,7 +57,7 @@ public class App {
                 return rc;
             }
             for (String filename : inputfilenames) {
-                err.info("/nHtml2Textile " + filename);
+                err.info("\nHtml2Textile " + filename);
                 if ((rc = run(filename)) > 0) {
                     return rc;
                 }
@@ -78,13 +78,13 @@ public class App {
             switch (args[i]) {
 
                 case "-x" ->
-                    ignoresystemrules = IGNORE_ALL_SYSTEM_RULES;
+                    systemrulescontrols = IGNORE_ALL_SYSTEM_RULES;
                 case "-xh" ->
-                    ignoresystemrules |= IGNORE_HTML_SYSTEM_RULES;
+                    systemrulescontrols |= IGNORE_HTML_SYSTEM_RULES;
                 case "-xs" ->
-                    ignoresystemrules |= IGNORE_STYLE_SYSTEM_RULES;
+                    systemrulescontrols |= IGNORE_STYLE_SYSTEM_RULES;
                 case "-xt" ->
-                    ignoresystemrules |= IGNORE_TEXTILE_SYSTEM_RULES;
+                    systemrulescontrols |= IGNORE_TEXTILE_SYSTEM_RULES;
                 default -> {
                     while (i < l) {
                         inputfilenames.add(args[i++]);
@@ -104,7 +104,7 @@ public class App {
         String outputfilename = getfilenoext(filename) + ".textile";
         try {
             try ( Reader rdr = getInputReader(filename);  PrintWriter wtr = getOutputWriter(outputfilename)) {
-                Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile(), ignoresystemrules);
+                Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile(), systemrulescontrols);
                 return 0;
             } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
                 err.error("Exception: " + ex.getLocalizedMessage());
@@ -156,7 +156,6 @@ public class App {
                 -xs             do not use the Style system rules file
                                 
                 -xt             do not use the Textile system rules file
-                                
                 
             and INPUTFILES is the source html files (html fragment) which are to be converted.
         """;

@@ -27,55 +27,49 @@ import java.util.List;
 
 public class RegexTransformationRuleSet {
 
-    public final static String RULE_PARTS_SEPARATOR = "<===>";
-
     private final List<Rule> transformations = new ArrayList<>();
 
     public RegexTransformationRuleSet(File datainput, String rulesext, boolean ignoresystemrules) throws FileNotFoundException, IOException {
-        loadrules(getRuleSources(datainput, rulesext, ignoresystemrules));
+        loadrules(datainput, rulesext, ignoresystemrules);
     }
-    
+
     public RegexTransformationRuleSet(String rulesext) throws FileNotFoundException, IOException {
-        loadrules(getRuleSources(rulesext));
+        loadrulesfile(getsystemrulesfile(rulesext));
     }
 
-    private List<InputStream> getRuleSources(File datainput, String rulesext, boolean ignoresystemrules) throws FileNotFoundException {
-        List<InputStream> rules = new ArrayList<>();
-        //
+    private void loadrules(File datainput, String rulesext, boolean ignoresystemrules) throws FileNotFoundException, IOException {
         File parent = datainput.getParentFile();
-        String name = datainput.getName();
-        String[] nameparts = name.split("\\.");
-        File[] rulefiles = parent.listFiles((dir, fname) -> fname.equals(nameparts[0] + "." + rulesext));
-        if (rulefiles.length == 1) {
-            rules.add(new FileInputStream(rulefiles[0]));
-        }
-        // 
-        rulefiles = parent.listFiles((dir, fname) -> fname.equals("shared." + rulesext));
-        if (rulefiles.length == 1) {
-            rules.add(new FileInputStream(rulefiles[0]));
-        }
         //
+        loadrulesfile(getownrulesfile(parent, datainput, rulesext));
+        InputStream is = getsharedrulesfile(parent, rulesext);
+        loadrulesfile(is != null ? is : getsharedrulesfile(parent.getParentFile(), rulesext));
         if (!ignoresystemrules) {
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/system." + rulesext);
-            if (is != null) {
-                rules.add(is);
-            }
+            loadrulesfile(getsystemrulesfile(rulesext));
         }
-        return rules;
-    }
-    
-    private List<InputStream> getRuleSources(String rulesext) throws FileNotFoundException {
-        List<InputStream> rules = new ArrayList<>();
-        //
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/system." + rulesext);
-        if (is != null ) {
-            rules.add(is);
-        }
-        return rules;
     }
 
-    private void loadrules(List<InputStream> rules) throws IOException {
-        for (InputStream ruleset : rules) {
+    private InputStream getownrulesfile(File folder, File own, String rulesext) throws FileNotFoundException {
+        String name = own.getName();
+        String[] nameparts = name.split("\\.");
+        return getrulesfile(folder, nameparts[0], rulesext);
+    }
+
+    private InputStream getsharedrulesfile(File folder, String rulesext) throws FileNotFoundException {
+        return getrulesfile(folder, "shared", rulesext);
+    }
+
+    private InputStream getsystemrulesfile(String rulesext) throws FileNotFoundException {
+        return this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/system." + rulesext);
+
+    }
+
+    private InputStream getrulesfile(File folder, String name, String rulesext) throws FileNotFoundException {
+        File[] rulefile = folder.listFiles((dir, fname) -> fname.equals(name + "." + rulesext));
+        return rulefile.length == 1 ? new FileInputStream(rulefile[0]) : null;
+    }
+
+    private void loadrulesfile(InputStream ruleset) throws IOException {
+        if (ruleset != null) {
             try ( BufferedReader rulesreader = new BufferedReader(new InputStreamReader(ruleset))) {
                 String line;
                 while ((line = rulesreader.readLine()) != null) {
@@ -89,7 +83,7 @@ public class RegexTransformationRuleSet {
 
     public String transform(String line) {
         for (Rule rule : transformations) {
-            line = line.replaceAll(rule.match, rule.result);
+            line = rule.isregex ? line.replaceAll(rule.match, rule.replacement) : line.replace(rule.match, rule.replacement);
         }
         return line;
     }
@@ -97,17 +91,56 @@ public class RegexTransformationRuleSet {
     private class Rule {
 
         public final String match;
-        public final String result;
+        public final String replacement;
+        public final boolean isregex;
 
-        public Rule(String rule) {
-            if (rule.contains(RULE_PARTS_SEPARATOR)){
-            String[] parts = rule.split(RULE_PARTS_SEPARATOR);
-            match = parts[0];
-            result = parts.length==1?"" :parts[1];
-            } else {
-                match = rule;
-                result = "";
+        public Rule(String rule) throws IOException {
+            rule = rule.trim();
+            if (rule.startsWith("REMOVE PATTERN ")) {
+                match = trimquotes(rule.substring(14).trim());
+                replacement = "";
+                isregex = true;
+                return;
             }
+            if (rule.startsWith("REMOVE ")) {
+                match = trimquotes(rule.substring(6).trim());
+                replacement = "";
+                isregex = false;
+                return;
+            }
+            if (rule.startsWith("REPLACE PATTERN ")) {
+                int withpos = rule.indexOf(" WITH ");
+                if (withpos == -1) {
+                    throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE PATTERN \" rule - " + rule);
+                }
+                match = trimquotes(rule.substring(15, withpos + 1).trim());
+                replacement = trimquotes(rule.substring(withpos + 5).trim());
+                isregex = true;
+                return;
+            }
+            if (rule.startsWith("REPLACE ")) {
+                int withpos = rule.indexOf(" WITH ");
+                if (withpos == -1) {
+                    throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE \" rule - " + rule);
+                }
+                match = trimquotes(rule.substring(7, withpos + 1).trim());
+                replacement = trimquotes(rule.substring(withpos + 5).trim());
+                isregex = false;
+                return;
+            }
+            throw new IOException("Bad Rule definition: unknown command - " + rule);
+        }
+
+        private String trimquotes(String string) {
+            if (string.length() > 2) {
+                if (string.startsWith("'") && string.endsWith("'")) {
+                    return string.substring(1, string.length() - 1);
+                }
+                if (string.startsWith("\"") && string.endsWith("\"")) {
+                    return string.substring(1, string.length() - 1);
+                }
+            }
+            return string;
         }
     }
 }
