@@ -79,40 +79,46 @@ public class ReplaceWithHeadings extends DomModifications {
     }
 
     private String headerpatternmatch(List<Element> elements) {
-        int flags = 0;
+//        int flags = 0;
         // strong and style="font-size: 18pt;"(16plus) => H3
         // strong and style="font-size: 14pt;" (13pt to 15 pt inclusive) => H4
-        // strong => H5
-        // strong and u ==> H6
-        flags = flags | scanforelement(elements, "strong", 8);
-        flags = flags | scanforelement(elements, "u", 4);
-        flags = flags | scanforfontsize(elements);
-        return switch (flags) {
-            case 8 ->
-                "h6";
-            case 9 ->
-                "h4";
-            case 10, 11 ->
-                "h3";
-            case 12 ->
-                "h5";
-            case 13 ->
-                "h4";
-            case 14, 15 ->
-                "h3";
-            default ->
-                null;
+        // strong => H5 xx
+        // strong and u ==> H6 xx
+//        flags = flags | scanforelement(elements, "strong", 8);
+//        flags = flags | scanforelement(elements, "u", 4);
+//        flags = flags | scanforfontsize(elements);
+//        return switch (flags) {
+//            case 8 ->
+//                "h6";
+//            case 9 ->
+//                "h4";
+//            case 10, 11 ->
+//                "h3";
+//            case 12 ->
+//                "h5";
+//            case 13 ->
+//                "h4";
+//            case 14, 15 ->
+//                "h3";
+//            default ->
+//                null;
+        return switch (scanforfontsize(elements)) {
+            case 1 -> "h4";
+                
+            case 2 -> "h3";
+                
+            default -> null;
         };
     }
 
-    private int scanforelement(List<Element> elements, String name, int successvalue) {
-        for (var element : elements) {
-            if (element.getTagName().equals(name)) {
-                return successvalue;
-            }
-        }
-        return 0;
-    }
+//    private int scanforelement(List<Element> elements, String name, int successvalue) {
+//        for (var element : elements) {
+//            if (element.getTagName().equals(name)) {
+//                return successvalue;
+//            }
+//        }
+//        return 0;
+//    }
 
     private int scanforfontsize(List<Element> elements) {
         int fontgroup = 0;

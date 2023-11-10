@@ -35,7 +35,7 @@ public class RaceOfficersBriefing_SmokeTest extends SmokeTest {
     String expected = """
 h3. !(float-left-50)https://files.exe-sailing-club.org/images/Dinghies2/Race_Officers_Brief_2.jpg(Race Officers Brief)!Preparation
 
-h6. Before the day of the race
+*Before the day of the race*
 
 Check the "forecast":https://www.windguru.cz/712  and "tide times":https://easytide.admiralty.co.uk/?PortID=0027 .
 
@@ -47,7 +47,7 @@ Check the "Race Team Roster":https://scm.exe-sailing-club.org/duties  and make s
 
 Check with the Club Professional which ribs you are allocated and where the racing marks (anchors if going to sea) and flag poles are located. Is there training activity concurrent with racing? If so, who is the Senior Instructor (in case of equipment issues).
 
-h6. On the day of the race
+*On the day of the race*
 
 Get to the club early! (at least 1 ¼ hours before race start in estuary, 1 ½ hours if at sea)
 
@@ -55,7 +55,7 @@ Consider if racing is safe. You can postpone the start if confident conditions w
 
 Ensure that you have a watch that works!
 
-h6. Make a Plan
+*Make a Plan*
 
 p((. _Committee Vessel Start_ - Decide where the start location will be. (See Appendix 1 - Committee Boat Estuary Start Notes and discuss with experienced sailors as necessary).
 
@@ -76,7 +76,7 @@ Number of Races
 
 Decide which route you want the sailors to take to the start location and back to the club after racing and communicate this to the competitors by a diagram or words on the blackboard above the sign on sheet.
 
-h6. Enact the Plan
+*Enact the Plan*
 
 Gather the race team and brief them on your plan. Allocate tasks, check radios are on channel 08. Gather equipment and head for the marina/race box.
 
@@ -124,7 +124,7 @@ Aim to start the first race on time. Only delay if more than half the fleet are 
 
 Run the start sequence (RRS 26). Call the line, if boats are over and you can identify them raise the X flag with one sound signal. If there are too many over the line for you to identify then signal a general recall 1st substitute and 2 sound signals.
 
-h6. If using Course 1 this includes the first time the boats pass No 11 buoy after going out to No 10
+Record the time each boat crosses the line on each lap.  *If using Course 1 this includes the first time the boats pass No 11 buoy after going out to No 10*.
 
 Shorten the course if needed to meet the target time for the race. (S flag and 2 sound signals as the leading boat rounds the last mark).
 
@@ -134,7 +134,7 @@ Record the finish time for each boat, give a sound signal for each finisher (not
 
 Alter the course/line as necessary. Run subsequent races as scheduled.
 
-h6. After the Race
+*After the Race*
 
 Ask the safety boat to pick up course marks after last boat has passed them.
 
@@ -154,9 +154,9 @@ Dinghy Committee Feb 23
 
 h3. Appendices
 
-h6=. 1.Committee Boat Estuary Start Notes
+p=. *1.Committee Boat Estuary Start Notes*
 
-h6. Tides
+*Tides*
 
 Courses can only be set outside the main channel over the Banks with a tide height of over 3.6m and then only for an hour either side of high water.
 
@@ -166,7 +166,7 @@ Up to 2 hours before HW the tide flows strongly in the main channel. There is le
 
 One and a half hours before HW a strong counter-eddy develops from No. 14 Buoy extending to No. 12 Buoy. This creates an interesting sailing area.
 
-h6. Moorings
+*Moorings*
 
 Avoid laying courses through Shelly in strong tides and winds. It is probably worth avoiding this area in all but lighter winds and tides.
 
@@ -176,7 +176,7 @@ Southerly/South-westerly starting around 19 Buoy will provide many options.
 
 North-westerly and Northerly. The 13-15 Buoy area will provide the same.
 
-h6=. 2.  Race Box Starts - Suggestions for Start Line Positions and  Course Selection
+p=. *2.  Race Box Starts - Suggestions for Start Line Positions and  Course Selection*
 
 !{margin:10px0px10px0px;float:center;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/raceboxstartlinev2.jpg(Race Box Start Line)!
 
@@ -209,9 +209,9 @@ p((. 3.  Course 5 is very long and is only viable in near perfect conditions.  I
 
 p((. 4.  If using Course 1 remember to record the times boats pass No 11 buoy after going out to No 10 for the first time.
 
-h6=. 3. Suggested use of Course Board
+p=. *3. Suggested use of Course Board*
 
-h6. Contents
+*Contents*
 
 table{border-collapse:collapse;width:100%;}. 
 |{border:none;vertical-align:middle;width:27%;}. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0002.jpg(image0002.jpg)!
@@ -239,15 +239,16 @@ White (Lap numbers (1 to 4), course shapes (Triangle or Sausage) and Start Line 
 Red one side, Green the other (to indicate marks of the course (Y is for a yellow laid mark, H is for Hinton). (The green side has a black line across the middle so that red/green colour blind people can distinguish the colours)
 
 |
-|\\2{border:none;vertical-align:middle;width:51%;}. h6. Set Up
+|\\2{border:none;vertical-align:middle;width:51%;}. p. *Set Up*
 
-h6. side of the rib away from the start line
+Place the pole of the board in one of the tubes used to support the signal flags on the *side of the rib away from the start line*. Use the bungy cord to stop the board rotating in the wind and tie the board back to the A frame on Grey RIB as necessary using the ropes at the top of the board. Use the tiles to define the course. The back of the course board has been painted as a chalkboard should you need to use this facility. Please put everything away carefully at the end of racing!
 
 |/2\\3{border:none;vertical-align:middle;width:50%;}. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0006.jpg(image0006.jpg)!
 
 |
-|\\2{border:none;vertical-align:middle;width:51%;}. h6. Example
+|\\2{border:none;vertical-align:middle;width:51%;}. p. *Example* The example on the right would be a triangular course beginning with the start line (S/L), Y to Port (Y on a red background), 17 to Port (17 on a red background), Y to Port (Y on a red background), and back through the finish line. The start line and finish line is between the RIB and a Yellow mark and the race consists of 3 laps.
 
 |
+                      
 """;
 }

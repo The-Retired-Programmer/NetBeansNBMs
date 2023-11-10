@@ -40,38 +40,46 @@ public class ReplaceWithHeadings_Test extends TransformhtmlTest {
     }
 
     private String expected() {
-        return """
-               html
-                   line number="1"
-                   h6
-                       "This is H6"
-                   line number="2"
-                   h5
-                       "This is H5"
-                   line number="3"
-                   h4
-                       "This is H4"
-                   line number="4"
-                   h3
-                       "This is H3"
-                   line number="5"
-                   h4
-                       "This is H4"
-                   line number="6"
-                   h3
-                       "This is H3"
-                   line number="7"
-                   h4
-                       "This is H4"
-                   line number="8"
-                   h3
-                       "This is H3"
-                   line number="9"
-                   h5
-                       "This is H5"
-                   line number="10"
-                   h4 style="text-align:center;"
-                       "This is H4"
-               """;
+        return  """
+                html
+                    line number="1"
+                    p
+                        strong
+                            "just bold"
+                    line number="2"
+                    p
+                        u
+                            strong
+                                "just strong,u"
+                    line number="3"
+                    h4
+                        "This is H4"
+                    line number="4"
+                    h3
+                        "This is H3"
+                    line number="5"
+                    h4
+                        "This is H4"
+                    line number="6"
+                    h3
+                        "This is H3"
+                    line number="7"
+                    h4
+                        "This is H4"
+                    line number="8"
+                    h3
+                        "This is H3"
+                    line number="9"
+                    p style="font-size:14pt;"
+                        strong
+                            span style="font-size:18pt;"
+                                u
+                                    span style="font-size:12pt;"
+                                        strong
+                                            "just strong,u"
+                    line number="10"
+                    h4 style="text-align:center;"
+                        "This is H4"
+                """;
     }
 }

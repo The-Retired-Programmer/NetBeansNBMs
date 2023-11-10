@@ -72,7 +72,7 @@ YOU NEED TO BRING
 
 
 
-h6. REGISTER YOUR INTEREST WITH THE CLUB PROFESSIONAL ("training@exe-sailing-club.org":mailto:training@exe-sailing-club.org )
+*REGISTER YOUR INTEREST WITH THE CLUB PROFESSIONAL ("training@exe-sailing-club.org":mailto:training@exe-sailing-club.org )*
 
 FOR COURSE DATES AND TO BOOK CLICK HERE (tbc)
 
