@@ -31,6 +31,7 @@ public class UlTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        out.write("\n");
         if (element.hasAttributes()) {
             out.write("*".repeat(translator.findlistdepth(element)));
             writeClassStyleId(element);

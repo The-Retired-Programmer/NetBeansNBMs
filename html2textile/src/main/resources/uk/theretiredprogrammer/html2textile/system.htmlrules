@@ -7,3 +7,4 @@
 REPLACE &nbsp; WITH " " 
 REPLACE &lsquo; WITH '
 REPLACE &rsquo; WITH '
+REMOVE dir="auto"

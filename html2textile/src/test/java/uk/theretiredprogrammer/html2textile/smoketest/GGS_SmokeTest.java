@@ -45,6 +45,7 @@ In 2018 we saw a great revival of our Girls Go Sailing scheme, which we have run
 
 h6. What do we do?
 
+                      
 * We are offering our female members sailing opportunities on cruisers, dinghies and the club Hawk, running the sessions at varying times – some weekends, some weekdays, some evenings, throughout the year.
 * We encourage participation in shore-based theory sessions and offer knowledge and safety seminars through the winter and spring.
 * We are also planning some social evenings throughout the year.
@@ -55,6 +56,7 @@ As part of the RYA Steering the Course week highlighting women in sailing, the E
 
 h6. "Winter 2024 Seminars now published":https://files.exe-sailing-club.org/documents/GGS_2022/GGS_WinterSeminars2023.pdf 
 
+                      
 * *Thursday 7th December* - Christmas Dinner, meet at 6.30. Hear some experiences from the 2023 season.  Christmas dinner at 7.30pm.
 * *Friday 19th January 2024*, 7pm,Topic - Staying Safe on the Water whilst sailing a dinghy or yacht.  Using a VHF radio, ‘Tide, Wind, Approach’, having a Plan B.
 * *Friday 2nd February 2024,* 7pm, Topic - Health and Well Being on the Water and looking after each other.

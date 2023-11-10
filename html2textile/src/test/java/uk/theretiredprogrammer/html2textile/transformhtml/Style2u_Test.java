@@ -96,7 +96,7 @@ public class Style2u_Test extends TransformhtmlTest {
                                    span style="font-size:14pt;"
                                        "Getting afloat"
                    line number="9"
-                   p dir="auto"
+                   p dir="autox"
                        span style=""
                            u
                                strong

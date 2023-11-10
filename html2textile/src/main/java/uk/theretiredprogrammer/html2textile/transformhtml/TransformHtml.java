@@ -68,6 +68,12 @@ public class TransformHtml {
         transform(new StyleMerge());
         transform(new NullAttributeRemoval());
         transform(new BlankElementRemoval());
+        transform(new EmptyLiRemoval());
+        transform(new EmptyListRemoval());
+        // repeat in case there is an embeded empty list in an empty list 
+        transform(new EmptyLiRemoval());
+        transform(new EmptyListRemoval());
+        transform(new MergeLiAndFollowingBlockElement());
         transform(new RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements());
         transform(new BlockElementTrailingSpaceRemoval());
         transform(new ReplaceWithHeadings());

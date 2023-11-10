@@ -53,6 +53,22 @@ public abstract class DomModifications {
         return child.getNodeType() == ELEMENT_NODE && child.getNodeName().equals("span")
                 ? (Element) child : null;
     }
+    
+    boolean hasChildNodesSkippingLine(Element element) {
+        if (element.hasChildNodes()) {
+            NodeList children = element.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                Node child = children.item(i);
+                if (child.getNodeType() == TEXT_NODE) {
+                    return true;
+                }
+                if (child.getNodeType() == ELEMENT_NODE && (!child.getNodeName().equals("line"))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     Element getOnlyChildElementSkippingLine(Element element) {
         if (!element.hasChildNodes()) {
@@ -92,6 +108,18 @@ public abstract class DomModifications {
                     || name.equals("h4") || name.equals("h5") || name.equals("h6")
                     || name.equals("table") || name.equals("tbody") || name.equals("tr")
                     || name.equals("html") || name.equals("div") || name.equals("line");
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean isMergableBlockElement(Node node) {
+        if (node.getNodeType() == ELEMENT_NODE) {
+            String name = node.getNodeName();
+            return name.equals("p") || name.equals("div") 
+                    || name.equals("h1") || name.equals("h2") || name.equals("h3")
+                    || name.equals("h4") || name.equals("h5") || name.equals("h6");
+                    
         } else {
             return false;
         }

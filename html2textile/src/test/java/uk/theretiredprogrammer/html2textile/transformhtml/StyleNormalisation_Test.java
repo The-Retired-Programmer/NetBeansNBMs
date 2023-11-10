@@ -69,7 +69,7 @@ public class StyleNormalisation_Test extends TransformhtmlTest {
                        span style="text-decoration:underline;"
                            span style="font-family:arial,helvetica,sans-serif;font-size:14pt;"
                    line number="9"
-                   p dir="auto"
+                   p dir="autox"
                        span style="text-decoration:underline;font-family:arial,helvetica,sans-serif;font-size:12pt;"
                    line number="10"
                    p

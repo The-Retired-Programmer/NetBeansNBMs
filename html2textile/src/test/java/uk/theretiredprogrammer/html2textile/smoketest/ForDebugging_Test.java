@@ -55,39 +55,20 @@ Cost: tbc
 
 YOU NEED TO BRING
 
-* Sailing gear to include** Wetsuit
-** p. Buoyancy aid (minimum 50 Newtons)
-
-
-** p. Footwear (Grippy shoes that can get wet. Wetsuit boots or shoes, or trainers are fine, Plimsoles, Crocs or Wellies not ok)
-
-
-** p. Swim gear and/or rash vest for under the wetsuit
-
-
-** p. Waterproof jacket or spray top
-
-
-** p. Towel
-
-
-** p. Sun protection including suncream/sun hat
-
-
-** p. Warm hat for colder days
-
-
-** <div class="MsoListParagraphCxSpMiddle" >
-G14 Instructor Logbook/handbook prior to the course</div>
-
-** <div class="MsoListParagraphCxSpMiddle" >
-Notepad and pen</div>
-
+                      
+* Sailing gear to include
+** Wetsuit
+** Buoyancy aid (minimum 50 Newtons)
+** Footwear (Grippy shoes that can get wet. Wetsuit boots or shoes, or trainers are fine, Plimsoles, Crocs or Wellies not ok)
+** Swim gear and/or rash vest for under the wetsuit
+** Waterproof jacket or spray top
+** Towel
+** Sun protection including suncream/sun hat
+** Warm hat for colder days
+**(MsoListParagraphCxSpMiddle) G14 Instructor Logbook/handbook prior to the course
+**(MsoListParagraphCxSpMiddle) Notepad and pen
 ** Waterbottle
 ** Packed lunch (extra snacks/drinks available when club bar is open)
-
-
-* ** 
 
 
 
