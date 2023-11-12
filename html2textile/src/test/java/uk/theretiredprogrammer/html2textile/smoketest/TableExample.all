@@ -1,0 +1,207 @@
+textile:
+
+table(#dvds){border-collapse:collapse}. Great films on DVD employing Textile summary, caption, thead, tfoot, two tbody elements and colgroups
+|={font-size:140%;margin-bottom:15px}. DVDs with two Textiled tbody elements
+|:\3. 100 |{background:#ddd}|250||50|300|
+|^(header).
+|_. Title |_. Starring |_. Director |_. Writer |_. Notes |
+|~(footer).
+|\5=. This is the tfoot, centred |
+|-(toplist){background:#c5f7f6}.
+| _The Usual Suspects_ | Benicio Del Toro, Gabriel Byrne, Stephen Baldwin, Kevin Spacey | Bryan Singer | Chris McQuarrie | One of the finest films ever made |
+| _Se7en_ | Morgan Freeman, Brad Pitt, Kevin Spacey | David Fincher | Andrew Kevin Walker | Great psychological thriller |
+| _Primer_ | David Sullivan, Shane Carruth | Shane Carruth | Shane Carruth | Amazing insight into trust and human psychology through science fiction. Terrific! |
+| _District 9_ | Sharlto Copley, Jason Cope | Neill Blomkamp | Neill Blomkamp, Terri Tatchell | Social commentary layered on thick, but boy is it done well |
+|-(medlist){background:#e7e895;}.
+| _Arlington Road_ | Tim Robbins, Jeff Bridges | Mark Pellington | Ehren Kruger | Awesome study in neighbourly relations |
+| _Phone Booth_ | Colin Farrell, Kiefer Sutherland, Forest Whitaker | Joel Schumacher | Larry Cohen | Edge-of-the-seat stuff in this short but brilliantly executed thriller |
+
+html:
+
+<table id="dvds" style="border-collapse:collapse;" summary="Great films on DVD employing Textile summary, caption, thead, tfoot, two tbody elements and colgroups">
+	<caption style="font-size:140%;margin-bottom:15px;"><span class="caps">DVD</span>s with two Textiled tbody elements</caption>
+	<colgroup span="3" width="100">
+	<col style="background:#ddd;" />
+	<col width="250" />
+	<col />
+	<col width="50" />
+	<col width="300" />
+	</colgroup>
+	<thead class="header">
+		<tr>
+			<th>Title </th>
+			<th>Starring </th>
+			<th>Director </th>
+			<th>Writer </th>
+			<th>Notes </th>
+		</tr>
+	</thead>
+	<tfoot class="footer">
+		<tr>
+			<td colspan="5" style="text-align:center;">This is the tfoot, centred </td>
+		</tr>
+	</tfoot>
+	<tbody class="toplist" style="background:#c5f7f6;">
+		<tr>
+			<td> <em>The Usual Suspects</em> </td>
+			<td> Benicio Del Toro, Gabriel Byrne, Stephen Baldwin, Kevin Spacey </td>
+			<td> Bryan Singer </td>
+			<td> Chris McQuarrie </td>
+			<td> One of the finest films ever made </td>
+		</tr>
+		<tr>
+			<td> <em>Se7en</em> </td>
+			<td> Morgan Freeman, Brad Pitt, Kevin Spacey </td>
+			<td> David Fincher </td>
+			<td> Andrew Kevin Walker </td>
+			<td> Great psychological thriller </td>
+		</tr>
+		<tr>
+			<td> <em>Primer</em> </td>
+			<td> David Sullivan, Shane Carruth </td>
+			<td> Shane Carruth </td>
+			<td> Shane Carruth </td>
+			<td> Amazing insight into trust and human psychology through science fiction. Terrific! </td>
+		</tr>
+		<tr>
+			<td> <em>District 9</em> </td>
+			<td> Sharlto Copley, Jason Cope </td>
+			<td> Neill Blomkamp </td>
+			<td> Neill Blomkamp, Terri Tatchell </td>
+			<td> Social commentary layered on thick, but boy is it done well </td>
+		</tr>
+	</tbody>
+	<tbody class="medlist" style="background:#e7e895;">
+		<tr>
+			<td> <em>Arlington Road</em> </td>
+			<td> Tim Robbins, Jeff Bridges </td>
+			<td> Mark Pellington </td>
+			<td> Ehren Kruger </td>
+			<td> Awesome study in neighbourly relations </td>
+		</tr>
+		<tr>
+			<td> <em>Phone Booth</em> </td>
+			<td> Colin Farrell, Kiefer Sutherland, Forest Whitaker </td>
+			<td> Joel Schumacher </td>
+			<td> Larry Cohen </td>
+			<td> Edge-of-the-seat stuff in this short but brilliantly executed thriller </td>
+		</tr>
+	</tbody>
+</table>
+
+Example from race-officers-briefing (html)
+
+<table style="border: 0; margin-left: auto; margin-right: auto;">  <table class="table">
+                                                                   <colgroup span="4" width="25%" text-align: center;>
+                                                                        <col />
+                                                                        <col background-color: #dea55e; />
+                                                                        <col  />
+                                                                        <col background-color: #e9ae6d; />
+                                                                     </colgroup>
+                                                                    <thead class="tableheader"> inc background-color: #adadad; strong
+                                                                        <tr>
+                                                                        <th>Wind Direction</td>  
+                                                                        <th>Tide Direction</td>
+                                                                        <th>Preferred Course(s)</td>
+                                                                        <th>Preferred Start Line</td>
+                                                                        </tr>
+                                                                    </thead>
+<tbody>                                                             <tbody>
+<tr style="background-color: #adadad;">                             
+<td style="border: medium solid #000000;"><strong>Wind Direction</strong></td>  
+<td style="text-align: center;"><strong>Tide Direction</strong></td>
+<td style="text-align: center;"><strong>Preferred Course(s)</strong></td>
+<td style="text-align: center;"><strong>Preferred Start Line</strong></td>
+</tr>
+<tr>                                                                    <tr>
+<td style="border: medium solid #000000;" rowspan="2">NNW &lt; <strong>N</strong> &gt; NNE&nbsp;</td>
+                                                                        <td rowspan="2">NNW &lt; <strong>N</strong> &gt; NNE</td>
+<td style="background-color: #dea55e; text-align: center;">Flood</td>
+                                                                        <td>Flood</td>
+<td style="text-align: center;">4</td>
+<td style="background-color: #e9ae6d; text-align: center;">W</td>
+</tr>
+<tr>
+<td style="background-color: #dea55e; text-align: center;">Ebb</td>
+<td style="text-align: center;">3</td>
+<td style="background-color: #e9ae6d; text-align: center;">W</td>
+</tr>
+<tr>
+<td style="border: medium solid #000000;" rowspan="2">NNE &lt; <strong>NE</strong> &gt; ENE&nbsp;&nbsp;</td>
+<td style="background-color: #dea55e; text-align: center;">&nbsp;Flood</td>
+<td style="text-align: center;">1 or 4&nbsp;</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;W</td>
+</tr>
+<tr>
+<td style="background-color: #dea55e; text-align: center;">Ebb&nbsp;</td>
+<td style="text-align: center;">&nbsp;3</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;W</td>
+</tr>
+<tr>
+<td style="border: medium solid #000000;" rowspan="2">ENE &lt; <strong>E</strong> &gt; ESE&nbsp;&nbsp;</td>
+<td style="background-color: #dea55e; text-align: center;">Flood&nbsp;</td>
+<td style="text-align: center;">&nbsp;1 or 4</td>
+<td style="background-color: #e9ae6d; text-align: center;">W&nbsp;</td>
+</tr>
+<tr>
+<td style="background-color: #dea55e; text-align: center;">&nbsp;Ebb</td>
+<td style="text-align: center;">&nbsp;3</td>
+<td style="background-color: #e9ae6d; text-align: center;">W&nbsp;</td>
+</tr>
+<tr>
+<td style="border: medium solid #000000;" rowspan="2">ESE &lt; <strong>SE</strong> &gt; SSE&nbsp;&nbsp;</td>
+<td style="background-color: #dea55e; text-align: center;">Flood&nbsp;</td>
+<td style="text-align: center;">&nbsp;1</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;G</td>
+</tr>
+<tr>
+<td style="background-color: #dea55e; text-align: center;">&nbsp;Ebb</td>
+<td style="text-align: center;">&nbsp;3</td>
+<td style="background-color: #e9ae6d; text-align: center;">G or W&nbsp;</td>
+</tr>
+<tr>
+<td style="border: medium solid #000000;" rowspan="2">SSE &lt; <strong>S</strong> &gt; SSW&nbsp;&nbsp;</td>
+<td style="background-color: #dea55e; text-align: center;">Flood&nbsp;</td>
+<td style="text-align: center;">1, 2 or 4&nbsp;</td>
+<td style="background-color: #e9ae6d; text-align: center;">G&nbsp;</td>
+</tr>
+<tr>
+<td style="background-color: #dea55e; text-align: center;">Ebb&nbsp;</td>
+<td style="text-align: center;">&nbsp;3</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;G</td>
+</tr>
+<tr>
+<td style="border: medium solid #000000;" rowspan="2">SSW &lt; <strong>SW</strong> &gt; WSW&nbsp;&nbsp;</td>
+<td style="background-color: #dea55e; text-align: center;">&nbsp;Flood</td>
+<td style="text-align: center;">2 or 4&nbsp;</td>
+<td style="background-color: #e9ae6d; text-align: center;">W&nbsp;</td>
+</tr>
+<tr>
+<td style="background-color: #dea55e; text-align: center;">&nbsp;Ebb</td>
+<td style="text-align: center;">&nbsp;3</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;W</td>
+</tr>
+<tr>
+<td style="border: medium solid #000000;" rowspan="2">WSW &lt; <strong>W</strong> &gt; WNW&nbsp;&nbsp;</td>
+<td style="background-color: #dea55e; text-align: center;">Flood&nbsp;</td>
+<td style="text-align: center;">4&nbsp;</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;W</td>
+</tr>
+<tr>
+<td style="background-color: #dea55e; text-align: center;">&nbsp;Ebb</td>
+<td style="text-align: center;">&nbsp;3</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;W</td>
+</tr>
+<tr>
+<td style="border: medium solid #000000;" rowspan="2">WNW &lt; <strong>NW</strong> &gt; NNW&nbsp;&nbsp;</td>
+<td style="background-color: #dea55e; text-align: center;">Flood&nbsp;</td>
+<td style="text-align: center;">&nbsp;2 or 4</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;W</td>
+</tr>
+<tr>
+<td style="background-color: #dea55e; text-align: center;">&nbsp;Ebb</td>
+<td style="text-align: center;">&nbsp;3</td>
+<td style="background-color: #e9ae6d; text-align: center;">&nbsp;W</td>
+</tr>
+</tbody>
+</table>

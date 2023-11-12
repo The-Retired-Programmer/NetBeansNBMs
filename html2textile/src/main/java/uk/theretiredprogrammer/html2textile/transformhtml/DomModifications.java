@@ -274,6 +274,32 @@ public abstract class DomModifications {
         Element newElement = createElementNode(element.getOwnerDocument(), newname, null, element.getChildNodes());
         element.appendChild(newElement);
     }
+    
+    Element insertChildElement(Element parent, String tagname, Attribute[] attributes) {
+        Element element = parent.getOwnerDocument().createElement(tagname);
+        for (Attribute attribute : attributes) {
+            element.setAttribute(attribute.name, attribute.value);
+        }
+        parent.insertBefore(element,parent.getFirstChild());
+        return element;
+    }
+    
+    Element insertChildElementAtEnd(Element parent, String tagname, Attribute[] attributes) {
+        Element element = parent.getOwnerDocument().createElement(tagname);
+        for (Attribute attribute : attributes) {
+            element.setAttribute(attribute.name, attribute.value);
+        }
+        parent.appendChild(element);
+        return element;
+    }
+    
+    Element createElement(Element element, String tagname) {
+        return createElementNode(element.getOwnerDocument(), tagname, element.getAttributes(),null);
+    }
+    
+    Element createElementAttachChildren(Element element, String tagname) {
+        return createElementNode(element.getOwnerDocument(), tagname, element.getAttributes(),element.getChildNodes());
+    }
 
     private Element createElementNode(Document doc, String tagname, NamedNodeMap attributes, NodeList children) {
         Element element = doc.createElement(tagname);
@@ -314,5 +340,16 @@ public abstract class DomModifications {
 
     void replaceAttributeValue(Element element, String attributename, String newvalue) {
         element.setAttribute(attributename, newvalue);
+    }
+    
+    public class Attribute {
+        
+        public final String name;
+        public final String value;
+        
+        public Attribute(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
     }
 }
