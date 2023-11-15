@@ -13,6 +13,9 @@ REMOVE dir="auto"
 #
 # filter and other actions on all rules embedded in a style attribute
 #
+[HTML_ELEMENT_PROCESSING]
+REMOVE ELEMENT header
+REMOVE ELEMENT section
 [HTML_STYLE_PROCESSING]
 REMOVE PATTERN font-family:[^;]*;
 REMOVE font-size:12pt;

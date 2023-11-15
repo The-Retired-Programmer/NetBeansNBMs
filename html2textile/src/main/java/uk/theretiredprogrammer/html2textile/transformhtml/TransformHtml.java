@@ -49,8 +49,7 @@ public class TransformHtml {
 
     public void transform(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
         transform(new StyleNormalisation());
-        transform(new HeaderRemoval());
-        transform(new SectionRemoval());
+        transform(new ElementRulesProcessing(ruleset,ignoresystemrules));
         transform(new DivRlStyleRemoval());
         transform(new DivReduction());
         transform(new StyleReduction(ruleset,ignoresystemrules));

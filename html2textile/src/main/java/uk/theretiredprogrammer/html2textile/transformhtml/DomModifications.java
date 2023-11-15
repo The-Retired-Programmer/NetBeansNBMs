@@ -16,7 +16,6 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;

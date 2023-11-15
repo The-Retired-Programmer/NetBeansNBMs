@@ -94,11 +94,56 @@ public class RegexTransformationRuleSet {
         return line;
     }
 
-    private class Rule {
+    public static enum TransformationActionType {
+        NONE, REMOVE, REMOVEELEMENT, REPLACE
+    };
+
+    public TransformationAction getAction(String matchkey, String sectionkey, boolean ignoresystemrules) {
+        for (Rule rule : transformations) {
+            if (sectionkey.equals(rule.sectionkey) && (ignoresystemrules ? (!rule.issystem) : true) && matchkey.equals(rule.match)) {
+                return switch (rule.rulename) {
+                    case REMOVE ->
+                        new TransformationAction(rule.onlyelement ? TransformationActionType.REMOVEELEMENT : TransformationActionType.REMOVE, rule.match, rule.replacement);
+                    case REPLACE ->
+                        new TransformationAction(TransformationActionType.REPLACE, rule.match, rule.replacement);
+                    default ->
+                        new TransformationAction();
+                };
+            }
+        }
+        return new TransformationAction();
+    }
+
+    public class TransformationAction {
 
         public final String match;
         public final String replacement;
+        public final TransformationActionType type;
+
+        public TransformationAction(TransformationActionType type, String match, String replacement) {
+            this.type = type;
+            this.match = match;
+            this.replacement = replacement;
+        }
+
+        public TransformationAction() {
+            this.type = TransformationActionType.NONE;
+            this.match = "";
+            this.replacement = "";
+        }
+    }
+
+    private static enum RuleName {
+        REMOVE, REPLACE
+    };
+
+    private class Rule {
+
+        public final RuleName rulename;
+        public final String match;
+        public final String replacement;
         public final boolean isregex;
+        public final boolean onlyelement;
         public final boolean issystem;
         public final String sectionkey;
 
@@ -107,18 +152,31 @@ public class RegexTransformationRuleSet {
             this.sectionkey = sectionkey;
             rule = rule.trim();
             if (rule.startsWith("REMOVE PATTERN ")) {
+                rulename = RuleName.REMOVE;
                 match = trimquotes(rule.substring(14).trim());
                 replacement = "";
                 isregex = true;
+                onlyelement = false;
+                return;
+            }
+            if (rule.startsWith("REMOVE ELEMENT ")) {
+                rulename = RuleName.REMOVE;
+                match = trimquotes(rule.substring(14).trim());
+                replacement = "";
+                isregex = false;
+                onlyelement = true;
                 return;
             }
             if (rule.startsWith("REMOVE ")) {
+                rulename = RuleName.REMOVE;
                 match = trimquotes(rule.substring(6).trim());
                 replacement = "";
                 isregex = false;
+                onlyelement = false;
                 return;
             }
             if (rule.startsWith("REPLACE PATTERN ")) {
+                rulename = RuleName.REPLACE;
                 int withpos = rule.indexOf(" WITH ");
                 if (withpos == -1) {
                     throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE PATTERN \" rule - " + rule);
@@ -126,9 +184,11 @@ public class RegexTransformationRuleSet {
                 match = trimquotes(rule.substring(15, withpos + 1).trim());
                 replacement = trimquotes(rule.substring(withpos + 5).trim());
                 isregex = true;
+                onlyelement = false;
                 return;
             }
             if (rule.startsWith("REPLACE ")) {
+                rulename = RuleName.REPLACE;
                 int withpos = rule.indexOf(" WITH ");
                 if (withpos == -1) {
                     throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE \" rule - " + rule);
@@ -136,8 +196,10 @@ public class RegexTransformationRuleSet {
                 match = trimquotes(rule.substring(7, withpos + 1).trim());
                 replacement = trimquotes(rule.substring(withpos + 5).trim());
                 isregex = false;
+                onlyelement = false;
                 return;
             }
+
             throw new IOException("Bad Rule definition: unknown command - " + rule);
         }
 
