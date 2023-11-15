@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
 public class EmptyListRemoval_Test extends TransformhtmlTest {
 
@@ -29,7 +30,8 @@ public class EmptyListRemoval_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("emptylistremoval");
+        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet();
+        TransformHtml transformer = super.createtransformation("emptylistremoval", ruleset);
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new EmptyListRemoval());
@@ -40,7 +42,7 @@ public class EmptyListRemoval_Test extends TransformhtmlTest {
     }
 
     private String expected() {
-        return  """
+        return """
                 html
                     line number="1"
                     line number="2"

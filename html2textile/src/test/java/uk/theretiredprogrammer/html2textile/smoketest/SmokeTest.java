@@ -28,6 +28,7 @@ import javax.xml.transform.TransformerException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.ErrHandler;
+import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
@@ -47,12 +48,13 @@ public class SmokeTest {
         try ( PrintWriter errwriter = new PrintWriter(System.err)) {
             ErrHandler err = new ErrHandler((s) -> errwriter.println(s));
             String s2;
+            RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet();
             InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/" + inputresourcefilename);
             TransformHtmlText texttransformer = new TransformHtmlText(new InputStreamReader(is));
             texttransformer.rootWrap("html");
-            try ( Reader wrapped = texttransformer.transform()) {
+            try ( Reader wrapped = texttransformer.transform(ruleset, false)) {
                 TransformHtml transformer = new TransformHtml(wrapped);
-                transformer.transform();
+                transformer.transform(ruleset, false);
                 transformer.writeHtml(new FileWriter("/home/richard/" + outputhtmlfilename));
                 //
                 StringWriter swriter = new StringWriter();
@@ -64,7 +66,7 @@ public class SmokeTest {
                 StringWriter s2writer = new StringWriter();
                 PrintWriter out = new PrintWriter(s2writer);
                 TransformTextileText textiletransformer = new TransformTextileText(swriter, out);
-                textiletransformer.transform();
+                textiletransformer.transform(ruleset, false);
                 textiletransformer.save();
 
                 PrintWriter out2 = new PrintWriter(new FileWriter("/home/richard/" + outputtextilefilename));

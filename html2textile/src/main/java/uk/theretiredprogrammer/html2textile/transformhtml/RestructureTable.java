@@ -121,9 +121,11 @@ public class RestructureTable extends DomModifications {
     }
 
     private Element renameasthead(Element firsttr) {
-        Element thead = firsttr.getOwnerDocument().createElement("thead");
-        Element theadtr = createElement(firsttr, "tr");
-        thead.appendChild(theadtr);
+        Element thead = createElement("thead", firsttr);
+        Element theadtr = createElement("tr",firsttr);
+        appendAttributes(theadtr,firsttr.getAttributes());
+        appendChild(thead, theadtr);
+        
         NodeList children = firsttr.getChildNodes();
         if (children != null) {
             if (children.getLength() != 0) {
@@ -131,8 +133,10 @@ public class RestructureTable extends DomModifications {
                 while (child != null) {
                     Node nextchild = child.getNextSibling();
                     if (child.getNodeType() == ELEMENT_NODE && child.getNodeName().equals("td")) {
-                        Element th = createElementAttachChildren((Element) child, "th");
-                        theadtr.appendChild(th);
+                        Element th = createElement("th", firsttr);
+                        appendAttributes(th, child.getAttributes());
+                        appendChildren(th,child.getChildNodes());
+                        appendChild(theadtr, th);
                     }
                     child = nextchild;
                 }
@@ -142,11 +146,13 @@ public class RestructureTable extends DomModifications {
     }
 
     private void insertcolgroup(Element table) {
-        Element colgroup = insertChildElement(table, "colgroup",
-                new Attribute[]{new Attribute("span", Integer.toString(colcount)), new Attribute("style", "width:" + 100 / colcount + "%;")}
-        );
+        Element colgroup = createElement("colgroup", table);
+        appendAttributes(colgroup, new Attribute[]{new Attribute("style", "width:" + 100 / colcount + "%;")});
+        insertBeforeNode(table.getFirstChild(),colgroup);
         for (int i = 0; i < colcount; i++) {
-            insertChildElementAtEnd((Element) colgroup, "col", buildcommonstyleattribute(stylerules[i]));
+            Element col = createElement("col", colgroup);
+            appendAttributes(col,buildcommonstyleattribute(stylerules[i]));
+            appendChild(colgroup, col);
         }
     }
 
@@ -200,50 +206,73 @@ public class RestructureTable extends DomModifications {
         return colspan.isEmpty() ? 1 : Integer.parseUnsignedInt(colspan);
     }
 
+    private int getrowspan(Element element) {
+        String rowspan = element.getAttribute("rowspan");
+        return rowspan.isEmpty() ? 1 : Integer.parseUnsignedInt(rowspan);
+    }
+
     private void extractcommonstylerules(Element element, List<String>[] stylerules, int colcount) {
+        int[] rowspancounters = new int[colcount];
         NodeList records = element.getElementsByTagName("tr");
         for (int i = 0; i < records.getLength(); i++) {
             Element record = (Element) records.item(i);
             NodeList columns = record.getElementsByTagName("td");
             int tdcount = 0;
             for (int j = 0; j < colcount;) {
-                Element column = (Element) columns.item(tdcount);
-                int colspan = getcolspan(column);
-                while (colspan > 0) {
-                    if (i == 0) {
-                        loadstylerules(column, j, stylerules);
-                    } else {
-                        reducestylerules(column, j, stylerules);
+                if (rowspancounters[j] > 0) {
+                    rowspancounters[j++]--;
+                } else {
+                    Element column = (Element) columns.item(tdcount);
+                    int rowspan = getrowspan(column);
+                    int colspan = getcolspan(column);
+                    while (colspan > 0) {
+                        if (i == 0) {
+                            loadstylerules(column, j, stylerules);
+                        } else {
+                            reducestylerules(column, j, stylerules);
+                        }
+                        rowspancounters[j] = rowspan - 1;
+                        j++;
+                        colspan--;
                     }
-                    j++;
-                    colspan--;
-                }
-                tdcount++;
-                if (tdcount >= columns.getLength()) {
-                    break;
+                    tdcount++;
+                    if (tdcount >= columns.getLength()) {
+                        break;
+                    }
                 }
             }
         }
     }
 
     private void removecommonstylerulesfromtd(Element element, List<String>[] stylerules, int colcount) {
+        int[] rowspancounters = new int[colcount];
         NodeList records = element.getElementsByTagName("tr");
         for (int i = 0; i < records.getLength(); i++) {
             Element record = (Element) records.item(i);
             NodeList columns = record.getElementsByTagName("td");
             int tdcount = 0;
             for (int j = 0; j < colcount;) {
-                Element column = (Element) columns.item(tdcount);
-                int colspan = getcolspan(column);
-                if (colspan == 1) { // dont remove when colspans
-                    for (String rule : stylerules[j]) {
-                        removestylerule(column, rule);
+                if (rowspancounters[j] > 0) {
+                    rowspancounters[j++]--;
+                } else {
+                    Element column = (Element) columns.item(tdcount);
+                    int rowspan = getrowspan(column);
+                    int colspan = getcolspan(column);
+                    if (colspan == 1) { // dont remove when colspans actually defined
+                        for (String rule : stylerules[j]) {
+                            removestylerule(column, rule);
+                        }
+                        rowspancounters[j++] = rowspan - 1;
+                    } else {
+                        while (colspan > 0) {
+                            rowspancounters[j++] = rowspan - 1;
+                            colspan--;
+                        }
                     }
-                }
-                j+=colspan;
-                tdcount++;
-                if (tdcount >= columns.getLength()) {
-                    break;
+                    tdcount++;
+                    if (tdcount >= columns.getLength()) {
+                        break;
+                    }
                 }
             }
         }
@@ -281,10 +310,13 @@ public class RestructureTable extends DomModifications {
         }
         StringBuilder sb = new StringBuilder();
         for (String rule : stylerules) {
-            sb.append(rule);
-            sb.append(';');
+            if (!rule.isBlank()) {
+                sb.append(rule);
+                sb.append(';');
+            }
         }
-        return new Attribute[]{new Attribute("style", sb.toString())};
+        String stylevalue = sb.toString();
+        return stylevalue.isBlank() ? new Attribute[0] : new Attribute[]{new Attribute("style", stylevalue)};
     }
 
     private void loadstylerules(Element column, int colno, List<String>[] stylerules) {

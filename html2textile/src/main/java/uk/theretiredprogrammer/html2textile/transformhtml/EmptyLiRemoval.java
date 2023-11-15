@@ -21,7 +21,8 @@ public class EmptyLiRemoval extends DomModifications {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("li") && (!hasChildNodesSkippingLine(element))) {
-            removeElement(element);
+            insertBeforeNode(element,element.getChildNodes());
+            removeNode(element);
             return ResumeAction.RESUME_FROM_PARENT;
         }
         return ResumeAction.RESUME_FROM_NEXT;

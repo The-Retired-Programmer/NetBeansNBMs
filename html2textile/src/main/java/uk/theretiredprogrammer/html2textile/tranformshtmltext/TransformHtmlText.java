@@ -16,7 +16,6 @@
 package uk.theretiredprogrammer.html2textile.tranformshtmltext;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -36,23 +35,16 @@ public class TransformHtmlText {
 //
     private final BufferedReader original;
     private String rootname = "";
-    private final RegexTransformationRuleSet ruleset;
-
-    public TransformHtmlText(Reader original, File datainput, boolean ignoresystemrules) throws IOException {
-        this.original = new BufferedReader(original);
-        ruleset = new RegexTransformationRuleSet(datainput, "htmlrules", ignoresystemrules);
-    }
 
     public TransformHtmlText(Reader original) throws IOException {
         this.original = new BufferedReader(original);
-        ruleset = new RegexTransformationRuleSet("htmlrules");
     }
 
     public void rootWrap(String name) {
         this.rootname = name;
     }
 
-    public Reader transform() throws IOException {
+    public Reader transform(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
         StringWriter wrapped = new StringWriter();
         if (rootname.isEmpty()) {
             copylines(original, wrapped);
@@ -61,7 +53,7 @@ public class TransformHtmlText {
             copylines(original, wrapped);
             wrapped.write("</" + rootname + ">");
         }
-        return new StringReader(ruleset.transform(wrapped.toString()));
+        return new StringReader(ruleset.transform(wrapped.toString(), "HTML_PREPROCESSING", ignoresystemrules));
     }
 
     private void copylines(BufferedReader from, Writer to) throws IOException {

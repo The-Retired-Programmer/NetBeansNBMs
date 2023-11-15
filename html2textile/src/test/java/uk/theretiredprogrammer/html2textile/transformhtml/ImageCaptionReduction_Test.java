@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
 public class ImageCaptionReduction_Test extends TransformhtmlTest {
 
@@ -29,7 +30,8 @@ public class ImageCaptionReduction_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("imagecaptionreduction");
+        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet();
+        TransformHtml transformer = super.createtransformation("imagecaptionreduction", ruleset);
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new ImageCaptionReduction());
@@ -60,7 +62,6 @@ public class ImageCaptionReduction_Test extends TransformhtmlTest {
                     line number="7"
                     img alt="image" src="image"
                     line number="8"
-                    br
                     line number="9"
                     b
                         "Hello World"
@@ -70,7 +71,6 @@ public class ImageCaptionReduction_Test extends TransformhtmlTest {
                     line number="12"
                     img alt="image" src="image"
                     line number="13"
-                    br
                     line number="14"
                 line number="15"
                 p

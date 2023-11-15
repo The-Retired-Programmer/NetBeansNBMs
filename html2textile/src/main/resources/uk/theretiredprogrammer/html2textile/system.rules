@@ -1,6 +1,28 @@
 #
-# Rules for final processing of Textile files
-# =================================================
+# =================================
+# Rules for Html2Textile processing
+# =================================
+#
+# preprocessing step - handle any textual edits on the html document
+#
+[HTML_PREPROCESSING]
+REPLACE &nbsp; WITH " " 
+REPLACE &lsquo; WITH '
+REPLACE &rsquo; WITH '
+REMOVE dir="auto"
+#
+# filter and other actions on all rules embedded in a style attribute
+#
+[HTML_STYLE_PROCESSING]
+REMOVE PATTERN font-family:[^;]*;
+REMOVE font-size:12pt;
+REMOVE font-size:10pt;
+REMOVE color:#000000;
+REMOVE background-color:inherit;
+#
+# final edits on the textile document after its translations
+#
+[TEXTILE_POSTPROCESSING]
 #
 # process the three text-align styles associated with headings to native Textile
 #

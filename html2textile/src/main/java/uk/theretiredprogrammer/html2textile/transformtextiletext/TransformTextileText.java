@@ -16,7 +16,6 @@
 package uk.theretiredprogrammer.html2textile.transformtextiletext;
 
 import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -30,16 +29,8 @@ public class TransformTextileText {
 //
     private final String[] lines;
     private final PrintWriter output;
-    private final RegexTransformationRuleSet ruleset;
 
-    public TransformTextileText(StringWriter input, PrintWriter output, File datainput, boolean ignoresystemrules) throws IOException {
-        ruleset = new RegexTransformationRuleSet(datainput, "textilerules", ignoresystemrules);
-        lines = getLines(input);
-        this.output = output;
-    }
-    
     public TransformTextileText(StringWriter input, PrintWriter output) throws IOException {
-        ruleset = new RegexTransformationRuleSet("textilerules");
         lines = getLines(input);
         this.output = output;
     }
@@ -57,9 +48,9 @@ public class TransformTextileText {
         return textin.split("\n");
     }
 
-    public void transform() throws IOException {
+    public void transform(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
         for (int i = 0; i < lines.length; i++) {
-            lines[i] = ruleset.transform(lines[i]);
+            lines[i] = ruleset.transform(lines[i], "TEXTILE_POSTPROCESSING", ignoresystemrules);
         }
     }
 }

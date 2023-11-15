@@ -47,7 +47,10 @@ public class ReplaceWithHeadings extends DomModifications {
         String headername = headerpatternmatch(elements);
         if (headername != null) {
             removefontsizestylerule(element);
-            replaceElement(element, headername, nextlevelelement);
+            Element h = createElement(headername, element);
+            appendAttributes(h, element.getAttributes());
+            appendChildren(h,  nextlevelelement.getChildNodes());
+            replaceNode(element, h);
         }
         return headername == null ? ResumeAction.RESUME_FROM_NEXT : ResumeAction.RESUME_FROM_PARENT;
     }
@@ -74,7 +77,7 @@ public class ReplaceWithHeadings extends DomModifications {
         if (newrules.isBlank()) {
             removeAttribute(element, "style");
         } else {
-            replaceAttributeValue(element, "style", newrules);
+            replaceAttribute(element, new Attribute("style", newrules));
         }
     }
 

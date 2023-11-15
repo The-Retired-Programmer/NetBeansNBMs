@@ -31,7 +31,8 @@ public class ListConcatonation extends DomModifications {
             Element sibling = nextElementSiblingSkippingLine(element);
             if (sibling != null && sibling.getTagName().equals(listtag)) {
                 if (!element.hasAttributes() && !sibling.hasAttributes()) {
-                    removeElementMoveChildrenTo((Element) sibling, element);
+                    appendChildren(element, sibling.getChildNodes());
+                    removeNode(sibling);
                     return ResumeAction.RESUME_FROM_SELF;
                 }
             }

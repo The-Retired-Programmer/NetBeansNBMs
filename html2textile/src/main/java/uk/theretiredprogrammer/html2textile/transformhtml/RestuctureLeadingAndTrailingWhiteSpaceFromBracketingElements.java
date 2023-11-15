@@ -51,7 +51,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements extend
                 } else {
                     firstchild.setNodeValue(remainingtext);
                 }
-                insertTextBefore(element, text.substring(0, wslength));
+                insertBeforeNode(element, text.substring(0, wslength));
                 return true;
             }
         }
@@ -72,7 +72,7 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements extend
                 } else {
                     lastchild.setNodeValue(remainingtext);
                 }
-                insertTextAfter(element, text.substring(trailingstrippedtextlength));
+                insertAfterNode(element, text.substring(trailingstrippedtextlength));
                 return true;
             }
         }

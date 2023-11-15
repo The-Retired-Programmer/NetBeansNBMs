@@ -21,10 +21,10 @@ public class HeaderRemoval extends DomModifications {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("header")) {
-            removeElement(element);
+            insertBeforeNode(element, element.getChildNodes());
+            removeNode(element);
             return ResumeAction.RESUME_FROM_PARENT;
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }
-
 }

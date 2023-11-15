@@ -15,28 +15,27 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
-import java.io.File;
 import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
-public class StyleReduction extends DomModificationsWithRules {
+public class StyleReduction extends DomModifications {
 
-    public StyleReduction(File input, String name, boolean ignoresystemrules) throws IOException {
-        super(input, name, ignoresystemrules);
-    }
-    
-    public StyleReduction(String name) throws IOException {
-        super(name);
+    private final boolean ignoresystemrules;
+    private final RegexTransformationRuleSet ruleset;
+
+    public StyleReduction(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
+        this.ruleset = ruleset;
+        this.ignoresystemrules = ignoresystemrules;
     }
 
-    public ResumeAction testElementAndModify(Element element, RegexTransformationRuleSet ruleset) {
+    public ResumeAction testElementAndModify(Element element) {
         NamedNodeMap attributes = element.getAttributes();
         Node style = attributes.getNamedItem("style");
         if (style != null) {
-            style.setNodeValue(ruleset.transform(style.getNodeValue()));
+            style.setNodeValue(ruleset.transform(style.getNodeValue(), "HTML_STYLE_PROCESSING", ignoresystemrules));
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }

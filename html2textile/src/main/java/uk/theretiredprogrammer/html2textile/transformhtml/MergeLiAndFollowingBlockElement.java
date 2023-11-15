@@ -24,7 +24,9 @@ public class MergeLiAndFollowingBlockElement extends DomModifications {
         if (element.getTagName().equals("li")) {
             Element child = getOnlyChildElementSkippingLine(element);
             if (child != null && isMergableBlockElement(child)) {
-                mergeElementsRemovingChild(element, child);
+                mergeAttributes(child, element);
+                insertBeforeNode(child, child.getChildNodes());
+                removeNode(child);
                 return ResumeAction.RESUME_FROM_SELF;
             }
         }

@@ -23,11 +23,13 @@ public class NullSpanRemoval extends DomModifications {
         if (element.getTagName().equals("span")) {
             String stylevalue = getOnlyAttribute(element, "style");
             if (stylevalue != null && stylevalue.isBlank()) {
-                removeElement(element);
+                insertBeforeNode(element, element.getChildNodes());
+                removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             }
             if (!element.hasAttributes()) {
-                removeElement(element);
+                insertBeforeNode(element, element.getChildNodes());
+                removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             }
         }

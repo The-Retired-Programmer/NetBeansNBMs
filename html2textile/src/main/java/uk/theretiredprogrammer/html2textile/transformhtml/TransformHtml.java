@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
 public class TransformHtml {
 
@@ -46,21 +47,13 @@ public class TransformHtml {
         root = newInstance().newDocumentBuilder().parse(new InputSource(input)).getDocumentElement();
     }
 
-    public void transform() throws IOException {
-        transform((File) null, false);
-    }
-
-    public void transform(File inputfile, boolean ignoresystemrules) throws IOException {
+    public void transform(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
         transform(new StyleNormalisation());
         transform(new HeaderRemoval());
         transform(new SectionRemoval());
         transform(new DivRlStyleRemoval());
         transform(new DivReduction());
-        if (inputfile == null) {
-            transform(new StyleReduction("stylerules"));
-        } else {
-            transform(new StyleReduction(inputfile, "stylerules", ignoresystemrules));
-        }
+        transform(new StyleReduction(ruleset,ignoresystemrules));
         transform(new Style2u());
         transform(new Style2strong());
         transform(new SpanCloakRemoval());
@@ -83,6 +76,7 @@ public class TransformHtml {
         transform(new MergeTextSegments());
         transform(new ImageCaptionReduction());
         transform(new ImageWidthConcatonation());
+        transform(new RestructureTable());
     }
 
     public void writeHtml(Writer output) throws TransformerException {

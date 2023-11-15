@@ -165,23 +165,102 @@ public abstract class DomModifications {
     //
     // Dom manipulation methods
     //
-    void insertIntoStyle(Element element, String rule) {
+    
+    Element createElement(String tagname, Element anydocumentelement) {
+        return anydocumentelement.getOwnerDocument().createElement(tagname);
+    }
+    
+    void appendChildren(Element parent, NodeList children) {
+        if (children != null) {
+            if (children.getLength() != 0) {
+                Node child = children.item(0);
+                while (child != null) {
+                    Node nextchild = child.getNextSibling();
+                    parent.appendChild(child);
+                    child = nextchild;
+                }
+            }
+        }
+    }
+    
+    void appendChild(Node parent, Node child) {
+        parent.appendChild(child);
+    }
+    
+    void insertBeforeNode(Node node, Node insert) {
+        node.getParentNode().insertBefore(insert, node);
+    }
+    
+    void insertBeforeNode(Node node, NodeList inserts) {
+        Node parent = node.getParentNode();
+        Node child = inserts.item(0);
+        while (child != null) {
+            Node nextchild = child.getNextSibling();
+            parent.insertBefore(child, node);
+            child = nextchild;
+        }
+    }
+
+    void insertAfterNode(Node node, Node insert) {
+        node.getParentNode().insertBefore(insert, node.getNextSibling());
+    }
+
+    void insertBeforeNode(Node node, String insert) {
+        insertBeforeNode(node, node.getOwnerDocument().createTextNode(insert));
+    }
+
+    void insertAfterNode(Node node, String insert) {
+        insertAfterNode(node, node.getOwnerDocument().createTextNode(insert));
+    }
+    
+    void replaceNode(Node oldnode, Node newnode) {
+        Node parent = oldnode.getParentNode();
+        parent.insertBefore(newnode, oldnode);
+        parent.removeChild(oldnode);
+    }
+
+    void removeNode(Node node) {
+        node.getParentNode().removeChild(node);
+    }
+    
+     void appendAttributes(Element element, Attribute[] attributes) {
+        for (Attribute attribute : attributes) {
+            element.setAttribute(attribute.name, attribute.value);
+        }
+    }
+    
+    void appendAttributes(Element element, NamedNodeMap attributes) {
+        if (attributes != null) {
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attribute = attributes.item(i);
+                element.setAttribute(attribute.getNodeName(), attribute.getNodeValue());
+            }
+        }
+    }
+    
+    void insertIntoStyleAttribute(Element element, String rule) {
         String style = element.getAttribute("style");
         element.setAttribute("style", style == null ? rule : style + rule);
     }
 
-    void mergeElementsRemovingChild(Element element, Element child) {
-        mergeAttributes(element, child);
-        removeElement(child);
+
+    void removeAttribute(Element element, String attributename) {
+        element.removeAttribute(attributename);
+    }
+    
+    void removeAttributes(Element element) {
+        while (element.hasAttributes()) {
+            NamedNodeMap attributes = element.getAttributes();
+            attributes.removeNamedItem(attributes.item(0).getNodeName());
+        }
     }
 
-    void mergeElementsRemovingElement(Element element, Element child) {
-        mergeAttributes(element, child);
-        moveAttributes(element, child);
-        removeElement(element);
+    void replaceAttribute(Element element, Attribute replacement) {
+        element.setAttribute(replacement.name, replacement.value);
     }
-
-    private void mergeAttributes(Element parent, Element child) {
+    
+    
+    void mergeAttributes(Element child, Element target) {
         if (child.hasAttributes()) {
             NamedNodeMap attributes = child.getAttributes();
             for (int i = 0; i < attributes.getLength(); i++) {
@@ -189,158 +268,26 @@ public abstract class DomModifications {
                 String attrname = attr.getNodeName();
                 switch (attrname) {
                     case "class" -> {
-                        if (parent.hasAttribute(attrname)) {
-                            parent.setAttribute(attrname, parent.getAttribute(attrname) + ' ' + attr.getNodeValue());
+                        if (target.hasAttribute(attrname)) {
+                            target.setAttribute(attrname, target.getAttribute(attrname) + ' ' + attr.getNodeValue());
                         } else {
-                            parent.setAttribute(attrname, attr.getNodeValue());
+                            target.setAttribute(attrname, attr.getNodeValue());
                         }
                     }
                     case "style" -> {
-                        if (parent.hasAttribute(attrname)) {
-                            parent.setAttribute(attrname, parent.getAttribute(attrname) + attr.getNodeValue());
+                        if (target.hasAttribute(attrname)) {
+                            target.setAttribute(attrname, target.getAttribute(attrname) + attr.getNodeValue());
                         } else {
-                            parent.setAttribute(attrname, attr.getNodeValue());
+                            target.setAttribute(attrname, attr.getNodeValue());
                         }
                     }
                     default ->
-                        parent.setAttribute(attrname, attr.getNodeValue());
+                        target.setAttribute(attrname, attr.getNodeValue());
                 }
             }
         }
     }
-
-    private void moveAttributes(Element from, Element to) {
-        clearAttributes(to);
-        copyAttributes(from, to);
-    }
-
-    private void clearAttributes(Element element) {
-        while (element.hasAttributes()) {
-            NamedNodeMap attributes = element.getAttributes();
-            attributes.removeNamedItem(attributes.item(0).getNodeName());
-        }
-    }
-
-    private void copyAttributes(Element from, Element to) {
-        if (from.hasAttributes()) {
-            NamedNodeMap attributes = from.getAttributes();
-            for (int i = 0; i < attributes.getLength(); i++) {
-                Node attr = attributes.item(i);
-                to.setAttribute(attr.getNodeName(), attr.getNodeValue());
-            }
-        }
-    }
-
-    void removeElement(Element element) {
-        Node parent = element.getParentNode();
-        if (element.hasChildNodes()) {
-            Node child = element.getFirstChild();
-            while (child != null) {
-                Node nextchild = child.getNextSibling();
-                parent.insertBefore(child, element);
-                child = nextchild;
-            }
-        }
-        parent.removeChild(element);
-    }
-
-    void removeElementMoveChildrenTo(Element toremove, Element toinsert) {
-        if (toremove.hasChildNodes()) {
-            Node child = toremove.getFirstChild();
-            while (child != null) {
-                Node nextchild = child.getNextSibling();
-                toinsert.appendChild(child);
-                child = nextchild;
-            }
-        }
-        toremove.getParentNode().removeChild(toremove);
-    }
-
-    void replaceElement(Element element, String newname) {
-        Element newElement = createElementNode(element.getOwnerDocument(), newname, element.getAttributes(), element.getChildNodes());
-        Node parent = element.getParentNode();
-        parent.insertBefore(newElement, element);
-        parent.removeChild(element);
-    }
-
-    void replaceElement(Element element, String newname, Element elementwithchildren) {
-        Element newElement = createElementNode(element.getOwnerDocument(), newname, element.getAttributes(), elementwithchildren.getChildNodes());
-        Node parent = element.getParentNode();
-        parent.insertBefore(newElement, element);
-        parent.removeChild(element);
-    }
-
-    void insertChildElement(Element element, String newname) {
-        Element newElement = createElementNode(element.getOwnerDocument(), newname, null, element.getChildNodes());
-        element.appendChild(newElement);
-    }
     
-    Element insertChildElement(Element parent, String tagname, Attribute[] attributes) {
-        Element element = parent.getOwnerDocument().createElement(tagname);
-        for (Attribute attribute : attributes) {
-            element.setAttribute(attribute.name, attribute.value);
-        }
-        parent.insertBefore(element,parent.getFirstChild());
-        return element;
-    }
-    
-    Element insertChildElementAtEnd(Element parent, String tagname, Attribute[] attributes) {
-        Element element = parent.getOwnerDocument().createElement(tagname);
-        for (Attribute attribute : attributes) {
-            element.setAttribute(attribute.name, attribute.value);
-        }
-        parent.appendChild(element);
-        return element;
-    }
-    
-    Element createElement(Element element, String tagname) {
-        return createElementNode(element.getOwnerDocument(), tagname, element.getAttributes(),null);
-    }
-    
-    Element createElementAttachChildren(Element element, String tagname) {
-        return createElementNode(element.getOwnerDocument(), tagname, element.getAttributes(),element.getChildNodes());
-    }
-
-    private Element createElementNode(Document doc, String tagname, NamedNodeMap attributes, NodeList children) {
-        Element element = doc.createElement(tagname);
-        if (attributes != null) {
-            for (int i = 0; i < attributes.getLength(); i++) {
-                Node attribute = attributes.item(i);
-                element.setAttribute(attribute.getNodeName(), attribute.getNodeValue());
-            }
-        }
-        if (children != null) {
-            if (children.getLength() != 0) {
-                Node child = children.item(0);
-                while (child != null) {
-                    Node nextchild = child.getNextSibling();
-                    element.appendChild(child);
-                    child = nextchild;
-                }
-            }
-        }
-        return element;
-    }
-
-    void insertTextBefore(Node element, String text) {
-        element.getParentNode().insertBefore(element.getOwnerDocument().createTextNode(text), element);
-    }
-
-    void insertTextAfter(Node element, String text) {
-        element.getParentNode().insertBefore(element.getOwnerDocument().createTextNode(text), element.getNextSibling());
-    }
-
-    void removeNode(Node node) {
-        node.getParentNode().removeChild(node);
-    }
-
-    void removeAttribute(Element element, String attributename) {
-        element.removeAttribute(attributename);
-    }
-
-    void replaceAttributeValue(Element element, String attributename, String newvalue) {
-        element.setAttribute(attributename, newvalue);
-    }
     
     public class Attribute {
         

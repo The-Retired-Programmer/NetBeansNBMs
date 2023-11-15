@@ -29,61 +29,67 @@ public class RegexTransformationRuleSet {
 
     private final List<Rule> transformations = new ArrayList<>();
 
-    public RegexTransformationRuleSet(File datainput, String rulesext, boolean ignoresystemrules) throws FileNotFoundException, IOException {
-        loadrules(datainput, rulesext, ignoresystemrules);
+    public RegexTransformationRuleSet(File datainput) throws FileNotFoundException, IOException {
+        loadrules(datainput);
     }
 
-    public RegexTransformationRuleSet(String rulesext) throws FileNotFoundException, IOException {
-        loadrulesfile(getsystemrulesfile(rulesext));
+    public RegexTransformationRuleSet() throws FileNotFoundException, IOException {
+        loadrulesfile(getsystemrulesfile(), true);
     }
 
-    private void loadrules(File datainput, String rulesext, boolean ignoresystemrules) throws FileNotFoundException, IOException {
+    private void loadrules(File datainput) throws FileNotFoundException, IOException {
         File parent = datainput.getParentFile();
         //
-        loadrulesfile(getownrulesfile(parent, datainput, rulesext));
-        InputStream is = getsharedrulesfile(parent, rulesext);
-        loadrulesfile(is != null ? is : getsharedrulesfile(parent.getParentFile(), rulesext));
-        if (!ignoresystemrules) {
-            loadrulesfile(getsystemrulesfile(rulesext));
-        }
+        loadrulesfile(getownrulesfile(parent, datainput), false);
+        InputStream is = getsharedrulesfile(parent);
+        loadrulesfile(is != null ? is : getsharedrulesfile(parent.getParentFile()), false);
+        loadrulesfile(getsystemrulesfile(), true);
     }
 
-    private InputStream getownrulesfile(File folder, File own, String rulesext) throws FileNotFoundException {
+    private InputStream getownrulesfile(File folder, File own) throws FileNotFoundException {
         String name = own.getName();
         String[] nameparts = name.split("\\.");
-        return getrulesfile(folder, nameparts[0], rulesext);
+        return getrulesfile(folder, nameparts[0]);
     }
 
-    private InputStream getsharedrulesfile(File folder, String rulesext) throws FileNotFoundException {
-        return getrulesfile(folder, "shared", rulesext);
+    private InputStream getsharedrulesfile(File folder) throws FileNotFoundException {
+        return getrulesfile(folder, "shared");
     }
 
-    private InputStream getsystemrulesfile(String rulesext) throws FileNotFoundException {
-        return this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/system." + rulesext);
+    private InputStream getsystemrulesfile() throws FileNotFoundException {
+        return this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/system.rules");
 
     }
 
-    private InputStream getrulesfile(File folder, String name, String rulesext) throws FileNotFoundException {
-        File[] rulefile = folder.listFiles((dir, fname) -> fname.equals(name + "." + rulesext));
+    private InputStream getrulesfile(File folder, String name) throws FileNotFoundException {
+        File[] rulefile = folder.listFiles((dir, fname) -> fname.equals(name + ".rules"));
         return rulefile.length == 1 ? new FileInputStream(rulefile[0]) : null;
     }
 
-    private void loadrulesfile(InputStream ruleset) throws IOException {
+    private void loadrulesfile(InputStream ruleset, boolean issystem) throws IOException {
         if (ruleset != null) {
             try ( BufferedReader rulesreader = new BufferedReader(new InputStreamReader(ruleset))) {
+                String sectionkey = "UNDEFINED";
                 String line;
                 while ((line = rulesreader.readLine()) != null) {
                     if (!(line.startsWith("#") || line.isBlank())) {
-                        transformations.add(new Rule(line));
+                        if (line.startsWith("[")) {
+                            int pos = line.indexOf(']');
+                            sectionkey = pos == -1 ? line.substring(1) : line.substring(1, pos);
+                        } else {
+                            transformations.add(new Rule(line, issystem, sectionkey));
+                        }
                     }
                 }
             }
         }
     }
 
-    public String transform(String line) {
+    public String transform(String line, String sectionkey, boolean ignoresystemrules) {
         for (Rule rule : transformations) {
-            line = rule.isregex ? line.replaceAll(rule.match, rule.replacement) : line.replace(rule.match, rule.replacement);
+            if (sectionkey.equals(rule.sectionkey) && (ignoresystemrules ? (!rule.issystem) : true)) {
+                line = rule.isregex ? line.replaceAll(rule.match, rule.replacement) : line.replace(rule.match, rule.replacement);
+            }
         }
         return line;
     }
@@ -93,8 +99,12 @@ public class RegexTransformationRuleSet {
         public final String match;
         public final String replacement;
         public final boolean isregex;
+        public final boolean issystem;
+        public final String sectionkey;
 
-        public Rule(String rule) throws IOException {
+        public Rule(String rule, boolean issystem, String sectionkey) throws IOException {
+            this.issystem = issystem;
+            this.sectionkey = sectionkey;
             rule = rule.trim();
             if (rule.startsWith("REMOVE PATTERN ")) {
                 match = trimquotes(rule.substring(14).trim());

@@ -33,7 +33,8 @@ public abstract class TextileElementTranslator {
 
     public static TextileElementTranslator factory(Element element, PrintWriter out, ErrHandler err) {
         return switch (element.getTagName().toLowerCase()) {
-            case "line" -> new LineHandler(out, err);
+            case "line" ->
+                new LineHandler(out, err);
             case "html" ->
                 new IgnoredTranslator(out, err);
             case "div" ->
@@ -82,8 +83,18 @@ public abstract class TextileElementTranslator {
                 new LiTranslator(out, err);
             case "table" ->
                 new TableTranslator(out, err);
+            case "colgroup" ->
+                new ColgroupTranslator(out, err);
+            case "col" ->
+                new ColTranslator(out, err);
+            case "thead" ->
+                new TheadTranslator(out, err);
+            case "th" ->
+                new ThTranslator(out, err);
+            case "tfoot" ->
+                new TfootTranslator(out, err);
             case "tbody" ->
-                new IgnoredTranslator(out, err);
+                new TbodyTranslator(out, err);
             case "tr" ->
                 new TrTranslator(out, err);
             case "td" ->
@@ -148,7 +159,7 @@ public abstract class TextileElementTranslator {
                 }
             }
             if (!match) {
-                err.warning("Unexpected attribute observed - will be ignored (" + attributeName + ")",element);
+                err.warning("Unexpected attribute observed - will be ignored (" + attributeName + ")", element);
             }
         }
     }

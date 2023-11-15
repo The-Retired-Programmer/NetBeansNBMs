@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
 public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
 
@@ -29,7 +30,8 @@ public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("mergeliandfollowingblockelement");
+        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet();
+        TransformHtml transformer = super.createtransformation("mergeliandfollowingblockelement", ruleset);
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new MergeLiAndFollowingBlockElement());
@@ -40,7 +42,7 @@ public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
     }
 
     private String expected() {
-        return  """
+        return """
                 html
                     line number="1"
                     ul
@@ -58,17 +60,17 @@ public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
                             line number="7"
                             line number="8"
                         line number="9"
-                        li style="hello;"
+                        li style="font-size=12pt;"
                             line number="10"
                             "ijk"
                             line number="11"
                         line number="12"
-                        li style="hello;"
+                        li style="font-size=12pt;"
                             line number="13"
                             "ijk"
                             line number="14"
                         line number="15"
-                        li style="hello;world;"
+                        li style="font-size=12pt;font-size=18pt;"
                             line number="16"
                             "xyz"
                             line number="17"

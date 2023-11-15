@@ -25,16 +25,16 @@ public class ImageWidthConcatonation extends DomModifications {
             if (!width.isEmpty()) {
                 int widthvalue = extractValue(width);
                 if (widthvalue <= 180) {
-                    insertIntoStyle(element, "width:20%;");
+                    insertIntoStyleAttribute(element, "width:20%;");
                     removeAttribute(element,"width");
                     return ResumeAction.RESUME_FROM_SELF;
                 }
                 if (widthvalue <= 450) {
-                    insertIntoStyle(element, "width:50%;");
+                    insertIntoStyleAttribute(element, "width:50%;");
                     removeAttribute(element,"width");
                     return ResumeAction.RESUME_FROM_SELF;
                 }
-                insertIntoStyle(element, "width:100%;");
+                insertIntoStyleAttribute(element, "width:100%;");
                 removeAttribute(element,"width");
                 return ResumeAction.RESUME_FROM_SELF;
             }

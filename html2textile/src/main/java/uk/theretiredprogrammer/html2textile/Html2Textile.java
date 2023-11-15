@@ -51,18 +51,20 @@ public class Html2Textile {
     }
 
     public void converter(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int systemrulescontrols) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        TransformHtmlText texttransformer = new TransformHtmlText(from, inputfile, (systemrulescontrols & IGNORE_HTML_SYSTEM_RULES) > 0);
+        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet(inputfile);
+        TransformHtmlText texttransformer = new TransformHtmlText(from);
         texttransformer.rootWrap("html");
         StringWriter swriter = new StringWriter();
-        try ( Reader wrapped = texttransformer.transform();  PrintWriter textileout = new PrintWriter(swriter)) {
-            TransformHtml transformer = new TransformHtml(wrapped);
-            transformer.transform(inputfile, (systemrulescontrols & IGNORE_STYLE_SYSTEM_RULES) > 0);
+        try ( Reader wrapped = texttransformer.transform(ruleset,(systemrulescontrols & IGNORE_HTML_SYSTEM_RULES) > 0);
+                PrintWriter textileout = new PrintWriter(swriter)) {
+            TransformHtml htmltransformer = new TransformHtml(wrapped);
+            htmltransformer.transform(ruleset, (systemrulescontrols & IGNORE_STYLE_SYSTEM_RULES) > 0);
             //
-            TextileTranslator translator = new TextileTranslator(transformer.getRoot(), textileout, err);
+            TextileTranslator translator = new TextileTranslator(htmltransformer.getRoot(), textileout, err);
             translator.translate();
         }
-        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter, inputfile, (systemrulescontrols & IGNORE_TEXTILE_SYSTEM_RULES) > 0);
-        textiletransformer.transform();
+        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter);
+        textiletransformer.transform(ruleset, (systemrulescontrols & IGNORE_TEXTILE_SYSTEM_RULES) > 0);
         textiletransformer.save();
     }
 }

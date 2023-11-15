@@ -24,8 +24,8 @@ public class RemoveTrailingBr extends DomModifications {
     public ResumeAction testElementAndModify(Element element) {
         if (isBlockElement(element)) {
             Node trailingNode = element.getLastChild();
-            if (trailingNode != null && trailingNode.getNodeType() == ELEMENT_NODE  && trailingNode.getNodeName().equals("br")) {
-                removeElement((Element)trailingNode);
+            if (trailingNode != null && trailingNode.getNodeType() == ELEMENT_NODE && trailingNode.getNodeName().equals("br")) {
+                removeNode(trailingNode);
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;

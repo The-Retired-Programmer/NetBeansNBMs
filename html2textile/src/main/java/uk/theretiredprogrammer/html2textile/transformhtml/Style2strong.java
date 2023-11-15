@@ -16,27 +16,25 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 public class Style2strong extends DomModifications {
 
     public ResumeAction testElementAndModify(Element element) {
-        NamedNodeMap attributes = element.getAttributes();
-        Node style = attributes.getNamedItem("style");
-        if (style != null) {
-            if (removeStyleItem(style, "font-weight:bold;")) {
-                insertChildElement(element, "strong");
+        String style = element.getAttribute("style");
+        if (!style.isBlank()) {
+            if (removeStyleItem(element, style, "font-weight:bold;")) {
+                Element string = createElement("strong", element);
+                appendChildren(string, element.getChildNodes());
+                appendChild(element, string);
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }
 
-    private boolean removeStyleItem(Node style, String removeme) {
-        String from = style.getNodeValue();
-        int here = from.indexOf(removeme);
+    private boolean removeStyleItem(Element element, String style, String removeme) {
+        int here = style.indexOf(removeme);
         if (here != -1) {
-            style.setNodeValue(from.substring(0, here) + from.substring(here + removeme.length()));
+            replaceAttribute(element,new Attribute("style", style.substring(0, here) + style.substring(here + removeme.length())));
             return true;
         }
         return false;

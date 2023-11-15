@@ -181,24 +181,28 @@ p=. *2.  Race Box Starts - Suggestions for Start Line Positions and  Course Sele
 !{margin:10px0px10px0px;float:center;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/raceboxstartlinev2.jpg(Race Box Start Line)!
 
 table{border:0;margin-left:auto;margin-right:auto;}. 
-{background-color:#adadad;}. |{border:mediumsolid#000000;}. *Wind Direction*|{text-align:center;}. *Tide Direction*|{text-align:center;}. *Preferred Course(s)*|{text-align:center;}. *Preferred Start Line*|
-|/2{border:mediumsolid#000000;}. NNW < *N* > NNE |{background-color:#dea55e;text-align:center;}. Flood|{text-align:center;}. 4|{background-color:#e9ae6d;text-align:center;}. W|
-|{background-color:#dea55e;text-align:center;}. Ebb|{text-align:center;}. 3|{background-color:#e9ae6d;text-align:center;}. W|
-|/2{border:mediumsolid#000000;}. NNE < *NE* > ENE  |{background-color:#dea55e;text-align:center;}.  Flood|{text-align:center;}. 1 or 4 |{background-color:#e9ae6d;text-align:center;}.  W|
-|{background-color:#dea55e;text-align:center;}. Ebb |{text-align:center;}.  3|{background-color:#e9ae6d;text-align:center;}.  W|
-|/2{border:mediumsolid#000000;}. ENE < *E* > ESE  |{background-color:#dea55e;text-align:center;}. Flood |{text-align:center;}.  1 or 4|{background-color:#e9ae6d;text-align:center;}. W |
-|{background-color:#dea55e;text-align:center;}.  Ebb|{text-align:center;}.  3|{background-color:#e9ae6d;text-align:center;}. W |
-|/2{border:mediumsolid#000000;}. ESE < *SE* > SSE  |{background-color:#dea55e;text-align:center;}. Flood |{text-align:center;}.  1|{background-color:#e9ae6d;text-align:center;}.  G|
-|{background-color:#dea55e;text-align:center;}.  Ebb|{text-align:center;}.  3|{background-color:#e9ae6d;text-align:center;}. G or W |
-|/2{border:mediumsolid#000000;}. SSE < *S* > SSW  |{background-color:#dea55e;text-align:center;}. Flood |{text-align:center;}. 1, 2 or 4 |{background-color:#e9ae6d;text-align:center;}. G |
-|{background-color:#dea55e;text-align:center;}. Ebb |{text-align:center;}.  3|{background-color:#e9ae6d;text-align:center;}.  G|
-|/2{border:mediumsolid#000000;}. SSW < *SW* > WSW  |{background-color:#dea55e;text-align:center;}.  Flood|{text-align:center;}. 2 or 4 |{background-color:#e9ae6d;text-align:center;}. W |
-|{background-color:#dea55e;text-align:center;}.  Ebb|{text-align:center;}.  3|{background-color:#e9ae6d;text-align:center;}.  W|
-|/2{border:mediumsolid#000000;}. WSW < *W* > WNW  |{background-color:#dea55e;text-align:center;}. Flood |{text-align:center;}. 4 |{background-color:#e9ae6d;text-align:center;}.  W|
-|{background-color:#dea55e;text-align:center;}.  Ebb|{text-align:center;}.  3|{background-color:#e9ae6d;text-align:center;}.  W|
-|/2{border:mediumsolid#000000;}. WNW < *NW* > NNW  |{background-color:#dea55e;text-align:center;}. Flood |{text-align:center;}.  2 or 4|{background-color:#e9ae6d;text-align:center;}.  W|
-|{background-color:#dea55e;text-align:center;}.  Ebb|{text-align:center;}.  3|{background-color:#e9ae6d;text-align:center;}.  W|
+|:{width:25%;}. |{border:mediumsolid#000000;}. |{text-align:center;}. |{text-align:center;}. |{text-align:center;}. |
+|^. 
+{background-color:#adadad;}. |_. *Wind Direction*|_. *Tide Direction*|_. *Preferred Course(s)*|_. *Preferred Start Line*|
+|-. 
+|/2. NNW < *N* > NNE |{background-color:#dea55e;}. Flood|4|{background-color:#e9ae6d;}. W|
+|{background-color:#dea55e;}. Ebb|3|{background-color:#e9ae6d;}. W|
+|/2. NNE < *NE* > ENE  |{background-color:#dea55e;}.  Flood|1 or 4 |{background-color:#e9ae6d;}.  W|
+|{background-color:#dea55e;}. Ebb | 3|{background-color:#e9ae6d;}.  W|
+|/2. ENE < *E* > ESE  |{background-color:#dea55e;}. Flood | 1 or 4|{background-color:#e9ae6d;}. W |
+|{background-color:#dea55e;}.  Ebb| 3|{background-color:#e9ae6d;}. W |
+|/2. ESE < *SE* > SSE  |{background-color:#dea55e;}. Flood | 1|{background-color:#e9ae6d;}.  G|
+|{background-color:#dea55e;}.  Ebb| 3|{background-color:#e9ae6d;}. G or W |
+|/2. SSE < *S* > SSW  |{background-color:#dea55e;}. Flood |1, 2 or 4 |{background-color:#e9ae6d;}. G |
+|{background-color:#dea55e;}. Ebb | 3|{background-color:#e9ae6d;}.  G|
+|/2. SSW < *SW* > WSW  |{background-color:#dea55e;}.  Flood|2 or 4 |{background-color:#e9ae6d;}. W |
+|{background-color:#dea55e;}.  Ebb| 3|{background-color:#e9ae6d;}.  W|
+|/2. WSW < *W* > WNW  |{background-color:#dea55e;}. Flood |4 |{background-color:#e9ae6d;}.  W|
+|{background-color:#dea55e;}.  Ebb| 3|{background-color:#e9ae6d;}.  W|
+|/2. WNW < *NW* > NNW  |{background-color:#dea55e;}. Flood | 2 or 4|{background-color:#e9ae6d;}.  W|
+|{background-color:#dea55e;}.  Ebb| 3|{background-color:#e9ae6d;}.  W|
 
+                      
  Notes:
 
 p((. 1.  There are many possible variations of wind and tide which might make a different course or start line position preferable - These are only suggestions!
@@ -214,22 +218,25 @@ p=. *3. Suggested use of Course Board*
 *Contents*
 
 table{border-collapse:collapse;width:100%;}. 
-|{border:none;vertical-align:middle;width:27%;}. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0002.jpg(image0002.jpg)!
+|:{width:20%;}. |{border:none;vertical-align:middle;}. |{border:none;vertical-align:middle;}. |{border:none;vertical-align:middle;}. |{border:none;vertical-align:middle;}. |{border:none;vertical-align:middle;}. |
+|^. 
+|{width:27%;}_. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0002.jpg(image0002.jpg)!
 
-|\\2{border:none;vertical-align:middle;width:27%;}. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0003.jpg(image0003.jpg)!
+|\\2{border:none;vertical-align:middle;width:27%;}_. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0003.jpg(image0003.jpg)!
 
-|{border:none;vertical-align:middle;width:25%;}. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0004.jpg(image0004.jpg)!
+|{width:25%;}_. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0004.jpg(image0004.jpg)!
 
-|{border:none;vertical-align:middle;width:21%;}. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0005.jpg(image0005.jpg)!
+|{width:21%;}_. p{margin:6pt0px6pt0px;text-align:center;}. !{margin:020px10px0px;float:left;width:100%;}https://files.exe-sailing-club.org/images/Dinghies2/image0005.jpg(image0005.jpg)!
 
 |
-|{border:none;vertical-align:middle;width:27%;}. p. Course Board Front
+|-. 
+|{width:27%;}. p. Course Board Front
 
 |\\2{border:none;vertical-align:middle;width:27%;}. p. Course Board Back
 
-|{border:none;vertical-align:middle;width:25%;}. p. Tiles Box
+|{width:25%;}. p. Tiles Box
 
-|{border:none;vertical-align:middle;width:21%;}. p. Tiles
+|{width:21%;}. p. Tiles
 
 |
 |\\5{border:none;vertical-align:middle;width:100%;}. p. Tiles are either:
@@ -249,6 +256,5 @@ Place the pole of the board in one of the tubes used to support the signal flags
 |\\2{border:none;vertical-align:middle;width:51%;}. p. *Example* The example on the right would be a triangular course beginning with the start line (S/L), Y to Port (Y on a red background), 17 to Port (17 on a red background), Y to Port (Y on a red background), and back through the finish line. The start line and finish line is between the RIB and a Yellow mark and the race consists of 3 laps.
 
 |
-                      
 """;
 }

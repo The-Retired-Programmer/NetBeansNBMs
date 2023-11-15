@@ -26,13 +26,21 @@ public class DivReduction extends DomModifications {
                 if (child== null) {
                     return ResumeAction.RESUME_FROM_NEXT;
                 }
-                mergeElementsRemovingElement(element,child);
+                mergeAttributes(child, element);
+                removeAttributes(child);
+                appendAttributes(child, element.getAttributes());
+                insertBeforeNode(element, element.getChildNodes());
+                removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             } else {
                 if (areAllChildrenBlockElements(element)) {
-                    removeElement(element);
+                    insertBeforeNode(element, element.getChildNodes());
+                    removeNode(element);
                 } else {
-                    replaceElement(element, "p");
+                    Element p = createElement("p",element);
+                    appendAttributes(p, element.getAttributes());
+                    appendChildren(p,  element.getChildNodes());
+                    replaceNode(element, p);
                 }
                 return ResumeAction.RESUME_FROM_PARENT;
             }

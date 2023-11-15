@@ -23,7 +23,8 @@ public class DivRlStyleRemoval extends DomModifications {
         if (element.getTagName().equals("div")
                 && "margin:20px20px20px20px;font-family:arial,helvetica,sans-serif;font-size:12pt;line-height:1.5em;color:#000000;"
                         .equals(getOnlyAttribute(element, "style"))) {
-            removeElement(element);
+            insertBeforeNode(element, element.getChildNodes());
+            removeNode(element);
             return ResumeAction.RESUME_FROM_ROOT;
         }
         return ResumeAction.RESUME_FROM_NEXT;

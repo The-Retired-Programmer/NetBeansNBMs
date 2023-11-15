@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
 public class DivReduction_Test extends TransformhtmlTest {
 
@@ -29,9 +30,9 @@ public class DivReduction_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("divreduction");
+        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet();
+        TransformHtml transformer = super.createtransformation("divreduction", ruleset);
         transformer.transform(new StyleNormalisation());
-        //transformer.transform(new StyleReduction("stylerules"));
         //
         transformer.transform(new DivReduction());
         //

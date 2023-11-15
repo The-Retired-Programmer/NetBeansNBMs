@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.transformhtml;
+package uk.theretiredprogrammer.html2textile.textiletranslation;
 
+import java.io.PrintWriter;
+import java.io.IOException;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 
-public class SectionRemoval extends DomModifications {
+public class ColTranslator extends TextileElementTranslator {
 
-    public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("section")) {
-            insertBeforeNode(element, element.getChildNodes());
-            removeNode(element);
-            return ResumeAction.RESUME_FROM_PARENT;
-        }
-        return ResumeAction.RESUME_FROM_NEXT;
+    public ColTranslator(PrintWriter out, ErrHandler err) {
+        super(out, err);
+    }
+
+    public String[] allowedAttributes() {
+        return new String[]{"style", "class", "id"};
+    }
+
+    public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        writeClassStyleId(element);
+        out.write(". |");
     }
 }

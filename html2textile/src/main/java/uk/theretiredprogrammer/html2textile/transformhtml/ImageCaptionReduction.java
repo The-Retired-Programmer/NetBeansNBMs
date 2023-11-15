@@ -22,8 +22,8 @@ public class ImageCaptionReduction extends DomModifications {
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("img")) {
             Element next = nextSiblingIsElementSkippingLine(element, "br");
-            if (next != null && nextSiblingIsText(next)) {
-                removeElement(next);
+            if (next != null ) {
+                removeNode(next);
                 return ResumeAction.RESUME_FROM_SELF;
             }
         }

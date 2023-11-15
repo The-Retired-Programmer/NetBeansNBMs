@@ -28,20 +28,21 @@ public class StyleMerge extends DomModifications {
         if (isBlockElement(element)) {
             Element span = getOnlyChildSpanElement(element);
             if (span != null) {
-                mergeAttributes(element, span);
+                mergeStyleAttributes(element, span);
                 return ResumeAction.RESUME_FROM_SELF;
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }
 
-    private void mergeAttributes(Element parent, Element child) throws IOException {
+    private void mergeStyleAttributes(Element parent, Element child) throws IOException {
         Map<String, String> attributes = new HashMap<>();
         Map<String, String> stylerules = new HashMap<>();
         loadAttributes(parent, attributes, stylerules);
         loadAttributes(child, attributes, stylerules);
         replaceAttributes(parent, attributes, stylerules);
-        removeElement(child);
+        insertBeforeNode(child,child.getChildNodes());
+        removeNode(child);
     }
 
     private void loadAttributes(Element element, Map<String, String> attributesmap, Map<String, String> stylerulesmap) throws IOException {

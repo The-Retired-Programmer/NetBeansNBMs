@@ -25,7 +25,8 @@ public class BlankElementRemoval extends DomModifications {
     public ResumeAction testElementAndModify(Element element) {
         if (isBracketingElement(element)) {
             if (isNoChildOrOnlyChildBlankText(element)) {
-                removeElement(element);
+                insertBeforeNode(element,element.getChildNodes());
+                removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             }
         }
