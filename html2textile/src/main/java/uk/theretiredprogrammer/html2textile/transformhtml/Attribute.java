@@ -15,17 +15,13 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
-import org.w3c.dom.Element;
+public class Attribute {
 
-public class SpanCloakRemoval implements TransformHtmlItem {
+        public final String name;
+        public final String value;
 
-    public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("span")) {
-            String idvalue = element.getAttribute("id");
-            if (!idvalue.isEmpty() && idvalue.startsWith("cloak")) {
-                DomHelper.removeAttribute(element,"id");
-            }
+        public Attribute(String name, String value) {
+            this.name = name;
+            this.value = value;
         }
-        return ResumeAction.RESUME_FROM_NEXT;
     }
-}

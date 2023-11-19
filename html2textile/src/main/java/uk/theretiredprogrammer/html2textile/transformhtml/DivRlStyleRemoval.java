@@ -17,14 +17,14 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class DivRlStyleRemoval extends DomModifications {
+public class DivRlStyleRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("div")
                 && "margin:20px20px20px20px;font-family:arial,helvetica,sans-serif;font-size:12pt;line-height:1.5em;color:#000000;"
-                        .equals(getOnlyAttribute(element, "style"))) {
-            insertBeforeNode(element, element.getChildNodes());
-            removeNode(element);
+                        .equals(DomHelper.getOnlyAttribute(element, "style"))) {
+            DomHelper.insertBeforeNode(element, element.getChildNodes());
+            DomHelper.removeNode(element);
             return ResumeAction.RESUME_FROM_ROOT;
         }
         return ResumeAction.RESUME_FROM_NEXT;

@@ -15,21 +15,14 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.IOException;
 import org.w3c.dom.Element;
 
-public class MergeLiAndFollowingBlockElement implements TransformHtmlItem {
+public interface TransformHtmlItem {
 
-    @Override
-    public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("li")) {
-            Element child = DomHelper.getOnlyChildElementSkippingLine(element);
-            if (child != null && DomHelper.isMergableBlockElement(child)) {
-                DomHelper.mergeAttributes(child, element);
-                DomHelper.insertBeforeNode(child, child.getChildNodes());
-                DomHelper.removeNode(child);
-                return ResumeAction.RESUME_FROM_SELF;
-            }
-        }
-        return ResumeAction.RESUME_FROM_NEXT;
-    }
+    public enum ResumeAction {
+        RESUME_FROM_ROOT, RESUME_FROM_SELF, RESUME_FROM_PARENT, RESUME_FROM_NEXT, RESUME_FROM_PREVIOUS, RESUME_FROM_FIRST_SIBLING
+    };
+
+    public ResumeAction testElementAndModify(Element element) throws IOException;
 }

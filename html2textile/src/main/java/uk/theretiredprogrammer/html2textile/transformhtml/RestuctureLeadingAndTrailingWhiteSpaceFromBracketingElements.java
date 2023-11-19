@@ -19,10 +19,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.TEXT_NODE;
 
-public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements extends DomModifications {
+public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        if (isBracketingElement(element)) {
+        if (DomHelper.isBracketingElement(element)) {
             if (adjustWS(element)) {
                 return ResumeAction.RESUME_FROM_PARENT;
             }
@@ -47,11 +47,11 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements extend
                 int wslength = textlength - leadingstrippedtextlength;
                 String remainingtext = text.substring(wslength);
                 if (remainingtext.isEmpty()) {
-                    removeNode(firstchild);
+                    DomHelper.removeNode(firstchild);
                 } else {
                     firstchild.setNodeValue(remainingtext);
                 }
-                insertBeforeNode(element, text.substring(0, wslength));
+                DomHelper.insertBeforeNode(element, text.substring(0, wslength));
                 return true;
             }
         }
@@ -68,11 +68,11 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements extend
             if (textlength != trailingstrippedtextlength) {
                 String remainingtext = text.substring(0, trailingstrippedtextlength);
                 if (remainingtext.isEmpty()) {
-                    removeNode(lastchild);
+                    DomHelper.removeNode(lastchild);
                 } else {
                     lastchild.setNodeValue(remainingtext);
                 }
-                insertAfterNode(element, text.substring(trailingstrippedtextlength));
+                DomHelper.insertAfterNode(element, text.substring(trailingstrippedtextlength));
                 return true;
             }
         }

@@ -17,30 +17,30 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class DivReduction extends DomModifications {
+public class DivReduction implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("div")) {
             if (element.hasAttributes()) {
-                Element child = getOnlyChildElementSkippingLine(element);
+                Element child = DomHelper.getOnlyChildElementSkippingLine(element);
                 if (child== null) {
                     return ResumeAction.RESUME_FROM_NEXT;
                 }
-                mergeAttributes(child, element);
-                removeAttributes(child);
-                appendAttributes(child, element.getAttributes());
-                insertBeforeNode(element, element.getChildNodes());
-                removeNode(element);
+                DomHelper.mergeAttributes(child, element);
+                DomHelper.removeAttributes(child);
+                DomHelper.appendAttributes(child, element.getAttributes());
+                DomHelper.insertBeforeNode(element, element.getChildNodes());
+                DomHelper.removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             } else {
-                if (areAllChildrenBlockElements(element)) {
-                    insertBeforeNode(element, element.getChildNodes());
-                    removeNode(element);
+                if (DomHelper.areAllChildrenBlockElements(element)) {
+                    DomHelper.insertBeforeNode(element, element.getChildNodes());
+                    DomHelper.removeNode(element);
                 } else {
-                    Element p = createElement("p",element);
-                    appendAttributes(p, element.getAttributes());
-                    appendChildren(p,  element.getChildNodes());
-                    replaceNode(element, p);
+                    Element p = DomHelper.createElement("p",element);
+                    DomHelper.appendAttributes(p, element.getAttributes());
+                    DomHelper.appendChildren(p,  element.getChildNodes());
+                    DomHelper.replaceNode(element, p);
                 }
                 return ResumeAction.RESUME_FROM_PARENT;
             }

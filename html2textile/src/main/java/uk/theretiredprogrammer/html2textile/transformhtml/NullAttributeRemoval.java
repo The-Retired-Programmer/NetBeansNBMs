@@ -21,7 +21,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-public class NullAttributeRemoval extends DomModifications {
+public class NullAttributeRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.hasAttributes()) {

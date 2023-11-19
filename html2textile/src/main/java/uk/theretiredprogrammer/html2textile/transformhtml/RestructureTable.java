@@ -24,7 +24,7 @@ import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import org.w3c.dom.NodeList;
 
-public class RestructureTable extends DomModifications {
+public class RestructureTable implements TransformHtmlItem {
 
     @Override
     public ResumeAction testElementAndModify(Element element) throws IOException {
@@ -121,10 +121,10 @@ public class RestructureTable extends DomModifications {
     }
 
     private Element renameasthead(Element firsttr) {
-        Element thead = createElement("thead", firsttr);
-        Element theadtr = createElement("tr",firsttr);
-        appendAttributes(theadtr,firsttr.getAttributes());
-        appendChild(thead, theadtr);
+        Element thead = DomHelper.createElement("thead", firsttr);
+        Element theadtr = DomHelper.createElement("tr",firsttr);
+        DomHelper.appendAttributes(theadtr,firsttr.getAttributes());
+        DomHelper.appendChild(thead, theadtr);
         
         NodeList children = firsttr.getChildNodes();
         if (children != null) {
@@ -133,10 +133,10 @@ public class RestructureTable extends DomModifications {
                 while (child != null) {
                     Node nextchild = child.getNextSibling();
                     if (child.getNodeType() == ELEMENT_NODE && child.getNodeName().equals("td")) {
-                        Element th = createElement("th", firsttr);
-                        appendAttributes(th, child.getAttributes());
-                        appendChildren(th,child.getChildNodes());
-                        appendChild(theadtr, th);
+                        Element th = DomHelper.createElement("th", firsttr);
+                        DomHelper.appendAttributes(th, child.getAttributes());
+                        DomHelper.appendChildren(th,child.getChildNodes());
+                        DomHelper.appendChild(theadtr, th);
                     }
                     child = nextchild;
                 }
@@ -146,13 +146,13 @@ public class RestructureTable extends DomModifications {
     }
 
     private void insertcolgroup(Element table) {
-        Element colgroup = createElement("colgroup", table);
-        appendAttributes(colgroup, new Attribute[]{new Attribute("style", "width:" + 100 / colcount + "%;")});
-        insertBeforeNode(table.getFirstChild(),colgroup);
+        Element colgroup = DomHelper.createElement("colgroup", table);
+        DomHelper.appendAttributes(colgroup, new Attribute[]{new Attribute("style", "width:" + 100 / colcount + "%;")});
+        DomHelper.insertBeforeNode(table.getFirstChild(),colgroup);
         for (int i = 0; i < colcount; i++) {
-            Element col = createElement("col", colgroup);
-            appendAttributes(col,buildcommonstyleattribute(stylerules[i]));
-            appendChild(colgroup, col);
+            Element col = DomHelper.createElement("col", colgroup);
+            DomHelper.appendAttributes(col,buildcommonstyleattribute(stylerules[i]));
+            DomHelper.appendChild(colgroup, col);
         }
     }
 

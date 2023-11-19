@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.tranformshtmltext;
+package uk.theretiredprogrammer.html2textile.transformtext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,9 +23,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 
-public class TransformHtmlText {
+public class TransformHtmlText extends StringProxy {
 
 //
 // STAGE 1 - textual transforms
@@ -33,10 +32,15 @@ public class TransformHtmlText {
 //          wrap in <html> tag - so is valid XML structure which can be loaded
 //          replace any &nbsp; entities with a space
 //
-    private final BufferedReader original;
+    private BufferedReader original;
     private String rootname = "";
-
-    public TransformHtmlText(Reader original) throws IOException {
+    private boolean ignoresystemrules;
+    
+    public void ignoreSystemRules(boolean ignoresystemrules) {
+        this.ignoresystemrules = ignoresystemrules;
+    }
+    
+    public void setReader(Reader original) throws IOException {
         this.original = new BufferedReader(original);
     }
 
@@ -44,7 +48,7 @@ public class TransformHtmlText {
         this.rootname = name;
     }
 
-    public Reader transform(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
+    public Reader transform() throws IOException {
         StringWriter wrapped = new StringWriter();
         if (rootname.isEmpty()) {
             copylines(original, wrapped);
@@ -53,7 +57,9 @@ public class TransformHtmlText {
             copylines(original, wrapped);
             wrapped.write("</" + rootname + ">");
         }
-        return new StringReader(ruleset.transform(wrapped.toString(), "HTML_PREPROCESSING", ignoresystemrules));
+        set(wrapped.toString());
+        applyRuleActions(this,ignoresystemrules);
+        return new StringReader(this.get());
     }
 
     private void copylines(BufferedReader from, Writer to) throws IOException {

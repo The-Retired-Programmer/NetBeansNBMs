@@ -17,15 +17,15 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class Style2strong extends DomModifications {
+public class Style2strong implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         String style = element.getAttribute("style");
         if (!style.isBlank()) {
             if (removeStyleItem(element, style, "font-weight:bold;")) {
-                Element string = createElement("strong", element);
-                appendChildren(string, element.getChildNodes());
-                appendChild(element, string);
+                Element string = DomHelper.createElement("strong", element);
+                DomHelper.appendChildren(string, element.getChildNodes());
+                DomHelper.appendChild(element, string);
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;
@@ -34,7 +34,7 @@ public class Style2strong extends DomModifications {
     private boolean removeStyleItem(Element element, String style, String removeme) {
         int here = style.indexOf(removeme);
         if (here != -1) {
-            replaceAttribute(element,new Attribute("style", style.substring(0, here) + style.substring(here + removeme.length())));
+            DomHelper.replaceAttribute(element,new Attribute("style", style.substring(0, here) + style.substring(here + removeme.length())));
             return true;
         }
         return false;

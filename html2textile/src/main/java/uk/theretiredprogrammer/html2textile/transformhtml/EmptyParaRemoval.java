@@ -17,12 +17,12 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class EmptyParaRemoval extends DomModifications {
+public class EmptyParaRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("p") && (!element.hasChildNodes())) {
-                insertBeforeNode(element, element.getChildNodes());
-                removeNode(element);
+                DomHelper.insertBeforeNode(element, element.getChildNodes());
+                DomHelper.removeNode(element);
             return ResumeAction.RESUME_FROM_PARENT;
         }
         return ResumeAction.RESUME_FROM_NEXT;

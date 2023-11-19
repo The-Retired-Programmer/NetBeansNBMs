@@ -17,12 +17,12 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class EmptyListRemoval extends DomModifications {
+public class EmptyListRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        if ((element.getTagName().equals("ol") || element.getTagName().equals("ul")) && (!hasChildNodesSkippingLine(element))) {
-            insertBeforeNode(element,element.getChildNodes());
-            removeNode(element);
+        if ((element.getTagName().equals("ol") || element.getTagName().equals("ul")) && (!DomHelper.hasChildNodesSkippingLine(element))) {
+            DomHelper.insertBeforeNode(element,element.getChildNodes());
+            DomHelper.removeNode(element);
             return ResumeAction.RESUME_FROM_PARENT;
         }
         return ResumeAction.RESUME_FROM_NEXT;

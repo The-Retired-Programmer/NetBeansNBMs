@@ -13,29 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.transformtextiletext;
+package uk.theretiredprogrammer.html2textile.transformtext;
 
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class TransformTextileText {
+public class TransformTextileText extends StringProxy {
 
 //
 // STAGE 4 - textual transforms
 //          update the input (textile file)
 //          
 //
-    private final String[] lines;
-    private final PrintWriter output;
-
-    public TransformTextileText(StringWriter input, PrintWriter output) throws IOException {
-        lines = getLines(input);
-        this.output = output;
+    private String[] lines;
+    private boolean ignoresystemrules;
+    
+    public void ignoreSystemRules(boolean ignoresystemrules) {
+        this.ignoresystemrules = ignoresystemrules;
+    }
+    
+    public void setInput(StringWriter input) {
+        String textin = input.toString();
+        lines = textin.split("\n");
     }
 
-    public void save() {
+    public void save(PrintWriter output) {
         try (output) {
             for (String line : lines) {
                 output.println(line);
@@ -43,14 +46,11 @@ public class TransformTextileText {
         }
     }
 
-    private String[] getLines(StringWriter input) {
-        String textin = input.toString();
-        return textin.split("\n");
-    }
-
-    public void transform(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
+    public void transform() throws IOException {
         for (int i = 0; i < lines.length; i++) {
-            lines[i] = ruleset.transform(lines[i], "TEXTILE_POSTPROCESSING", ignoresystemrules);
+            set(lines[i]);
+            applyRuleActions(this, ignoresystemrules);
+            lines[i] = this.get();
         }
     }
 }

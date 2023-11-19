@@ -20,7 +20,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class ReplaceWithHeadings extends DomModifications {
+public class ReplaceWithHeadings implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("p")) {
@@ -34,7 +34,7 @@ public class ReplaceWithHeadings extends DomModifications {
         elements.add(element);
         Element nextlevelelement = element;
         while (true) {
-            Element nextlevel = getOnlyChildElementSkippingLine(nextlevelelement);
+            Element nextlevel = DomHelper.getOnlyChildElementSkippingLine(nextlevelelement);
             if (nextlevel == null) {
                 break;
             }
@@ -47,10 +47,10 @@ public class ReplaceWithHeadings extends DomModifications {
         String headername = headerpatternmatch(elements);
         if (headername != null) {
             removefontsizestylerule(element);
-            Element h = createElement(headername, element);
-            appendAttributes(h, element.getAttributes());
-            appendChildren(h,  nextlevelelement.getChildNodes());
-            replaceNode(element, h);
+            Element h = DomHelper.createElement(headername, element);
+            DomHelper.appendAttributes(h, element.getAttributes());
+            DomHelper.appendChildren(h,  nextlevelelement.getChildNodes());
+            DomHelper.replaceNode(element, h);
         }
         return headername == null ? ResumeAction.RESUME_FROM_NEXT : ResumeAction.RESUME_FROM_PARENT;
     }
@@ -75,36 +75,13 @@ public class ReplaceWithHeadings extends DomModifications {
             }
         }
         if (newrules.isBlank()) {
-            removeAttribute(element, "style");
+            DomHelper.removeAttribute(element, "style");
         } else {
-            replaceAttribute(element, new Attribute("style", newrules));
+            DomHelper.replaceAttribute(element, new Attribute("style", newrules));
         }
     }
 
     private String headerpatternmatch(List<Element> elements) {
-//        int flags = 0;
-        // strong and style="font-size: 18pt;"(16plus) => H3
-        // strong and style="font-size: 14pt;" (13pt to 15 pt inclusive) => H4
-        // strong => H5 xx
-        // strong and u ==> H6 xx
-//        flags = flags | scanforelement(elements, "strong", 8);
-//        flags = flags | scanforelement(elements, "u", 4);
-//        flags = flags | scanforfontsize(elements);
-//        return switch (flags) {
-//            case 8 ->
-//                "h6";
-//            case 9 ->
-//                "h4";
-//            case 10, 11 ->
-//                "h3";
-//            case 12 ->
-//                "h5";
-//            case 13 ->
-//                "h4";
-//            case 14, 15 ->
-//                "h3";
-//            default ->
-//                null;
         return switch (scanforfontsize(elements)) {
             case 1 -> "h4";
                 
@@ -113,15 +90,6 @@ public class ReplaceWithHeadings extends DomModifications {
             default -> null;
         };
     }
-
-//    private int scanforelement(List<Element> elements, String name, int successvalue) {
-//        for (var element : elements) {
-//            if (element.getTagName().equals(name)) {
-//                return successvalue;
-//            }
-//        }
-//        return 0;
-//    }
 
     private int scanforfontsize(List<Element> elements) {
         int fontgroup = 0;

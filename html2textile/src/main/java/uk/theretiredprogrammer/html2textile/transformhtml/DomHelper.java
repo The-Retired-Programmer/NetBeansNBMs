@@ -15,7 +15,6 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
-import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -23,27 +22,20 @@ import static org.w3c.dom.Node.ELEMENT_NODE;
 import static org.w3c.dom.Node.TEXT_NODE;
 import org.w3c.dom.NodeList;
 
-public abstract class DomModifications {
+public abstract class DomHelper {
 
-    public enum ResumeAction {
-        RESUME_FROM_ROOT, RESUME_FROM_SELF, RESUME_FROM_PARENT, RESUME_FROM_NEXT, RESUME_FROM_PREVIOUS, RESUME_FROM_FIRST_SIBLING
-    };
-
-    public abstract ResumeAction testElementAndModify(Element element) throws IOException;
-
-    // ===========================================================================
-    int extractValue(String value) {
+    public static int extractValue(String value) {
         String numeric = value.replaceAll("\\D*(\\d+).*", "$1");
         return numeric.isEmpty() ? 0 : Integer.parseInt(numeric);
     }
 
-    String getOnlyAttribute(Element element, String attributename) {
+    public static String getOnlyAttribute(Element element, String attributename) {
         NamedNodeMap attributes = element.getAttributes();
         Node attribute = attributes.getNamedItem(attributename);
         return attributes.getLength() == 1 && attribute != null ? attribute.getNodeValue() : null;
     }
 
-    Element getOnlyChildSpanElement(Element element) {
+    public static Element getOnlyChildSpanElement(Element element) {
         NodeList children = element.getChildNodes();
         if (children.getLength() != 1) {
             return null;
@@ -52,8 +44,8 @@ public abstract class DomModifications {
         return child.getNodeType() == ELEMENT_NODE && child.getNodeName().equals("span")
                 ? (Element) child : null;
     }
-    
-    boolean hasChildNodesSkippingLine(Element element) {
+
+    public static boolean hasChildNodesSkippingLine(Element element) {
         if (element.hasChildNodes()) {
             NodeList children = element.getChildNodes();
             for (int i = 0; i < children.getLength(); i++) {
@@ -69,7 +61,7 @@ public abstract class DomModifications {
         return false;
     }
 
-    Element getOnlyChildElementSkippingLine(Element element) {
+    public static Element getOnlyChildElementSkippingLine(Element element) {
         if (!element.hasChildNodes()) {
             return null;
         }
@@ -88,7 +80,7 @@ public abstract class DomModifications {
         return elementcount == 1 ? el : null;
     }
 
-    boolean areAllChildrenBlockElements(Element element) {
+    public static boolean areAllChildrenBlockElements(Element element) {
         NodeList children = element.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
@@ -99,7 +91,7 @@ public abstract class DomModifications {
         return true;
     }
 
-    public boolean isBlockElement(Node node) {
+    public static boolean isBlockElement(Node node) {
         if (node.getNodeType() == ELEMENT_NODE) {
             String name = node.getNodeName();
             return name.equals("p") || name.equals("ul") || name.equals("ol") || name.equals("li")
@@ -111,26 +103,26 @@ public abstract class DomModifications {
             return false;
         }
     }
-    
-    public boolean isMergableBlockElement(Node node) {
+
+    public static boolean isMergableBlockElement(Node node) {
         if (node.getNodeType() == ELEMENT_NODE) {
             String name = node.getNodeName();
-            return name.equals("p") || name.equals("div") 
+            return name.equals("p") || name.equals("div")
                     || name.equals("h1") || name.equals("h2") || name.equals("h3")
                     || name.equals("h4") || name.equals("h5") || name.equals("h6");
-                    
+
         } else {
             return false;
         }
     }
 
-    boolean isBracketingElement(Element element) {
+    public static boolean isBracketingElement(Element element) {
         String name = element.getTagName();
         return name.equals("strong") || name.equals("u") || name.equals("span") || name.equals("sub")
                 || name.equals("sup") || name.equals("b") || name.equals("a");
     }
 
-    Element nextSiblingIsElementSkippingLine(Element element, String name) {
+    public static Element nextSiblingIsElementSkippingLine(Element element, String name) {
         Node next = element;
         do {
             next = next.getNextSibling();
@@ -143,10 +135,10 @@ public abstract class DomModifications {
         } while (next.getNodeName().equals("line"));
         return null;
     }
-    
-    Element nextElementSiblingSkippingLine(Element element) {
+
+    public static Element nextElementSiblingSkippingLine(Element element) {
         Node next = element;
-        while ((next = next.getNextSibling())!= null) {
+        while ((next = next.getNextSibling()) != null) {
             if (next.getNodeType() == ELEMENT_NODE) {
                 if (!next.getNodeName().equals("line")) {
                     return (Element) next;
@@ -156,7 +148,7 @@ public abstract class DomModifications {
         return null;
     }
 
-    boolean nextSiblingIsText(Element element) {
+    public static boolean nextSiblingIsText(Element element) {
         Node next = element.getNextSibling();
         return next != null && next.getNodeType() == TEXT_NODE;
     }
@@ -164,12 +156,11 @@ public abstract class DomModifications {
     //
     // Dom manipulation methods
     //
-    
-    Element createElement(String tagname, Element anydocumentelement) {
+    public static Element createElement(String tagname, Element anydocumentelement) {
         return anydocumentelement.getOwnerDocument().createElement(tagname);
     }
-    
-    void appendChildren(Element parent, NodeList children) {
+
+    public static void appendChildren(Element parent, NodeList children) {
         if (children != null) {
             if (children.getLength() != 0) {
                 Node child = children.item(0);
@@ -181,16 +172,16 @@ public abstract class DomModifications {
             }
         }
     }
-    
-    void appendChild(Node parent, Node child) {
+
+    public static void appendChild(Node parent, Node child) {
         parent.appendChild(child);
     }
-    
-    void insertBeforeNode(Node node, Node insert) {
+
+    public static void insertBeforeNode(Node node, Node insert) {
         node.getParentNode().insertBefore(insert, node);
     }
-    
-    void insertBeforeNode(Node node, NodeList inserts) {
+
+    public static void insertBeforeNode(Node node, NodeList inserts) {
         Node parent = node.getParentNode();
         Node child = inserts.item(0);
         while (child != null) {
@@ -200,35 +191,35 @@ public abstract class DomModifications {
         }
     }
 
-    void insertAfterNode(Node node, Node insert) {
+    public static void insertAfterNode(Node node, Node insert) {
         node.getParentNode().insertBefore(insert, node.getNextSibling());
     }
 
-    void insertBeforeNode(Node node, String insert) {
+    public static void insertBeforeNode(Node node, String insert) {
         insertBeforeNode(node, node.getOwnerDocument().createTextNode(insert));
     }
 
-    void insertAfterNode(Node node, String insert) {
+    public static void insertAfterNode(Node node, String insert) {
         insertAfterNode(node, node.getOwnerDocument().createTextNode(insert));
     }
-    
-    void replaceNode(Node oldnode, Node newnode) {
+
+    public static void replaceNode(Node oldnode, Node newnode) {
         Node parent = oldnode.getParentNode();
         parent.insertBefore(newnode, oldnode);
         parent.removeChild(oldnode);
     }
 
-    void removeNode(Node node) {
+    public static void removeNode(Node node) {
         node.getParentNode().removeChild(node);
     }
-    
-     void appendAttributes(Element element, Attribute[] attributes) {
+
+    public static void appendAttributes(Element element, Attribute[] attributes) {
         for (Attribute attribute : attributes) {
             element.setAttribute(attribute.name, attribute.value);
         }
     }
-    
-    void appendAttributes(Element element, NamedNodeMap attributes) {
+
+    public static void appendAttributes(Element element, NamedNodeMap attributes) {
         if (attributes != null) {
             for (int i = 0; i < attributes.getLength(); i++) {
                 Node attribute = attributes.item(i);
@@ -236,30 +227,28 @@ public abstract class DomModifications {
             }
         }
     }
-    
-    void insertIntoStyleAttribute(Element element, String rule) {
+
+    public static void insertIntoStyleAttribute(Element element, String rule) {
         String style = element.getAttribute("style");
         element.setAttribute("style", style == null ? rule : style + rule);
     }
 
-
-    void removeAttribute(Element element, String attributename) {
+    public static void removeAttribute(Element element, String attributename) {
         element.removeAttribute(attributename);
     }
-    
-    void removeAttributes(Element element) {
+
+    public static void removeAttributes(Element element) {
         while (element.hasAttributes()) {
             NamedNodeMap attributes = element.getAttributes();
             attributes.removeNamedItem(attributes.item(0).getNodeName());
         }
     }
 
-    void replaceAttribute(Element element, Attribute replacement) {
+    public static void replaceAttribute(Element element, Attribute replacement) {
         element.setAttribute(replacement.name, replacement.value);
     }
-    
-    
-    void mergeAttributes(Element child, Element target) {
+
+    public static void mergeAttributes(Element child, Element target) {
         if (child.hasAttributes()) {
             NamedNodeMap attributes = child.getAttributes();
             for (int i = 0; i < attributes.getLength(); i++) {
@@ -284,18 +273,6 @@ public abstract class DomModifications {
                         target.setAttribute(attrname, attr.getNodeValue());
                 }
             }
-        }
-    }
-    
-    
-    public class Attribute {
-        
-        public final String name;
-        public final String value;
-        
-        public Attribute(String name, String value) {
-            this.name = name;
-            this.value = value;
         }
     }
 }

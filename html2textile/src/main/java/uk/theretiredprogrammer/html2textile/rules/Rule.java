@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.transformhtml;
+package uk.theretiredprogrammer.html2textile.rules;
 
-import org.w3c.dom.Element;
+import java.io.IOException;
+import java.util.function.Predicate;
 
-public class SpanCloakRemoval implements TransformHtmlItem {
+public class Rule<S> {
 
-    public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("span")) {
-            String idvalue = element.getAttribute("id");
-            if (!idvalue.isEmpty() && idvalue.startsWith("cloak")) {
-                DomHelper.removeAttribute(element,"id");
-            }
-        }
-        return ResumeAction.RESUME_FROM_NEXT;
+    private final boolean isSystemRule;
+    private final Predicate<S> action;
+
+    public Rule(boolean isSystemRule, Predicate<S> action) {
+        this.isSystemRule = isSystemRule;
+        this.action = action;
+    }
+
+    boolean applyRuleAction(S item, boolean ignoresystemrules) throws IOException {
+        return (ignoresystemrules ? !isSystemRule : true) ? action.test(item): false;
     }
 }

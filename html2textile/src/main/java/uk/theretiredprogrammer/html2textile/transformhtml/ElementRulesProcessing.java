@@ -17,39 +17,17 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
 import org.w3c.dom.Element;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet.TransformationAction;
 
-public class ElementRulesProcessing extends DomModifications {
+public class ElementRulesProcessing extends ElementProxy implements TransformHtmlItem {
 
-    private final boolean ignoresystemrules;
-    private final RegexTransformationRuleSet ruleset;
+    private boolean ignoresystemrules;
 
-    public ElementRulesProcessing(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
-        this.ruleset = ruleset;
+    public void ignoreSystemRules(boolean ignoresystemrules) {
         this.ignoresystemrules = ignoresystemrules;
     }
 
-    public ResumeAction testElementAndModify(Element element) {
-        TransformationAction action = ruleset.getAction(element.getTagName(), "HTML_ELEMENT_PROCESSING", ignoresystemrules);
-        switch (action.type) {
-            case REMOVE -> {
-                removeNode(element);
-                return ResumeAction.RESUME_FROM_PARENT;
-            }
-            case REMOVEELEMENT -> {
-                insertBeforeNode(element, element.getChildNodes());
-                removeNode(element);
-                return ResumeAction.RESUME_FROM_PARENT;
-            }
-            case REPLACE -> {
-                Element newelement = createElement(action.replacement, element);
-                appendAttributes(newelement, element.getAttributes());
-                appendChildren(newelement, element.getChildNodes());
-                replaceNode(element, newelement);
-                return ResumeAction.RESUME_FROM_PARENT;
-            }
-        }
-        return ResumeAction.RESUME_FROM_NEXT;
+    public ResumeAction testElementAndModify(Element element) throws IOException {
+        set(element);
+        return applyRuleActions(this, ignoresystemrules) ? ResumeAction.RESUME_FROM_PARENT : ResumeAction.RESUME_FROM_NEXT;
     }
 }

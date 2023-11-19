@@ -19,7 +19,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-public class StyleNormalisation extends DomModifications {
+public class StyleNormalisation implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         NamedNodeMap attributes = element.getAttributes();

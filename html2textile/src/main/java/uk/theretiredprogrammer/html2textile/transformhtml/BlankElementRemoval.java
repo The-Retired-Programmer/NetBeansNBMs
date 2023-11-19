@@ -20,13 +20,13 @@ import org.w3c.dom.Node;
 import static org.w3c.dom.Node.TEXT_NODE;
 import org.w3c.dom.NodeList;
 
-public class BlankElementRemoval extends DomModifications {
+public class BlankElementRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        if (isBracketingElement(element)) {
+        if (DomHelper.isBracketingElement(element)) {
             if (isNoChildOrOnlyChildBlankText(element)) {
-                insertBeforeNode(element,element.getChildNodes());
-                removeNode(element);
+                DomHelper.insertBeforeNode(element,element.getChildNodes());
+                DomHelper.removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             }
         }

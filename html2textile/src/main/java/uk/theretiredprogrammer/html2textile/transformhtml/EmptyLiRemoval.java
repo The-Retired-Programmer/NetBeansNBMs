@@ -17,12 +17,12 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class EmptyLiRemoval extends DomModifications {
+public class EmptyLiRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("li") && (!hasChildNodesSkippingLine(element))) {
-            insertBeforeNode(element,element.getChildNodes());
-            removeNode(element);
+        if (element.getTagName().equals("li") && (!DomHelper.hasChildNodesSkippingLine(element))) {
+            DomHelper.insertBeforeNode(element,element.getChildNodes());
+            DomHelper.removeNode(element);
             return ResumeAction.RESUME_FROM_PARENT;
         }
         return ResumeAction.RESUME_FROM_NEXT;

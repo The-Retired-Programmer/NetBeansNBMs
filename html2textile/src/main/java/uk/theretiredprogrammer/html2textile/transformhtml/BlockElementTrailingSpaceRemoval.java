@@ -19,15 +19,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.TEXT_NODE;
 
-public class BlockElementTrailingSpaceRemoval extends DomModifications {
+public class BlockElementTrailingSpaceRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        if (isBlockElement(element)) {
+        if (DomHelper.isBlockElement(element)) {
             Node trailingNode = element.getLastChild();
             if (trailingNode != null && trailingNode.getNodeType() == TEXT_NODE) {
                 String text = trailingNode.getNodeValue();
                 if (text.isBlank()) {
-                    removeNode(trailingNode);
+                    DomHelper.removeNode(trailingNode);
                     return ResumeAction.RESUME_FROM_SELF;
                 }
                 String trailingstrippedtext = text.stripTrailing();

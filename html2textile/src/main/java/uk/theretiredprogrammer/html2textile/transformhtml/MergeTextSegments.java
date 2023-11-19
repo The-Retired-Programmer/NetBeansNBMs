@@ -19,7 +19,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.TEXT_NODE;
 
-public class MergeTextSegments extends DomModifications {
+public class MergeTextSegments implements TransformHtmlItem {
 
     @Override
     public ResumeAction testElementAndModify(Element element) {
@@ -30,7 +30,7 @@ public class MergeTextSegments extends DomModifications {
                 if (child.getNodeType() == TEXT_NODE) {
                     if (next.getNodeType() == TEXT_NODE) {
                         child.setNodeValue(child.getNodeValue()+next.getNodeValue());
-                        removeNode(next);
+                        DomHelper.removeNode(next);
                         return ResumeAction.RESUME_FROM_SELF;
                     }
                 }

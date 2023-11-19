@@ -17,13 +17,13 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class ImageCaptionReduction extends DomModifications {
+public class ImageCaptionReduction implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("img")) {
-            Element next = nextSiblingIsElementSkippingLine(element, "br");
+            Element next = DomHelper.nextSiblingIsElementSkippingLine(element, "br");
             if (next != null ) {
-                removeNode(next);
+                DomHelper.removeNode(next);
                 return ResumeAction.RESUME_FROM_SELF;
             }
         }

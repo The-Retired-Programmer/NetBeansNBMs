@@ -17,7 +17,7 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class ListConcatonation extends DomModifications {
+public class ListConcatonation implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (checkListAndConcatonate("ul", element) == ResumeAction.RESUME_FROM_SELF) {
@@ -28,11 +28,11 @@ public class ListConcatonation extends DomModifications {
 
     private ResumeAction checkListAndConcatonate(String listtag, Element element) {
         if (element.getTagName().equals(listtag)) {
-            Element sibling = nextElementSiblingSkippingLine(element);
+            Element sibling = DomHelper.nextElementSiblingSkippingLine(element);
             if (sibling != null && sibling.getTagName().equals(listtag)) {
                 if (!element.hasAttributes() && !sibling.hasAttributes()) {
-                    appendChildren(element, sibling.getChildNodes());
-                    removeNode(sibling);
+                    DomHelper.appendChildren(element, sibling.getChildNodes());
+                    DomHelper.removeNode(sibling);
                     return ResumeAction.RESUME_FROM_SELF;
                 }
             }

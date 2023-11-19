@@ -19,13 +19,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 
-public class RemoveTrailingBr extends DomModifications {
+public class RemoveTrailingBr implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        if (isBlockElement(element)) {
+        if (DomHelper.isBlockElement(element)) {
             Node trailingNode = element.getLastChild();
             if (trailingNode != null && trailingNode.getNodeType() == ELEMENT_NODE && trailingNode.getNodeName().equals("br")) {
-                removeNode(trailingNode);
+                DomHelper.removeNode(trailingNode);
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;

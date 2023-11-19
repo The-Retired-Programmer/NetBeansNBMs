@@ -17,15 +17,15 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class Style2u extends DomModifications {
+public class Style2u implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         String style = element.getAttribute("style");
         if (!style.isBlank()) {
             if (removeStyleItem(element, style, "text-decoration:underline;")) {
-                Element u = createElement("u", element);
-                appendChildren(u, element.getChildNodes());
-                appendChild(element, u);
+                Element u = DomHelper.createElement("u", element);
+                DomHelper.appendChildren(u, element.getChildNodes());
+                DomHelper.appendChild(element, u);
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;
@@ -34,7 +34,7 @@ public class Style2u extends DomModifications {
     private boolean removeStyleItem(Element element, String style, String removeme) {
         int here = style.indexOf(removeme);
         if (here != -1) {
-            replaceAttribute(element,new Attribute("style", style.substring(0, here) + style.substring(here + removeme.length())));
+            DomHelper.replaceAttribute(element,new Attribute("style", style.substring(0, here) + style.substring(here + removeme.length())));
             return true;
         }
         return false;

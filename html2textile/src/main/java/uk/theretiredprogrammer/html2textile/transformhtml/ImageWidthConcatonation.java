@@ -17,25 +17,25 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class ImageWidthConcatonation extends DomModifications {
+public class ImageWidthConcatonation implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("img")) {
             String width = element.getAttribute("width");
             if (!width.isEmpty()) {
-                int widthvalue = extractValue(width);
+                int widthvalue = DomHelper.extractValue(width);
                 if (widthvalue <= 180) {
-                    insertIntoStyleAttribute(element, "width:20%;");
-                    removeAttribute(element,"width");
+                    DomHelper.insertIntoStyleAttribute(element, "width:20%;");
+                    DomHelper.removeAttribute(element,"width");
                     return ResumeAction.RESUME_FROM_SELF;
                 }
                 if (widthvalue <= 450) {
-                    insertIntoStyleAttribute(element, "width:50%;");
-                    removeAttribute(element,"width");
+                    DomHelper.insertIntoStyleAttribute(element, "width:50%;");
+                    DomHelper.removeAttribute(element,"width");
                     return ResumeAction.RESUME_FROM_SELF;
                 }
-                insertIntoStyleAttribute(element, "width:100%;");
-                removeAttribute(element,"width");
+                DomHelper.insertIntoStyleAttribute(element, "width:100%;");
+                DomHelper.removeAttribute(element,"width");
                 return ResumeAction.RESUME_FROM_SELF;
             }
         }

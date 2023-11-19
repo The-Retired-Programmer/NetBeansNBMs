@@ -19,23 +19,23 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
+import uk.theretiredprogrammer.html2textile.transformtext.StringProxy;
 
-public class StyleReduction extends DomModifications {
+public class StyleReduction extends StringProxy implements TransformHtmlItem {
 
-    private final boolean ignoresystemrules;
-    private final RegexTransformationRuleSet ruleset;
+    private boolean ignoresystemrules;
 
-    public StyleReduction(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
-        this.ruleset = ruleset;
+    public void ignoreSystemRules(boolean ignoresystemrules) {
         this.ignoresystemrules = ignoresystemrules;
     }
-
-    public ResumeAction testElementAndModify(Element element) {
+    
+    public ResumeAction testElementAndModify(Element element) throws IOException {
         NamedNodeMap attributes = element.getAttributes();
         Node style = attributes.getNamedItem("style");
         if (style != null) {
-            style.setNodeValue(ruleset.transform(style.getNodeValue(), "HTML_STYLE_PROCESSING", ignoresystemrules));
+            set(style.getNodeValue());
+            applyRuleActions(this, ignoresystemrules);
+            style.setNodeValue(get());
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }

@@ -25,21 +25,21 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
-import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
+import uk.theretiredprogrammer.html2textile.rules.Rules;
+import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 
 public class Transformhtmltext_Test {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet();
+        Rules.parse();
         TransformHtml transformer;
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_transformhtmltext.html");
         Reader from = new InputStreamReader(is);
-        TransformHtmlText texttransformer = new TransformHtmlText(from);
+        TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
+        texttransformer.setReader(from);
         texttransformer.rootWrap("html");
-
-        try ( Reader transformed = texttransformer.transform(ruleset, false)) {
+        try ( Reader transformed = texttransformer.transform()) {
             transformer = new TransformHtml(transformed);
         }
         //

@@ -21,7 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
+
 
 public class ReplaceWithHeadings_Test extends TransformhtmlTest {
 
@@ -30,8 +30,7 @@ public class ReplaceWithHeadings_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet();
-        TransformHtml transformer = super.createtransformation("replacewithheadings", ruleset);
+        TransformHtml transformer = super.createtransformation("replacewithheadings");
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new ReplaceWithHeadings());

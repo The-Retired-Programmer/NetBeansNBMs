@@ -22,18 +22,19 @@ import java.io.Reader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
-import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
+import uk.theretiredprogrammer.html2textile.rules.Rules;
+import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 
 public class TransformhtmlTest {
 
-    public TransformHtml createtransformation(String inputname, RegexTransformationRuleSet ruleset) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
+    public TransformHtml createtransformation(String inputname) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_" + inputname + ".html");
         Reader from = new InputStreamReader(is);
-        TransformHtmlText texttransformer = new TransformHtmlText(from);
+        TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
+        texttransformer.setReader(from);
         texttransformer.rootWrap("html");
 
-        try ( Reader transformed = texttransformer.transform(ruleset, false)) {
+        try ( Reader transformed = texttransformer.transform()) {
             return new TransformHtml(transformed);
         }
     }

@@ -17,19 +17,19 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
 
-public class NullSpanRemoval extends DomModifications {
+public class NullSpanRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("span")) {
-            String stylevalue = getOnlyAttribute(element, "style");
+            String stylevalue = DomHelper.getOnlyAttribute(element, "style");
             if (stylevalue != null && stylevalue.isBlank()) {
-                insertBeforeNode(element, element.getChildNodes());
-                removeNode(element);
+                DomHelper.insertBeforeNode(element, element.getChildNodes());
+                DomHelper.removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             }
             if (!element.hasAttributes()) {
-                insertBeforeNode(element, element.getChildNodes());
-                removeNode(element);
+                DomHelper.insertBeforeNode(element, element.getChildNodes());
+                DomHelper.removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             }
         }

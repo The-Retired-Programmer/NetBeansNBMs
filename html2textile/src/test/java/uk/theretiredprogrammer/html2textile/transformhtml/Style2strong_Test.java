@@ -21,7 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
+
 
 public class Style2strong_Test extends TransformhtmlTest {
 
@@ -30,8 +30,7 @@ public class Style2strong_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet();
-        TransformHtml transformer = super.createtransformation("style2strong", ruleset);
+        TransformHtml transformer = super.createtransformation("style2strong");
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new Style2strong());

@@ -15,7 +15,6 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -32,7 +31,7 @@ import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.RegexTransformationRuleSet;
+import uk.theretiredprogrammer.html2textile.rules.Rules;
 
 public class TransformHtml {
 
@@ -47,12 +46,12 @@ public class TransformHtml {
         root = newInstance().newDocumentBuilder().parse(new InputSource(input)).getDocumentElement();
     }
 
-    public void transform(RegexTransformationRuleSet ruleset, boolean ignoresystemrules) throws IOException {
+    public void transform() throws IOException {
         transform(new StyleNormalisation());
-        transform(new ElementRulesProcessing(ruleset,ignoresystemrules));
+        transform(Rules.get_HTML_ELEMENT_PROCESSING());
         transform(new DivRlStyleRemoval());
         transform(new DivReduction());
-        transform(new StyleReduction(ruleset,ignoresystemrules));
+        transform(Rules.get_HTML_STYLE_PROCESSING());
         transform(new Style2u());
         transform(new Style2strong());
         transform(new SpanCloakRemoval());
@@ -91,10 +90,10 @@ public class TransformHtml {
         return root;
     }
 
-    void transform(DomModifications transformrules) throws IOException {
+    void transform(TransformHtmlItem transformitem) throws IOException {
         State state = new State();
         do {
-            switch (transformrules.testElementAndModify(state.current)) {
+            switch (transformitem.testElementAndModify(state.current)) {
                 case RESUME_FROM_ROOT ->
                     state.root();
                 //case RESUME_FROM_SELF - no state change

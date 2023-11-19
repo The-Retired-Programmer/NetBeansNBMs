@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.html2textile;
 
+import uk.theretiredprogrammer.html2textile.rules.Rules;
 import java.io.File;
 import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 import java.io.FileNotFoundException;
@@ -25,46 +26,36 @@ import java.io.StringWriter;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.tranformshtmltext.TransformHtmlText;
+import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
-import uk.theretiredprogrammer.html2textile.transformtextiletext.TransformTextileText;
+import uk.theretiredprogrammer.html2textile.transformtext.TransformTextileText;
 
 public class Html2Textile {
 
-    // ignore system rules
-    public final static int IGNORE_TEXTILE_SYSTEM_RULES = 1;
-    public final static int IGNORE_STYLE_SYSTEM_RULES = 2;
-    public final static int IGNORE_HTML_SYSTEM_RULES = 4;
-    //
-    public final static int IGNORE_NO_SYSTEM_RULES = 0;
-    public final static int IGNORE_ALL_SYSTEM_RULES = IGNORE_TEXTILE_SYSTEM_RULES | IGNORE_STYLE_SYSTEM_RULES | IGNORE_HTML_SYSTEM_RULES;
-
     public static void convert(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        new Html2Textile().converter(from, textilewriter, err, inputfile, IGNORE_NO_SYSTEM_RULES);
-    }
-
-    public static void convert(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int systemrulescontrols) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        new Html2Textile().converter(from, textilewriter, err, inputfile, systemrulescontrols);
+        new Html2Textile().converter(from, textilewriter, err, inputfile);
     }
 
     private Html2Textile() {
     }
 
-    public void converter(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile, int systemrulescontrols) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        RegexTransformationRuleSet ruleset = new RegexTransformationRuleSet(inputfile);
-        TransformHtmlText texttransformer = new TransformHtmlText(from);
+    public void converter(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        Rules.parse(inputfile);
+        TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
+        texttransformer.setReader(from);
         texttransformer.rootWrap("html");
         StringWriter swriter = new StringWriter();
-        try ( Reader wrapped = texttransformer.transform(ruleset,(systemrulescontrols & IGNORE_HTML_SYSTEM_RULES) > 0);
+        try ( Reader wrapped = texttransformer.transform();
                 PrintWriter textileout = new PrintWriter(swriter)) {
             TransformHtml htmltransformer = new TransformHtml(wrapped);
-            htmltransformer.transform(ruleset, (systemrulescontrols & IGNORE_STYLE_SYSTEM_RULES) > 0);
+            htmltransformer.transform();
             //
             TextileTranslator translator = new TextileTranslator(htmltransformer.getRoot(), textileout, err);
             translator.translate();
         }
-        TransformTextileText textiletransformer = new TransformTextileText(swriter, textilewriter);
-        textiletransformer.transform(ruleset, (systemrulescontrols & IGNORE_TEXTILE_SYSTEM_RULES) > 0);
-        textiletransformer.save();
+        TransformTextileText textiletransformer = Rules.get_TEXTILE_POSTPROCESSING();
+        textiletransformer.setInput(swriter);
+        textiletransformer.transform();
+        textiletransformer.save(textilewriter);
     }
 }

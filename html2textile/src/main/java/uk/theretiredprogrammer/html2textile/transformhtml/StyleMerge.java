@@ -22,11 +22,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-public class StyleMerge extends DomModifications {
+public class StyleMerge implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) throws IOException {
-        if (isBlockElement(element)) {
-            Element span = getOnlyChildSpanElement(element);
+        if (DomHelper.isBlockElement(element)) {
+            Element span = DomHelper.getOnlyChildSpanElement(element);
             if (span != null) {
                 mergeStyleAttributes(element, span);
                 return ResumeAction.RESUME_FROM_SELF;
@@ -41,8 +41,8 @@ public class StyleMerge extends DomModifications {
         loadAttributes(parent, attributes, stylerules);
         loadAttributes(child, attributes, stylerules);
         replaceAttributes(parent, attributes, stylerules);
-        insertBeforeNode(child,child.getChildNodes());
-        removeNode(child);
+        DomHelper.insertBeforeNode(child,child.getChildNodes());
+        DomHelper.removeNode(child);
     }
 
     private void loadAttributes(Element element, Map<String, String> attributesmap, Map<String, String> stylerulesmap) throws IOException {

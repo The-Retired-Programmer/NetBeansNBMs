@@ -30,16 +30,11 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
-import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_ALL_SYSTEM_RULES;
-import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_HTML_SYSTEM_RULES;
-import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_NO_SYSTEM_RULES;
-import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_STYLE_SYSTEM_RULES;
-import static uk.theretiredprogrammer.html2textile.Html2Textile.IGNORE_TEXTILE_SYSTEM_RULES;
+import uk.theretiredprogrammer.html2textile.rules.Rules;
 
 public class App {
 
     private ErrHandler err;
-    private int systemrulescontrols = IGNORE_NO_SYSTEM_RULES;
     private final List<String> inputfilenames = new ArrayList<>();
 
     public App() {
@@ -78,13 +73,13 @@ public class App {
             switch (args[i]) {
 
                 case "-x" ->
-                    systemrulescontrols = IGNORE_ALL_SYSTEM_RULES;
+                    Rules.ignore_ALL_SystemRules();
                 case "-xh" ->
-                    systemrulescontrols |= IGNORE_HTML_SYSTEM_RULES;
+                    Rules.ignore_HTML_PREPROCESSING_SystemRules();
                 case "-xs" ->
-                    systemrulescontrols |= IGNORE_STYLE_SYSTEM_RULES;
+                    Rules.ignore_HTML_STYLE_PROCESSING_SystemRules();
                 case "-xt" ->
-                    systemrulescontrols |= IGNORE_TEXTILE_SYSTEM_RULES;
+                    Rules.ignore_TEXTILE_POSTPROCESSING_SystemRules();
                 default -> {
                     while (i < l) {
                         inputfilenames.add(args[i++]);
@@ -104,7 +99,7 @@ public class App {
         String outputfilename = getfilenoext(filename) + ".textile";
         try {
             try ( Reader rdr = getInputReader(filename);  PrintWriter wtr = getOutputWriter(outputfilename)) {
-                Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile(), systemrulescontrols);
+                Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile());
                 return 0;
             } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
                 err.error("Exception: " + ex.getLocalizedMessage());
