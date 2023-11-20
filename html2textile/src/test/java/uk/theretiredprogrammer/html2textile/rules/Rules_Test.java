@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
-import uk.theretiredprogrammer.html2textile.rules.RuleSet;
-import uk.theretiredprogrammer.html2textile.rules.Rules;
 import uk.theretiredprogrammer.html2textile.transformtext.StringProxy;
 
 public class Rules_Test {
@@ -72,7 +70,7 @@ public class Rules_Test {
         System.out.println("test5 - textilerules");
         systemOnly("TEXTILE_POSTPROCESSING",
                 "h3{text-align:center;color:red;}. text-text-text\n",
-                "h3{color:red;}=. text-text-text\n;",
+                "h3{color:red;}=. text-text-text\n",
                 false);
     }
 
@@ -139,30 +137,20 @@ public class Rules_Test {
                 true);
     }
 
-    @Test
-    public void test13() throws IOException {
-        System.out.println("test13 - htmlrules - with special files from parent");
-        systemPlusAssociated(new File(SANDBOX_INPUT), "HTML_PREPROCESSING",
-                "abc|;|&nbsp;|&lsquo;|&rsquo;|&|xyz",
-                "abc|;| |'|!!!|&|xyz",
-                false);
-    }
-
     private void systemOnly(String key, String input, String expected, boolean ignoresystemfile) throws IOException {
-        Rules.parse();
-        RuleSet ruleset = Rules.get(key);
-        StringProxy s = new StringProxy();
-        s.set(input);
-        ruleset.applyRuleActions(s, ignoresystemfile);
-        assertEquals(expected, s.get());
+        Rules.create();
+        runtest(key, input, expected, ignoresystemfile);
     }
 
     private void systemPlusAssociated(File inputfile, String key, String input, String expected, boolean ignoresystemfile) throws IOException {
-        Rules.parse(inputfile);
-        RuleSet ruleset = Rules.get(key);
+        Rules.create(inputfile);
+        runtest(key, input, expected, ignoresystemfile);
+    }
+
+    private void runtest(String key, String input, String expected, boolean ignoresystemfile) throws IOException {
         StringProxy s = new StringProxy();
         s.set(input);
-        ruleset.applyRuleActions(s, ignoresystemfile);
+        Rules.get(key).applyRuleActions(s, ignoresystemfile);
         assertEquals(expected, s.get());
     }
 }

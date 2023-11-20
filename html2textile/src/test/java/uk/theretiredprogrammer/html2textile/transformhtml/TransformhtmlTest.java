@@ -28,6 +28,7 @@ import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 public class TransformhtmlTest {
 
     public TransformHtml createtransformation(String inputname) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
+        Rules.create();
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_" + inputname + ".html");
         Reader from = new InputStreamReader(is);
         TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();

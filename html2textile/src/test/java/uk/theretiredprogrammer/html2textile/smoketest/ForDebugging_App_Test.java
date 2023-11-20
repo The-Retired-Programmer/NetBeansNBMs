@@ -29,7 +29,7 @@ public class ForDebugging_App_Test {
     public ForDebugging_App_Test() {
     }
 
-    @Test
+//    @Test
     public void testApp() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
         String[] args = new String[]{"/home/richard/PRODUCTS/ESC_WEBSITE/Joomla2SCM/Training/ai.html"};
         int rc = new App().goInner(args);

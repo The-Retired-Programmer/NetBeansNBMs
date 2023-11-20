@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.rules.Rules;
 
 
 public class ElementRulesProcessing_Test extends TransformhtmlTest {
@@ -31,12 +32,11 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("elementrulesprocessing");
-        
         //
-        transformer.transform(new ElementRulesProcessing());
+        transformer.transform(Rules.get_HTML_ELEMENT_PROCESSING());
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
-        System.out.println(result);
+        //System.out.println(result);
         assertEquals(expected(), result);
     }
 

@@ -40,7 +40,7 @@ public class Html2Textile {
     }
 
     public void converter(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        Rules.parse(inputfile);
+        Rules.create(inputfile);
         TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
         texttransformer.setReader(from);
         texttransformer.rootWrap("html");

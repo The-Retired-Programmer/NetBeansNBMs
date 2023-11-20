@@ -46,13 +46,19 @@ public class StringProxy extends RuleSet<StringProxy> {
         if (rulecommandline.startsWith("REMOVE PATTERN ")) {
             match = trimquotes(rulecommandline.substring(14).trim());
             replacement = "";
-            add(new Rule<>(isSystemRule, (t) -> {t.replaceAll(match, replacement); return false;}));
+            add(new Rule<>(isSystemRule, (t) -> {
+                t.replaceAll(match, replacement);
+                return false;
+            }));
             return;
         }
         if (rulecommandline.startsWith("REMOVE ")) {
             match = trimquotes(rulecommandline.substring(6).trim());
             replacement = "";
-            add(new Rule<>(isSystemRule, (t) -> {t.replace(match, replacement); return false;}));
+            add(new Rule<>(isSystemRule, (t) -> {
+                t.replace(match, replacement);
+                return false;
+            }));
             return;
         }
         if (rulecommandline.startsWith("REPLACE PATTERN ")) {
@@ -62,7 +68,10 @@ public class StringProxy extends RuleSet<StringProxy> {
             }
             match = trimquotes(rulecommandline.substring(15, withpos + 1).trim());
             replacement = trimquotes(rulecommandline.substring(withpos + 5).trim());
-            add(new Rule<>(isSystemRule, (t) -> {t.replaceAll(match, replacement); return false;}));
+            add(new Rule<>(isSystemRule, (t) -> {
+                t.replaceAll(match, replacement);
+                return false;
+            }));
             return;
         }
         if (rulecommandline.startsWith("REPLACE ")) {
@@ -71,8 +80,11 @@ public class StringProxy extends RuleSet<StringProxy> {
                 throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE \" rule - " + rulecommandline);
             }
             match = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
-            replacement = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
-            add(new Rule<>(isSystemRule, (t) -> { t.replace(match, replacement); return false;}));
+            replacement = trimquotes(rulecommandline.substring(withpos + 5).trim());
+            add(new Rule<>(isSystemRule, (t) -> {
+                t.replace(match, replacement);
+                return false;
+            }));
             return;
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);

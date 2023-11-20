@@ -32,7 +32,7 @@ public class Transformhtmltext_Test {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        Rules.parse();
+        Rules.create();
         TransformHtml transformer;
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_transformhtmltext.html");
         Reader from = new InputStreamReader(is);

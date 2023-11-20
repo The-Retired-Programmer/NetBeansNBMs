@@ -75,13 +75,13 @@ public class ElementProxy extends RuleSet<ElementProxy> {
             return;
         }
         if (rulecommandline.startsWith("REMOVE ")) {
-            int withpos = rulecommandline.indexOf(" INCLUDING CONTENT");
-            if (withpos == -1) {
+            int includingpos = rulecommandline.indexOf(" INCLUDING CONTENT");
+            if (includingpos == -1) {
                 tagname = trimquotes(rulecommandline.substring(6).trim());
                 add(new Rule<>(isSystemRule, (e) -> remove(e.get(), tagname)));
                 return;
             }
-            tagname = trimquotes(rulecommandline.substring(6, withpos + 1).trim());
+            tagname = trimquotes(rulecommandline.substring(6, includingpos + 1).trim());
             add(new Rule<>(isSystemRule, (e) -> removeincludingcontent(e.get(), tagname)));
             return;
         }
