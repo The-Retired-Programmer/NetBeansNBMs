@@ -18,12 +18,6 @@ package uk.theretiredprogrammer.html2textile.rules;
 import java.io.IOException;
 
 public interface Proxy<C,R> {
-
-    public void set(C proxy);
-
-    public void complete();
-
-    public C get();
-    
+ 
     public R applyRules(C proxyvalue, boolean ignoresystemrules) throws IOException;
 }
