@@ -16,13 +16,13 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
-
 
 public class StyleRulesProcessing_Test extends TransformhtmlTest {
 
@@ -31,7 +31,7 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("stylerulesprocessing");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         //transformer.transform(new StyleNormalisation());
         //
         transformer.transform(Rules.get_HTML_STYLE_PROCESSING());
@@ -41,23 +41,45 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
         assertEquals(expected(), result);
     }
 
+    private String rules() {
+        return  """
+                [HTML_STYLE_PROCESSING]
+                #    MOVE text-align TO ATTRIBUTE
+                    REMOVE font-family
+                    REMOVE PATTERN font-size: 10pt
+                    REMOVE PATTERN font-size: 12pt
+                    REMOVE PATTERN color: #000000
+                    REMOVE PATTERN background-color: inherit
+                """;
+    }
+
+    private String input() {
+        return  """
+                <p style="text-align: right;">content</p>
+                <p style="font-family: serif;">content</p>
+                <p style="color: #000000; background-color: inherit;">content</p>
+                <p></p>
+                <p style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000;">content</p>
+                """;
+    }
+
     private String expected() {
-        return """
-html
-    line number="1"
-    p style="text-align: right;"
-        "content"
-    line number="2"
-    p
-        "content"
-    line number="3"
-    p
-        "content"
-    line number="4"
-    p
-    line number="5"
-    p style="margin: 20px 20px 20px 20px;line-height: 1.5em;"
-        "content"
-""";
+        return  """
+                html
+                    line number="1"
+                    p style="text-align: right;"
+                        "content"
+                    line number="2"
+                    p
+                        "content"
+                    line number="3"
+                    p
+                        "content"
+                    line number="4"
+                    p
+                    line number="5"
+                    p style="margin: 20px 20px 20px 20px;line-height: 1.5em;"
+                        "content"
+                """;
     }
 }

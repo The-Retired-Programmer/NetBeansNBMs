@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
@@ -27,14 +26,26 @@ import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 
 public class TransformhtmlTest {
 
-    public TransformHtml createtransformation(String inputname) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
+    public TransformHtml createtransformation(String inputname) throws IOException, ParserConfigurationException, SAXException {
         Rules.create();
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_" + inputname + ".html");
-        Reader from = new InputStreamReader(is);
-        TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
-        texttransformer.setReader(from);
-        texttransformer.rootWrap("html");
+        return commontransformation(new InputStreamReader(is));
+    }
+    
+    public TransformHtml createtransformation(Reader input) throws IOException, ParserConfigurationException, SAXException {
+        Rules.create();
+        return commontransformation(input);
+    }
 
+    public TransformHtml createtransformation(Reader rules, Reader input) throws IOException, ParserConfigurationException, SAXException {
+        Rules.create(rules);
+        return commontransformation(input);
+    }
+
+    public TransformHtml commontransformation(Reader input) throws IOException, ParserConfigurationException, SAXException {
+        TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
+        texttransformer.setReader(input);
+        texttransformer.rootWrap("html");
         try ( Reader transformed = texttransformer.transform()) {
             return new TransformHtml(transformed);
         }

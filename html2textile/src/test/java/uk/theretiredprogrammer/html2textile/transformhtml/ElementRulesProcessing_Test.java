@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +32,7 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("elementrulesprocessing");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         //
         transformer.transform(Rules.get_HTML_ELEMENT_PROCESSING());
         //
@@ -39,19 +40,37 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
         //System.out.println(result);
         assertEquals(expected(), result);
     }
+    
+    private String rules() {
+        return  """
+                [HTML_ELEMENT_PROCESSING]
+                    REMOVE header
+                    REMOVE section
+                """;
+    }
+
+    private String input() {
+        return  """
+                <header></header>
+                <header>
+                content <strong> strong content </strong> final content
+                </header>
+                <section></section>
+                """;
+    }
 
     private String expected() {
-        return """
-html
-    line number="1"
-    line number="2"
-    line number="3"
-    "content "
-    strong
-        " strong content "
-    " final content"
-    line number="4"
-    line number="5"
-""";
+        return  """
+                html
+                    line number="1"
+                    line number="2"
+                    line number="3"
+                    "content "
+                    strong
+                        " strong content "
+                    " final content"
+                    line number="4"
+                    line number="5"
+                """;
     }
 }

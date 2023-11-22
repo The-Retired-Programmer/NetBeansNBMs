@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import uk.theretiredprogrammer.html2textile.transformhtml.AttributeRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.ElementRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.StyleRulesProcessing;
@@ -43,6 +44,12 @@ public class Rules {
         initialiserules();
         loadrulesfile(getsystemrulesfile(), true);
     }
+    
+    //  intended for testing purposes
+    public static void create(Reader alternative) throws FileNotFoundException, IOException {
+        initialiserules();
+        loadrulesfile(alternative, true);
+    }
 
     private static InputStream getownrulesfile(File folder, File own) throws FileNotFoundException {
         String name = own.getName();
@@ -56,31 +63,42 @@ public class Rules {
 
     private static InputStream getsystemrulesfile() throws FileNotFoundException {
         return Rules.class.getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/system.rules");
-
     }
 
     private static InputStream getrulesfile(File folder, String name) throws FileNotFoundException {
         File[] rulefile = folder.listFiles((dir, fname) -> fname.equals(name + ".rules"));
         return rulefile.length == 1 ? new FileInputStream(rulefile[0]) : null;
     }
+    
+    private static void loadrulesfile(Reader ruleset, boolean issystem) throws IOException {
+        if (ruleset != null) {
+            try ( BufferedReader rulesreader = new BufferedReader(ruleset)) {
+                loadrulesfile(issystem, rulesreader);
+            }
+        }
+    }
 
     private static void loadrulesfile(InputStream ruleset, boolean issystem) throws IOException {
         if (ruleset != null) {
             try ( BufferedReader rulesreader = new BufferedReader(new InputStreamReader(ruleset))) {
-                RuleSet rulesset = null;
-                String line;
-                while ((line = rulesreader.readLine()) != null) {
-                    if (!(line.startsWith("#") || line.isBlank())) {
-                        if (line.startsWith("[")) {
-                            int pos = line.indexOf(']');
-                            rulesset = get(pos == -1 ? line.substring(1) : line.substring(1, pos));
-                        } else {
-                            if (rulesset == null) {
-                                throw new IOException("Missing rules set name");
-                            } else {
-                                rulesset.parseAndInsertRule(line, issystem);
-                            }
-                        }
+                loadrulesfile(issystem, rulesreader);
+            }
+        }
+    }
+    
+    private static void loadrulesfile(boolean issystem, BufferedReader rulesreader) throws IOException {
+        RuleSet rulesset = null;
+        String line;
+        while ((line = rulesreader.readLine()) != null) {
+            if (!(line.startsWith("#") || line.isBlank())) {
+                if (line.startsWith("[")) {
+                    int pos = line.indexOf(']');
+                    rulesset = get(pos == -1 ? line.substring(1) : line.substring(1, pos));
+                } else {
+                    if (rulesset == null) {
+                        throw new IOException("Missing rules set name");
+                    } else {
+                        rulesset.parseAndInsertRule(line, issystem);
                     }
                 }
             }

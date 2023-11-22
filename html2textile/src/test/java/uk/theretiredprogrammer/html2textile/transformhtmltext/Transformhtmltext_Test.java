@@ -17,9 +17,8 @@ package uk.theretiredprogrammer.html2textile.transformhtmltext;
 
 import uk.theretiredprogrammer.html2textile.transformhtml.*;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,13 +31,11 @@ public class Transformhtmltext_Test {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        Rules.create();
-        TransformHtml transformer;
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_transformhtmltext.html");
-        Reader from = new InputStreamReader(is);
+        Rules.create(new StringReader(rules()));
         TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
-        texttransformer.setReader(from);
+        texttransformer.setReader(new StringReader(input()));
         texttransformer.rootWrap("html");
+        TransformHtml transformer;
         try ( Reader transformed = texttransformer.transform()) {
             transformer = new TransformHtml(transformed);
         }
@@ -47,17 +44,32 @@ public class Transformhtmltext_Test {
         //System.out.println(result);
         assertEquals(expected(), result);
     }
+    
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <img />
+                <b>text</b>
+                
+                <img/>
+                
+                """;
+    }
 
     private String expected() {
-        return """
-               html
-                   line number="1"
-                   img
-                   line number="2"
-                   b
-                       "text"
-                   line number="4"
-                   img
-               """;
+        return  """
+                html
+                    line number="1"
+                    img
+                    line number="2"
+                    b
+                        "text"
+                    line number="4"
+                    img
+                """;
     }
 }
