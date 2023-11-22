@@ -16,22 +16,20 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 public class StyleNormalisation implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        NamedNodeMap attributes = element.getAttributes();
-        Node style = attributes.getNamedItem("style");
-        if (style != null) {
-            style.setNodeValue(normalise(style.getNodeValue()));
+        String style = element.getAttribute("style");
+        if (!style.isBlank()) {
+            element.setAttribute("style", normalise(style));
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }
 
     private String normalise(String from) {
         from = from.strip();
+        
         if (from.isEmpty()) {
             return from;
         }

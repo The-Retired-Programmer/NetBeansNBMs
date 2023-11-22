@@ -21,16 +21,19 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.rules.Rules;
 
 
-public class NullAttributeRemoval_Test extends TransformhtmlTest {
+public class AttributeRulesProcessing_Test extends TransformhtmlTest {
+
+    public AttributeRulesProcessing_Test() {
+    }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("nullattributeremoval");
-        transformer.transform(new StyleNormalisation());
+        TransformHtml transformer = super.createtransformation("attributerulesprocessing");
         //
-        transformer.transform(new NullAttributeRemoval());
+        transformer.transform(Rules.get_HTML_ATTRIBUTE_PROCESSING());
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
@@ -39,33 +42,31 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
 
     private String expected() {
         return """
-               html
-                   line number="1"
-                   p style="text-align:center;"
-                   line number="2"
-                   p
-                   line number="3"
-                   p
-                   line number="4"
-                   p class="abc"
-                   line number="5"
-                   p class="abc" style="x:y;"
-                   line number="6"
-                   p class="abc"
-                   line number="7"
-                   p
-                   line number="8"
-                   p
-                   line number="9"
-                   p style="x:y;"
-                   line number="10"
-                   p
-                   line number="11"
-                   p
-                   line number="12"
-                   p style="x:y;"
-                   line number="13"
-                   p class="abc"
-               """;
+html
+    line number="1"
+    p
+        "content"
+    line number="2"
+    p style="font-size: 10pt;"
+        "content"
+    line number="3"
+    p style="width: 100%;"
+        "content"
+    line number="4"
+    p style="font-size: 10pt;width: 100%;"
+        "content"
+    line number="5"
+    p style="font-size: 10pt;text-align: center;"
+        "content"
+    line number="6"
+    p border="0" style="font-size: 10pt;"
+        "content"
+    line number="7"
+    p
+        "content"
+    line number="8"
+    p dir="right"
+        "content"
+""";
     }
 }

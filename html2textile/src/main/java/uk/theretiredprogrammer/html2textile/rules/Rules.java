@@ -22,8 +22,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import uk.theretiredprogrammer.html2textile.transformhtml.AttributeRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.ElementRulesProcessing;
-import uk.theretiredprogrammer.html2textile.transformhtml.StyleReduction;
+import uk.theretiredprogrammer.html2textile.transformhtml.StyleRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformTextileText;
 
@@ -86,16 +87,18 @@ public class Rules {
         }
     }
 
-    static RuleSet get(String name) throws IOException {
+    private static RuleSet get(String name) throws IOException {
         return switch (name) {
             case "HTML_PREPROCESSING" ->
                 transformhtmltext;
             case "TEXTILE_POSTPROCESSING" ->
                 transformtextiletext;
             case "HTML_STYLE_PROCESSING" ->
-                stylereduction;
+                stylerulesprocessing;
             case "HTML_ELEMENT_PROCESSING" ->
                 elementrulesprocessing;
+            case "HTML_ATTRIBUTE_PROCESSING" ->
+                attributerulesprocessing;
             default ->
                 throw new IOException("Unknown rules set name: " + name);
         };
@@ -106,26 +109,31 @@ public class Rules {
         ignore_HTML_PREPROCESSING_systemrules = false;
         transformtextiletext = new TransformTextileText();
         ignore_TEXTILE_POSTPROCESSING_systemrules = false;
-        stylereduction = new StyleReduction();
+        stylerulesprocessing = new StyleRulesProcessing();
         ignore_HTML_STYLE_PROCESSING_systemrules = false;
         elementrulesprocessing = new ElementRulesProcessing();
         ignore_HTML_ELEMENT_PROCESSING_systemrules = false;
+        attributerulesprocessing = new AttributeRulesProcessing();
+        ignore_HTML_ATTRIBUTE_PROCESSING_systemrules = false;
     }
 
     private static TransformHtmlText transformhtmltext;
     private static boolean ignore_HTML_PREPROCESSING_systemrules;
     private static TransformTextileText transformtextiletext;
     private static boolean ignore_TEXTILE_POSTPROCESSING_systemrules;
-    private static StyleReduction stylereduction;
+    private static StyleRulesProcessing stylerulesprocessing;
     private static boolean ignore_HTML_STYLE_PROCESSING_systemrules;
     private static ElementRulesProcessing elementrulesprocessing;
     private static boolean ignore_HTML_ELEMENT_PROCESSING_systemrules;
+    private static AttributeRulesProcessing attributerulesprocessing;
+    private static boolean ignore_HTML_ATTRIBUTE_PROCESSING_systemrules;
 
     public static void ignore_ALL_SystemRules() {
         ignore_HTML_PREPROCESSING_systemrules = true;
         ignore_TEXTILE_POSTPROCESSING_systemrules = true;
         ignore_HTML_STYLE_PROCESSING_systemrules = true;
         ignore_HTML_ELEMENT_PROCESSING_systemrules = true;
+        ignore_HTML_ATTRIBUTE_PROCESSING_systemrules = true;
     }
 
     public static void ignore_HTML_PREPROCESSING_SystemRules() {
@@ -150,9 +158,9 @@ public class Rules {
         ignore_HTML_STYLE_PROCESSING_systemrules = true;
     }
 
-    public static StyleReduction get_HTML_STYLE_PROCESSING() {
-        stylereduction.ignoreSystemRules(ignore_HTML_STYLE_PROCESSING_systemrules);
-        return stylereduction;
+    public static StyleRulesProcessing get_HTML_STYLE_PROCESSING() {
+        stylerulesprocessing.ignoreSystemRules(ignore_HTML_STYLE_PROCESSING_systemrules);
+        return stylerulesprocessing;
     }
 
     public static void ignore_HTML_ELEMENT_PROCESSING_SystemRules() {
@@ -162,5 +170,14 @@ public class Rules {
     public static ElementRulesProcessing get_HTML_ELEMENT_PROCESSING() {
         elementrulesprocessing.ignoreSystemRules(ignore_HTML_ELEMENT_PROCESSING_systemrules);
         return elementrulesprocessing;
+    }
+
+    public static void ignore_HTML_ATTRIBUTE_PROCESSING_SystemRules() {
+        ignore_HTML_ELEMENT_PROCESSING_systemrules = true;
+    }
+
+    public static AttributeRulesProcessing get_HTML_ATTRIBUTE_PROCESSING() {
+        attributerulesprocessing.ignoreSystemRules(ignore_HTML_ATTRIBUTE_PROCESSING_systemrules);
+        return attributerulesprocessing;
     }
 }

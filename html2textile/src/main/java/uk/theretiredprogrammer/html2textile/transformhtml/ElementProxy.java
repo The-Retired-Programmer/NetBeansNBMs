@@ -17,10 +17,11 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
 
-public class ElementProxy extends RuleSet<ElementProxy> {
+public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element, Boolean> {
 
     private Element element;
 
@@ -30,6 +31,15 @@ public class ElementProxy extends RuleSet<ElementProxy> {
 
     public Element get() {
         return element;
+    }
+    
+    public void complete() {
+    }
+    
+    public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
+        element=proxyvalue;
+        return applyRuleActions(this, ignoresystemrules);
+        // will need a complete here
     }
 
     public boolean replace(Element element, String tagname, String newtagname) {

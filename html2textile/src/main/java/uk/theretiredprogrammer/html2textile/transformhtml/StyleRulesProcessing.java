@@ -17,26 +17,17 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import uk.theretiredprogrammer.html2textile.transformtext.StringProxy;
 
-public class StyleReduction extends StringProxy implements TransformHtmlItem {
+public class StyleRulesProcessing extends StyleProxy implements TransformHtmlItem {
 
     private boolean ignoresystemrules;
 
     public void ignoreSystemRules(boolean ignoresystemrules) {
         this.ignoresystemrules = ignoresystemrules;
     }
-    
+
     public ResumeAction testElementAndModify(Element element) throws IOException {
-        NamedNodeMap attributes = element.getAttributes();
-        Node style = attributes.getNamedItem("style");
-        if (style != null) {
-            set(style.getNodeValue());
-            applyRuleActions(this, ignoresystemrules);
-            style.setNodeValue(get());
-        }
+        applyRules(element, ignoresystemrules);
         return ResumeAction.RESUME_FROM_NEXT;
     }
 }

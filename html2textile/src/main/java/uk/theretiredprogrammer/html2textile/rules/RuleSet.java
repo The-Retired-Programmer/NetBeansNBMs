@@ -29,9 +29,9 @@ public abstract class RuleSet<S> {
 
     public abstract void parseAndInsertRule(String ruletext, boolean isSystemRule) throws IOException;
 
-    public boolean applyRuleActions(S item, boolean ignoresystemrules) throws IOException {
+    public boolean applyRuleActions(S proxy, boolean ignoresystemrules) throws IOException {
         for (var rule : rules) {
-            if (rule.applyRuleAction(item, ignoresystemrules)) {
+            if (rule.applyRuleAction(proxy, ignoresystemrules)) {
                 return true;
             }
         }

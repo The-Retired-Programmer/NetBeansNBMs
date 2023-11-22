@@ -15,19 +15,19 @@
 #
 [HTML_ELEMENT_PROCESSING]
     REMOVE header
-    REMOVE section INCLUDING CONTENT
-#    REPLACE header WITH footer
-#[HTML_ATTRIBUTE_PROCESSING]
-#   REMOVE dir IF auto
-#    REMOVE id IF PATTERN cloak.*
-#    MOVE width TO STYLE
+    REMOVE section
+[HTML_ATTRIBUTE_PROCESSING]
+    REMOVE dir IF auto
+    REMOVE id IF PATTERN cloak.*
+    MOVE width TO STYLE
+    MOVE text-align TO STYLE
 [HTML_STYLE_PROCESSING]
-#    MOVE PATTERN text-align:.* TO ATTRIBUTE
-    REMOVE PATTERN font-family:[^;]*;
-    REMOVE font-size:12pt;
-    REMOVE font-size:10pt;
-    REMOVE color:#000000;
-    REMOVE background-color:inherit;
+#    MOVE text-align TO ATTRIBUTE
+    REMOVE font-family
+    REMOVE PATTERN font-size: 10pt
+    REMOVE PATTERN font-size: 12pt
+    REMOVE PATTERN color: #000000
+    REMOVE PATTERN background-color: inherit
 #
 # final edits on the textile document after its translations
 #

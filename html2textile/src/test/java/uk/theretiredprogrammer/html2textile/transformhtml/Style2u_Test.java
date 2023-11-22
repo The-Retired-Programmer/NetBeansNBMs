@@ -61,7 +61,7 @@ public class Style2u_Test extends TransformhtmlTest {
                            "."
                    line number="3"
                    p
-                       span style=""
+                       span style="  "
                            "The team are a group of ladies who run and support the Girls Go Sailing come from varied sailing and non-sailing backgrounds, they are here to help you.  To find out more, please go to our "
                            strong
                                a href="index.php?option=com_content&view=article&id=298"
@@ -87,7 +87,7 @@ public class Style2u_Test extends TransformhtmlTest {
                            " Christmas Dinner, meet at 6.30. Hear some experiences from the 2023 season.  Christmas dinner at 7.30pm. "
                    line number="7"
                    p
-                       span style=""
+                       span style="  "
                    line number="8"
                    p
                        span style=""
@@ -103,7 +103,7 @@ public class Style2u_Test extends TransformhtmlTest {
                                    "Cruisers"
                    line number="10"
                    p
-                       span style=""
+                       span style="  "
                            "A very useful Beginners Guide to Cruising - click "
                            a href="assets/documents/GGS_2022/Beginners_Guide_to_Cruiser_Racing.pdf"
                                "here"

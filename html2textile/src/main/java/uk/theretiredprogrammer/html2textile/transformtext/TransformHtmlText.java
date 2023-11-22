@@ -57,9 +57,7 @@ public class TransformHtmlText extends StringProxy {
             copylines(original, wrapped);
             wrapped.write("</" + rootname + ">");
         }
-        set(wrapped.toString());
-        applyRuleActions(this,ignoresystemrules);
-        return new StringReader(this.get());
+        return new StringReader(applyRules(wrapped.toString(),ignoresystemrules));
     }
 
     private void copylines(BufferedReader from, Writer to) throws IOException {

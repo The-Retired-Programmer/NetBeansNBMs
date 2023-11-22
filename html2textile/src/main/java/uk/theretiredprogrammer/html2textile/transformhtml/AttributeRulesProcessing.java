@@ -18,7 +18,7 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import java.io.IOException;
 import org.w3c.dom.Element;
 
-public class ElementRulesProcessing extends ElementProxy implements TransformHtmlItem {
+public class AttributeRulesProcessing extends AttributeProxy implements TransformHtmlItem {
 
     private boolean ignoresystemrules;
 
@@ -27,6 +27,6 @@ public class ElementRulesProcessing extends ElementProxy implements TransformHtm
     }
 
     public ResumeAction testElementAndModify(Element element) throws IOException {
-        return applyRules(element, ignoresystemrules) ? ResumeAction.RESUME_FROM_PARENT : ResumeAction.RESUME_FROM_NEXT;
+        return applyRules(element, ignoresystemrules) ? ResumeAction.RESUME_FROM_SELF : ResumeAction.RESUME_FROM_NEXT;
     }
 }

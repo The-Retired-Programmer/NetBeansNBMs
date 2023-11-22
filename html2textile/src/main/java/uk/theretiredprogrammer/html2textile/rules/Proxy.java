@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.transformhtml;
+package uk.theretiredprogrammer.html2textile.rules;
 
 import java.io.IOException;
-import org.w3c.dom.Element;
 
-public class ElementRulesProcessing extends ElementProxy implements TransformHtmlItem {
+public interface Proxy<C,R> {
 
-    private boolean ignoresystemrules;
+    public void set(C proxy);
 
-    public void ignoreSystemRules(boolean ignoresystemrules) {
-        this.ignoresystemrules = ignoresystemrules;
-    }
+    public void complete();
 
-    public ResumeAction testElementAndModify(Element element) throws IOException {
-        return applyRules(element, ignoresystemrules) ? ResumeAction.RESUME_FROM_PARENT : ResumeAction.RESUME_FROM_NEXT;
-    }
+    public C get();
+    
+    public R applyRules(C proxyvalue, boolean ignoresystemrules) throws IOException;
 }

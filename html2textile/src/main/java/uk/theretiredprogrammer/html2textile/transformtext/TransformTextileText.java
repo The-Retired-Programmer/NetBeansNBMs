@@ -48,9 +48,7 @@ public class TransformTextileText extends StringProxy {
 
     public void transform() throws IOException {
         for (int i = 0; i < lines.length; i++) {
-            set(lines[i]);
-            applyRuleActions(this, ignoresystemrules);
-            lines[i] = this.get();
+            lines[i] = applyRules(lines[i],ignoresystemrules);
         }
     }
 }

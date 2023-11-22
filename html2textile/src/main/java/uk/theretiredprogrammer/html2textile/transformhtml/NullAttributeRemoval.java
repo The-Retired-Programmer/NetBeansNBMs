@@ -29,7 +29,7 @@ public class NullAttributeRemoval implements TransformHtmlItem {
             NamedNodeMap attributes = element.getAttributes();
             for (int i = 0; i < attributes.getLength(); i++) {
                 Node attribute = attributes.item(i);
-                if (attribute.getNodeValue().isEmpty()) {
+                if (attribute.getNodeValue().isBlank()) {
                     namestoremove.add(attribute.getNodeName());
                 }
             }
