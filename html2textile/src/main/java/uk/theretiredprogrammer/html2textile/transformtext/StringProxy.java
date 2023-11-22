@@ -24,18 +24,6 @@ public class StringProxy extends RuleSet<StringProxy> implements Proxy<String,St
 
     private String text;
 
-    public void set(String text) {
-        this.text = text;
-    }
-    
-    public void complete() {
-        
-    }
-
-    public String get() {
-        return text;
-    }
-    
     public String applyRules(String proxyvalue, boolean ignoresystemrules) throws IOException {
         text=proxyvalue;
         applyRuleActions(this, ignoresystemrules);

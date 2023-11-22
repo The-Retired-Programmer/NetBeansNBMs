@@ -25,24 +25,13 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
 
     private Element element;
 
-    public void set(Element element) {
-        this.element = element;
-    }
-
-    public Element get() {
-        return element;
-    }
-    
-    public void complete() {
-    }
-    
     public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
         element=proxyvalue;
         return applyRuleActions(this, ignoresystemrules);
-        // will need a complete here
+        // will need a complete here when a style object is used
     }
 
-    public boolean replace(Element element, String tagname, String newtagname) {
+    public boolean replace(String tagname, String newtagname) {
         if (tagname.equals(element.getTagName())) {
             Element newelement = DomHelper.createElement(newtagname, element);
             DomHelper.appendAttributes(newelement, element.getAttributes());
@@ -53,7 +42,7 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         return false;
     }
 
-    public boolean remove(Element element, String tagname) {
+    public boolean remove(String tagname) {
         if (tagname.equals(element.getTagName())) {
             DomHelper.insertBeforeNode(element, element.getChildNodes());
             DomHelper.removeNode(element);
@@ -62,7 +51,7 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         return false;
     }
 
-    public boolean removeincludingcontent(Element item, String tagname) {
+    public boolean removeincludingcontent(String tagname) {
         if (tagname.equals(element.getTagName())) {
             DomHelper.removeNode(element);
             return true;
@@ -81,18 +70,18 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
             }
             tagname = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
             newtagname = trimquotes(rulecommandline.substring(withpos + 5).trim());
-            add(new Rule<>(isSystemRule, (e) -> replace(e.get(), tagname, newtagname)));
+            add(new Rule<>(isSystemRule, (e) -> e.replace(tagname, newtagname)));
             return;
         }
         if (rulecommandline.startsWith("REMOVE ")) {
             int includingpos = rulecommandline.indexOf(" INCLUDING CONTENT");
             if (includingpos == -1) {
                 tagname = trimquotes(rulecommandline.substring(6).trim());
-                add(new Rule<>(isSystemRule, (e) -> remove(e.get(), tagname)));
+                add(new Rule<>(isSystemRule, (e) -> e.remove(tagname)));
                 return;
             }
             tagname = trimquotes(rulecommandline.substring(6, includingpos + 1).trim());
-            add(new Rule<>(isSystemRule, (e) -> removeincludingcontent(e.get(), tagname)));
+            add(new Rule<>(isSystemRule, (e) -> e.removeincludingcontent(tagname)));
             return;
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);

@@ -26,24 +26,11 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
     private Element element;
     private String[] stylerules;
 
-    public void set(Element element) {
-        this.element = element;
-    }
-    
-    public void complete() {
-        
-    }
-
-    public Element get() {
-        return element;
-    }
-    
     public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
         element=proxyvalue;
         return applyRuleActions(this, ignoresystemrules);
-        // will need a complete here
+        // will need a complete here when style object is used
     }
-
 
     private boolean replace(String match, String replacement) {
         if (extractstylerules()) {

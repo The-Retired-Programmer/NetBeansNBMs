@@ -25,22 +25,10 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
 
     private Element element;
 
-    public void set(Element element) {
-        this.element = element;
-    }
-    
-    public void complete() {
-        
-    }
-
-    public Element get() {
-        return element;
-    }
-    
     public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
         element=proxyvalue;
         return applyRuleActions(this, ignoresystemrules);
-        // will need a complete here
+        // will need a complete here when the style object is used.
     }
 
     private boolean movetostyle(String attributename) {
