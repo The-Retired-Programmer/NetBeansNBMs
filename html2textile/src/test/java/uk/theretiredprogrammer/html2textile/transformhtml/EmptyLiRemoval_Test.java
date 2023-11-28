@@ -31,7 +31,6 @@ public class EmptyLiRemoval_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("emptyliremoval");
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new EmptyLiRemoval());
         //

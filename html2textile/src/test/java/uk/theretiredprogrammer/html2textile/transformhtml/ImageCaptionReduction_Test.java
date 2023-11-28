@@ -31,7 +31,6 @@ public class ImageCaptionReduction_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("imagecaptionreduction");
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new ImageCaptionReduction());
         //

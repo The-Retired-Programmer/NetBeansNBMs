@@ -32,7 +32,6 @@ public class DivReduction_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new DivReduction());
         //
@@ -80,12 +79,12 @@ public class DivReduction_Test extends TransformhtmlTest {
             html
                 line number="1"
                 p
-                    span style="font-size: 12pt; "
+                    span style="font-size: 12pt;"
                         strong
                             "bold text"
                 line number="2"
                 p
-                    span style="font-size: 12pt; "
+                    span style="font-size: 12pt;"
                         "Plain text."
                 line number="3"
                 p
@@ -95,22 +94,22 @@ public class DivReduction_Test extends TransformhtmlTest {
                 ul
                     line number="6"
                     li
-                        span style="font-size: 12pt; "
+                        span style="font-size: 12pt;"
                             "Item1"
                     line number="7"
                     li
-                        span style="font-size: 12pt; "
+                        span style="font-size: 12pt;"
                             "Item2"
                     line number="8"
                     li
-                        span style="font-size: 12pt; "
+                        span style="font-size: 12pt;"
                             "Item3"
                     line number="9"
                 line number="10"
                 line number="11"
                 line number="12"
                 p style="margin: 50px 0 0 100px; padding: 0; float: right; width: 20%; text-align: center; line-height: 12pt; "
-                    img alt="img" src="somewhere.jpg" style="width: 100%; margin: 0; padding: 0; "
+                    img alt="img" src="somewhere.jpg" style="width: 100%; margin: 0; padding: 0;"
                     br
                     "caption"
                 line number="13"

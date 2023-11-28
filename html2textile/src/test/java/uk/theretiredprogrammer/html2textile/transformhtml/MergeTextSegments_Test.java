@@ -28,7 +28,6 @@ public class MergeTextSegments_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("mergetextsegments");
-        transformer.transform(new StyleNormalisation());
         transformer.transform(new RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements());
         //
         transformer.transform(new MergeTextSegments());

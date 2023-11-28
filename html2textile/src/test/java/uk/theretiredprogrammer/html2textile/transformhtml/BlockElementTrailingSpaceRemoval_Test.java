@@ -32,9 +32,7 @@ public class BlockElementTrailingSpaceRemoval_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("blocktrailingspaceremoval");
-        transformer.transform(new StyleNormalisation());
         transformer.transform(Rules.get_HTML_STYLE_PROCESSING());
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new BlockElementTrailingSpaceRemoval());
         //

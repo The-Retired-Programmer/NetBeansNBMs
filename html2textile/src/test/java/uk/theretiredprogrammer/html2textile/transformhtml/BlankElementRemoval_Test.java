@@ -32,7 +32,6 @@ public class BlankElementRemoval_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("blankelementremoval");
-        transformer.transform(new StyleNormalisation());
         
         transformer.transform(Rules.get_HTML_STYLE_PROCESSING());
         //

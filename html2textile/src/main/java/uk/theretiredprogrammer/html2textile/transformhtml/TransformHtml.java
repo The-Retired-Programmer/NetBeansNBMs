@@ -47,7 +47,6 @@ public class TransformHtml {
     }
 
     public void transform() throws IOException {
-        transform(new StyleNormalisation());
         transform(Rules.get_HTML_ELEMENT_PROCESSING());
         transform(Rules.get_HTML_ATTRIBUTE_PROCESSING());
         transform(new DivRlStyleRemoval());

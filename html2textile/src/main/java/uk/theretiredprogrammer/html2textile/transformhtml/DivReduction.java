@@ -15,11 +15,12 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.IOException;
 import org.w3c.dom.Element;
 
 public class DivReduction implements TransformHtmlItem {
 
-    public ResumeAction testElementAndModify(Element element) {
+    public ResumeAction testElementAndModify(Element element) throws IOException {
         if (element.getTagName().equals("div")) {
             if (element.hasAttributes()) {
                 Element child = DomHelper.getOnlyChildElementSkippingLine(element);

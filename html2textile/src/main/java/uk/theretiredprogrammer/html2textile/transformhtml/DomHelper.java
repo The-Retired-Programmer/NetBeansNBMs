@@ -254,7 +254,7 @@ public abstract class DomHelper {
         element.setAttribute(replacement.name, replacement.value);
     }
 
-    public static void mergeAttributes(Element child, Element target) {
+    public static void mergeAttributes(Element child, Element target) throws IOException {
         if (child.hasAttributes()) {
             NamedNodeMap attributes = child.getAttributes();
             for (int i = 0; i < attributes.getLength(); i++) {
@@ -269,11 +269,12 @@ public abstract class DomHelper {
                         }
                     }
                     case "style" -> {
-                        if (target.hasAttribute(attrname)) {
-                            target.setAttribute(attrname, target.getAttribute(attrname) + attr.getNodeValue());
-                        } else {
-                            target.setAttribute(attrname, attr.getNodeValue());
-                        }
+                        Style targetstyle = new Style();
+                        targetstyle.extract(target);
+                        Style thisstyle = new Style();
+                        thisstyle.extract(attr.getNodeValue());
+                        targetstyle.insertStyle(thisstyle);
+                        targetstyle.setStyle(target);
                     }
                     default ->
                         target.setAttribute(attrname, attr.getNodeValue());

@@ -29,7 +29,6 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new NullAttributeRemoval());
         //
@@ -65,7 +64,7 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
         return """
                html
                    line number="1"
-                   p style="text-align: center; "
+                   p style="text-align:center;"
                    line number="2"
                    p
                    line number="3"
@@ -73,7 +72,7 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
                    line number="4"
                    p class="abc"
                    line number="5"
-                   p class="abc" style="x: y; "
+                   p class="abc" style="x:y"
                    line number="6"
                    p class="abc"
                    line number="7"
@@ -81,13 +80,13 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
                    line number="8"
                    p
                    line number="9"
-                   p style="x: y; "
+                   p style="x:y"
                    line number="10"
                    p
                    line number="11"
                    p
                    line number="12"
-                   p style="x: y; "
+                   p style="x:y"
                    line number="13"
                    p class="abc"
                """;

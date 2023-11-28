@@ -31,7 +31,6 @@ public class RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements_Test e
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("restructurews");
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements());
         //

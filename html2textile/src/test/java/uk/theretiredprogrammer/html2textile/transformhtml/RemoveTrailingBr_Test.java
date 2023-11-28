@@ -31,7 +31,6 @@ public class RemoveTrailingBr_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("removetrailingbr");
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new RemoveTrailingBr());
         //

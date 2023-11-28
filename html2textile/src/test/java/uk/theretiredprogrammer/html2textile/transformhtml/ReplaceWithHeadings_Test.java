@@ -32,7 +32,6 @@ public class ReplaceWithHeadings_Test extends TransformhtmlTest {
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new ReplaceWithHeadings());
         //

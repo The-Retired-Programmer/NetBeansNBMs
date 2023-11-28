@@ -224,7 +224,6 @@ public class RestructureTable_Test extends TransformhtmlTest {
     
     public void testtransformation(String rules, String input, String expectedresult) throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation(new StringReader(rules), new StringReader(input));
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new RestructureTable());
         //
@@ -403,11 +402,11 @@ html
         tbody
             line number="3"
             tr
-                td colspan="3" style="font-size: 10px; font-weight: bold; font-style: italic; "
+                td colspan="3" style="font-size:10px;font-weight:bold;font-style:italic;"
                     "d1"
             line number="4"
             tr
-                td colspan="2" style="font-weight: bold; font-size: 10px; font-style: italic; "
+                td colspan="2" style="font-weight:bold;font-size:10px;font-style:italic;"
                     "d2"
             line number="5"
             tr
@@ -425,7 +424,7 @@ html
                     "x"
             line number="7"
             tr
-                td colspan="2" style="font-weight: bold; font-size: 10px; "
+                td colspan="2" style="font-weight:bold;font-size:10px;"
                     "d5"
                 td style="color: red; "
                     "x"
@@ -516,11 +515,11 @@ html
             tr
                 td
                     "d1"
-                td colspan="2" style="font-size: 10pt; "
+                td colspan="2" style="font-size:10pt"
                     "d2"
             line number="30"
             tr
-                td colspan="2" rowspan="3" style="font-size: 10pt; "
+                td colspan="2" rowspan="3" style="font-size:10pt"
                     "big"
                 td
                     "d3"
@@ -551,24 +550,24 @@ html
         return """
 html
     line number="1"
-    table style="border: 0; margin-left: auto; margin-right: auto; "
+    table style="border: 0; margin-left: auto; margin-right: auto;"
         colgroup style="width: 25%; "
             col style="border: medium solid #000000; "
             col style="background-color: #dea55e; text-align: center; "
             col style="text-align: center; "
             col style="background-color: #e9ae6d; text-align: center; "
         thead
-            tr style="background-color: #adadad; "
-                th style="border: medium solid #000000; "
+            tr style="background-color: #adadad;"
+                th style="border: medium solid #000000;"
                     strong
                         "Wind Direction"
-                th style="text-align: center; "
+                th style="text-align: center;"
                     strong
                         "Tide Direction"
-                th style="text-align: center; "
+                th style="text-align: center;"
                     strong
                         "Preferred Course(s)"
-                th style="text-align: center; "
+                th style="text-align: center;"
                     strong
                         "Preferred Start Line"
         line number="2"

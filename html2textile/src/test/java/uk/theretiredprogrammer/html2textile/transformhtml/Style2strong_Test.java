@@ -31,7 +31,6 @@ public class Style2strong_Test extends TransformhtmlTest {
 //    @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation("style2strong");
-        transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new Style2strong());
         //
