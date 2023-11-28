@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +31,7 @@ public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("mergeliandfollowingblockelement");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new MergeLiAndFollowingBlockElement());
@@ -38,6 +39,34 @@ public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
+    }
+    
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <ul>
+                    <li><p>abc</p></li>
+                    <li><h1>abc</h1></li>
+                    <li>
+                        <h1>
+                            xyz
+                        </h1>
+                    </li>
+                    <li style="font-size: 12pt; ">
+                        <p>ijk</p>
+                    </li>
+                    <li>
+                        <p style="font-size: 12pt; ">ijk</p>
+                    </li>
+                    <li style="font-size: 12pt; ">
+                        <p style="font-size: 18pt; ">xyz</p>
+                    </li>
+                </ul>
+                """;
     }
 
     private String expected() {
@@ -59,17 +88,17 @@ public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
                             line number="7"
                             line number="8"
                         line number="9"
-                        li style="font-size=12pt;"
+                        li style="font-size: 12pt; "
                             line number="10"
                             "ijk"
                             line number="11"
                         line number="12"
-                        li style="font-size=12pt;"
+                        li style="font-size: 12pt; "
                             line number="13"
                             "ijk"
                             line number="14"
                         line number="15"
-                        li style="font-size=12pt;font-size=18pt;"
+                        li style="font-size: 12pt; font-size: 18pt; "
                             line number="16"
                             "xyz"
                             line number="17"

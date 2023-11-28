@@ -15,12 +15,16 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.IOException;
+import uk.theretiredprogrammer.html2textile.rules.Attribute;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import static org.w3c.dom.Node.TEXT_NODE;
 import org.w3c.dom.NodeList;
+import uk.theretiredprogrammer.html2textile.rules.Style;
+import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public abstract class DomHelper {
 
@@ -228,9 +232,11 @@ public abstract class DomHelper {
         }
     }
 
-    public static void insertIntoStyleAttribute(Element element, String rule) {
-        String style = element.getAttribute("style");
-        element.setAttribute("style", style == null ? rule : style + rule);
+    public static void insertIntoStyleAttribute(Element element, String rule) throws IOException {
+        Style style = new Style();
+        style.extract(element);
+        style.insertStyleRule(new StyleRule(rule));
+        style.setStyle(element);
     }
 
     public static void removeAttribute(Element element, String attributename) {

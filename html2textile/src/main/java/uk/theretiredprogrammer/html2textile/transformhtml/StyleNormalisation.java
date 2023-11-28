@@ -15,27 +15,17 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import uk.theretiredprogrammer.html2textile.rules.Style;
+import java.io.IOException;
 import org.w3c.dom.Element;
 
 public class StyleNormalisation implements TransformHtmlItem {
 
-    public ResumeAction testElementAndModify(Element element) {
-        String style = element.getAttribute("style");
-        if (!style.isBlank()) {
-            element.setAttribute("style", normalise(style));
+    public ResumeAction testElementAndModify(Element element) throws IOException {
+        Style style = new Style();
+        if (style.extract(element)) {
+            style.setStyle(element);
         }
         return ResumeAction.RESUME_FROM_NEXT;
-    }
-
-    private String normalise(String from) {
-        from = from.strip();
-        
-        if (from.isEmpty()) {
-            return from;
-        }
-        if (!from.endsWith(";")) {
-            from = from + ";";
-        }
-        return from.replace(" ", "");
     }
 }

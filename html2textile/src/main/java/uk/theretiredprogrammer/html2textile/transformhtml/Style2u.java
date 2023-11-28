@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import uk.theretiredprogrammer.html2textile.rules.Attribute;
 import org.w3c.dom.Element;
 
 public class Style2u implements TransformHtmlItem {

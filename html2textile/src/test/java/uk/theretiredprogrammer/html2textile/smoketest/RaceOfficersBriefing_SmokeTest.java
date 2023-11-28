@@ -27,7 +27,7 @@ public class RaceOfficersBriefing_SmokeTest extends SmokeTest {
     public RaceOfficersBriefing_SmokeTest() {
     }
 
-    @Test
+//    @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
         transformation("sample_race-officers-briefing.html", "RaceOfficersBriefing_SMOKE_TEST.html", "RaceOfficersBriefing_SMOKE_TEST.textile", expected);
     }

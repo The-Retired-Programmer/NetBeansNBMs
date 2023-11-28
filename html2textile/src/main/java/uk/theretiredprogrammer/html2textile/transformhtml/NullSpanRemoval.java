@@ -22,12 +22,7 @@ public class NullSpanRemoval implements TransformHtmlItem {
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("span")) {
             String stylevalue = DomHelper.getOnlyAttribute(element, "style");
-            if (stylevalue != null && stylevalue.isBlank()) {
-                DomHelper.insertBeforeNode(element, element.getChildNodes());
-                DomHelper.removeNode(element);
-                return ResumeAction.RESUME_FROM_PARENT;
-            }
-            if (!element.hasAttributes()) {
+            if ((stylevalue != null && stylevalue.isBlank()) || !element.hasAttributes()) {
                 DomHelper.insertBeforeNode(element, element.getChildNodes());
                 DomHelper.removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;

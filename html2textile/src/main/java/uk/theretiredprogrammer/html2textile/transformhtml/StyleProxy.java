@@ -16,103 +16,86 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.util.List;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.rules.Attribute;
 import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
+import uk.theretiredprogrammer.html2textile.rules.Style;
+import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Boolean> {
 
     private Element element;
-    private String[] stylerules;
+    private Style style;
+    private IOException error = null;
 
     public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
-        element=proxyvalue;
-        return applyRuleActions(this, ignoresystemrules);
-        // will need a complete here when style object is used
+        error = null;
+        boolean res = false;
+        element = proxyvalue;
+        style = new Style();
+        if (style.extract(element)) {
+            res = applyRuleActions(this, ignoresystemrules);
+            style.setStyle(element);
+        }
+        if (error != null) {
+            throw error;
+        }
+        return res;
+    }
+    
+    private boolean remove(String namematch) {
+        style.removeStyleRule(namematch);
+        return false;
     }
 
-    private boolean replace(String match, String replacement) {
-        if (extractstylerules()) {
-            for (int i = 0; i< stylerules.length; i++) {
-                if (stylerules[i].startsWith(match + ":")) {
-                    stylerules[i] = replacement;
-                }
-            }
-            updatestyle();
-        }
+    private boolean removeAll(String pattern) {
+            style.removeStyleRuleIfPattern(pattern);
+        return false;
+    }
+
+    private boolean replace(String namematch, String valuereplacement) {
+        style.replaceStyleRuleValue(namematch, valuereplacement);
         return false;
     }
 
     private boolean replaceAll(String pattern, String replacement) {
-        if (extractstylerules()) {
-            for (int i = 0; i< stylerules.length; i++) {
-                if (stylerules[i].matches(pattern)) {
-                    stylerules[i] = replacement;
-                }
-            }
-            updatestyle();
+        try {
+            style.replaceStyleRuleUsingPattern(pattern, replacement);
+        } catch (IOException ex) {
+            error = ex;
+            return true;
         }
         return false;
     }
 
     private boolean movePatternToAttribute(String pattern) {
-        if (extractstylerules()) {
-            for (int i = 0; i< stylerules.length; i++) {
-                if (stylerules[i].matches(pattern)) {
-                    setattribute(stylerules[i]);
-                    stylerules[i] = "";
-                }
-            }
-            updatestyle();
+        List<StyleRule> srules = style.removeStyleRuleIfPattern(pattern);
+        for (StyleRule sr : srules) {
+            Attribute attr = new Attribute(sr);
+            setattribute(attr);
         }
         return false;
     }
 
-    private boolean moveToAttribute(String match) {
-        if (extractstylerules()) {
-            for (int i = 0; i< stylerules.length; i++) {
-                if (stylerules[i].startsWith(match + ":")) {
-                    setattribute(stylerules[i]);
-                    stylerules[i] = "";
-                }
-            }
-            updatestyle();
+    private boolean moveToAttribute(String rulematch) {
+        StyleRule sr;
+        try {
+            sr = new StyleRule(rulematch);
+        } catch (IOException ex) {
+            error = ex;
+            return true;
         }
+        Attribute attr = new Attribute(sr);
+        style.removeStyleRule(sr.getName());
+        setattribute(attr);
         return false;
     }
 
-    private boolean extractstylerules() {
-        String style = element.getAttribute("style");
-        if (style.isEmpty()) {
-            return false;
-        }
-        stylerules = style.split(";");
-        for (int i = 0; i< stylerules.length; i++) {
-            stylerules[i]=stylerules[i].trim();
-        }
-        return true;
-    }
-
-    private void setattribute(String stylerule) {
-        String[] parts = stylerule.split(":");
-        element.setAttribute(parts[0].trim(), parts[1].trim());
-    }
-
-    private void updatestyle() {
-        StringBuilder sb = new StringBuilder();
-        for (String stylerule : stylerules) {
-            if (!stylerule.isBlank()) {
-                sb.append(stylerule.trim());
-                sb.append(';');
-            }
-        }
-        String newstyle = sb.toString();
-        if (newstyle.isBlank()) {
-            element.removeAttribute("style");
-        } else {
-            element.setAttribute("style", newstyle);
-        }
+    private void setattribute(Attribute attr) {
+        element.setAttribute(attr.name, attr.value);
     }
 
     public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
@@ -121,12 +104,12 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
         rulecommandline = rulecommandline.trim();
         if (rulecommandline.startsWith("REMOVE PATTERN ")) {
             match = trimquotes(rulecommandline.substring(14).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.replaceAll(match, "")));
+            add(new Rule<>(isSystemRule, (e) -> e.removeAll(match)));
             return;
         }
         if (rulecommandline.startsWith("REMOVE ")) {
             match = trimquotes(rulecommandline.substring(6).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.replace(match, "")));
+            add(new Rule<>(isSystemRule, (e) -> e.remove(match)));
             return;
         }
         if (rulecommandline.startsWith("REPLACE PATTERN ")) {

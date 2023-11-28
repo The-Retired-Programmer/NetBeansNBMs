@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +28,7 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("nullattributeremoval");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new NullAttributeRemoval());
@@ -37,11 +38,34 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
         assertEquals(expected(), result);
     }
 
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <p style="text-align:center;"></p>
+                <p style=""></p>
+                <p style=" "></p>
+                <p style="" class="abc"></p>
+                <p style="x:y" class="abc"></p>
+                <p style=" " class="abc"></p>
+                <p style="" class=" "></p>
+                <p style=" " class=" "></p>
+                <p style="x:y" class=" "></p>
+                <p style="" class=""></p>
+                <p style=" " class=""></p>
+                <p style="x:y" class=""></p>
+                <p class="abc"></p>
+                """;
+    }
+    
     private String expected() {
         return """
                html
                    line number="1"
-                   p style="text-align:center;"
+                   p style="text-align: center; "
                    line number="2"
                    p
                    line number="3"
@@ -49,7 +73,7 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
                    line number="4"
                    p class="abc"
                    line number="5"
-                   p class="abc" style="x:y;"
+                   p class="abc" style="x: y; "
                    line number="6"
                    p class="abc"
                    line number="7"
@@ -57,13 +81,13 @@ public class NullAttributeRemoval_Test extends TransformhtmlTest {
                    line number="8"
                    p
                    line number="9"
-                   p style="x:y;"
+                   p style="x: y; "
                    line number="10"
                    p
                    line number="11"
                    p
                    line number="12"
-                   p style="x:y;"
+                   p style="x: y; "
                    line number="13"
                    p class="abc"
                """;

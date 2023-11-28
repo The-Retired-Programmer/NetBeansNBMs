@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.transformhtml.AttributeRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.ElementRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.StyleRulesProcessing;
@@ -31,8 +32,8 @@ import uk.theretiredprogrammer.html2textile.transformtext.TransformTextileText;
 
 public class Rules {
 
-    public static void create(File datainput) throws FileNotFoundException, IOException {
-        initialiserules();
+    public static void create(File datainput, ErrHandler err) throws FileNotFoundException, IOException {
+        initialiserules(err);
         File parent = datainput.getParentFile();
         loadrulesfile(getownrulesfile(parent, datainput), false);
         loadrulesfile(getsharedrulesfile(parent), false);
@@ -40,14 +41,14 @@ public class Rules {
         loadrulesfile(getsystemrulesfile(), true);
     }
 
-    public static void create() throws FileNotFoundException, IOException {
-        initialiserules();
+    public static void create(ErrHandler err) throws FileNotFoundException, IOException {
+        initialiserules(err);
         loadrulesfile(getsystemrulesfile(), true);
     }
     
     //  intended for testing purposes
-    public static void create(Reader alternative) throws FileNotFoundException, IOException {
-        initialiserules();
+    public static void create(Reader alternative, ErrHandler err) throws FileNotFoundException, IOException {
+        initialiserules(err);
         loadrulesfile(alternative, true);
     }
 
@@ -122,7 +123,7 @@ public class Rules {
         };
     }
 
-    private static void initialiserules() {
+    private static void initialiserules(ErrHandler err) {
         transformhtmltext = new TransformHtmlText();
         ignore_HTML_PREPROCESSING_systemrules = false;
         transformtextiletext = new TransformTextileText();

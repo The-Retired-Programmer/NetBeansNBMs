@@ -15,21 +15,23 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import uk.theretiredprogrammer.html2textile.rules.Style;
+import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public class ReplaceWithHeadings implements TransformHtmlItem {
 
-    public ResumeAction testElementAndModify(Element element) {
+    public ResumeAction testElementAndModify(Element element) throws IOException {
         if (element.getTagName().equals("p")) {
             return scanthroughotherformatting(element);
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }
 
-    private ResumeAction scanthroughotherformatting(Element element) {
+    private ResumeAction scanthroughotherformatting(Element element) throws IOException {
         List<Element> elements = new ArrayList<>();
         elements.add(element);
         Element nextlevelelement = element;
@@ -46,10 +48,10 @@ public class ReplaceWithHeadings implements TransformHtmlItem {
         }
         String headername = headerpatternmatch(elements);
         if (headername != null) {
-            removefontsizestylerule(element);
+            removefontsizestylerules(elements);
             Element h = DomHelper.createElement(headername, element);
             DomHelper.appendAttributes(h, element.getAttributes());
-            DomHelper.appendChildren(h,  nextlevelelement.getChildNodes());
+            DomHelper.appendChildren(h, nextlevelelement.getChildNodes());
             DomHelper.replaceNode(element, h);
         }
         return headername == null ? ResumeAction.RESUME_FROM_NEXT : ResumeAction.RESUME_FROM_PARENT;
@@ -60,38 +62,30 @@ public class ReplaceWithHeadings implements TransformHtmlItem {
         return name.equals("p") || name.equals("strong") || name.equals("u") || name.equals("span");
     }
 
-    private void removefontsizestylerule(Element element) {
-        Node style = element.getAttributeNode("style");
-        if (style == null) {
-            return;
-        }
-        String newrules = "";
-        String[] rules = style.getNodeValue().strip().split(";");
-        for (String rule : rules) {
-            if (!rule.isBlank()) {
-                if (!rule.startsWith("font-size:")) {
-                    newrules = newrules + rule + ";";
-                }
+    private void removefontsizestylerules(List<Element> elements) throws IOException {
+        for (var element : elements) {
+            Style style = new Style();
+            if (style.extract(element)) {
+                style.removeStyleRule("font-size");
+                style.setStyle(element);
             }
-        }
-        if (newrules.isBlank()) {
-            DomHelper.removeAttribute(element, "style");
-        } else {
-            DomHelper.replaceAttribute(element, new Attribute("style", newrules));
         }
     }
 
-    private String headerpatternmatch(List<Element> elements) {
+    private String headerpatternmatch(List<Element> elements) throws IOException {
         return switch (scanforfontsize(elements)) {
-            case 1 -> "h4";
-                
-            case 2 -> "h3";
-                
-            default -> null;
+            case 1 ->
+                "h4";
+
+            case 2 ->
+                "h3";
+
+            default ->
+                null;
         };
     }
 
-    private int scanforfontsize(List<Element> elements) {
+    private int scanforfontsize(List<Element> elements) throws IOException {
         int fontgroup = 0;
         for (var element : elements) {
             int fntgrp = getFontSizeGroup(element);
@@ -102,35 +96,29 @@ public class ReplaceWithHeadings implements TransformHtmlItem {
         return fontgroup;
     }
 
-    private int getFontSizeGroup(Element element) {
-        int fontgroup = -1;
-        Node style = element.getAttributeNode("style");
-        if (style != null) {
-            String[] stylerules = style.getNodeValue().split(";");
-            for (String rule : stylerules) {
-                if (!rule.isBlank()) {
-                    String[] pair = rule.split(":");
-                    if (pair[0].strip().equals("font-size")) {
-                        switch (pair[1].strip()) {
-                            case "13pt":
-                            case "14pt":
-                            case "15pt":
-                                fontgroup = 1;
-                                break;
-                            case "16pt":
-                            case "17pt":
-                            case "18pt":
-                                fontgroup = 2;
-                                break;
-                            case "12pt":
-                            default:
-                                fontgroup = 0;
-                                break;
-                        }
-                    }
-                }
-            }
+    private int getFontSizeGroup(Element element) throws IOException {
+        Style style = new Style();
+        if (style.extract(element)) {
+            StyleRule sr = style.lookup("font-size");
+            return sr == null ? -1 : switch (sr.getValue()) {
+                case "13pt" ->
+                    1;
+                case "14pt" ->
+                    1;
+                case "15pt" ->
+                    1;
+                case "16pt" ->
+                    2;
+                case "17pt" ->
+                    2;
+                case "18pt" ->
+                    2;
+                case "12pt" ->
+                    0;
+                default ->
+                    -1;
+            };
         }
-        return fontgroup;
+        return -1;
     }
 }

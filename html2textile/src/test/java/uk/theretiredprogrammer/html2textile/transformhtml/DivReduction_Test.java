@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +31,7 @@ public class DivReduction_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("divreduction");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new DivReduction());
@@ -39,77 +40,103 @@ public class DivReduction_Test extends TransformhtmlTest {
         //System.out.println(result);
         assertEquals(expected(), result);
     }
+    
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <div><span style="font-size: 12pt;"><strong>bold text</strong></span></div>
+                <div><span style="font-size: 12pt;">Plain text.</span></div>
+                <div> </div>
+                <div>
+                    <ul>
+                        <li><span style="font-size: 12pt;">Item1</span></li>
+                        <li><span style="font-size: 12pt;">Item2</span></li>
+                        <li><span style="font-size: 12pt;">Item3</span></li>
+                    </ul>
+                </div>
+                <div style="margin: 50px 0 0 100px; padding: 0; float: right; width: 20%;">
+                    <p style="text-align: center; line-height: 12pt;"><img style="width: 100%; margin: 0; padding: 0;" alt="img" src="somewhere.jpg" /><br />caption</p>
+                </div>
+                <div>
+                    <p>para1</p>
+                    <p>para2</p>
+                    <p>para3</p>
+                </div>
+                <div>
+                    <p>para1</p>
+                    <b>bold text</b>
+                    <p>para3</p>
+                </div>
+                """;
+    }
+
 
     private String expected() {
         return """
             html
                 line number="1"
                 p
-                    span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
+                    span style="font-size: 12pt; "
                         strong
-                            "About Girls Go Sailing"
+                            "bold text"
                 line number="2"
                 p
-                    span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                        "In 2018 we saw a great revival of our Girls Go Sailing scheme, which we have run intermittently for a few years. By making it a member lead activity, we have seen increased numbers of women participating and welcome new members at any time throughout the year."
+                    span style="font-size: 12pt; "
+                        "Plain text."
                 line number="3"
                 p
                     " "
                 line number="4"
-                p
-                    " "
                 line number="5"
-                p
-                    span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                        strong
-                            "What do we do?"
-                line number="6"
-                line number="7"
                 ul
+                    line number="6"
+                    li
+                        span style="font-size: 12pt; "
+                            "Item1"
+                    line number="7"
+                    li
+                        span style="font-size: 12pt; "
+                            "Item2"
                     line number="8"
                     li
-                        span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                            "We are offering our female members sailing opportunities on cruisers, dinghies and the club Hawk, running the sessions at varying times – some weekends, some weekdays, some evenings, throughout the year."
+                        span style="font-size: 12pt; "
+                            "Item3"
                     line number="9"
-                    li
-                        span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                            "We encourage participation in shore-based theory sessions and offer knowledge and safety seminars through the winter and spring."
-                    line number="10"
-                    li
-                        span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                            "We are also planning some social evenings throughout the year."
-                    line number="11"
+                line number="10"
+                line number="11"
                 line number="12"
+                p style="margin: 50px 0 0 100px; padding: 0; float: right; width: 20%; text-align: center; line-height: 12pt; "
+                    img alt="img" src="somewhere.jpg" style="width: 100%; margin: 0; padding: 0; "
+                    br
+                    "caption"
                 line number="13"
                 line number="14"
-                p style="margin:50px00100px;padding:0;float:right;width:20%;text-align:center;line-height:12pt;"
-                    img alt="Rob Vince" src="assets/images/Dinghies2/Rob_Vince_2.jpg" style="width:100%;margin:0;padding:0;"
-                    br
-                    "Rob Vince"
                 line number="15"
-                line number="16"
-                line number="17"
                 p
                     "para1"
-                line number="18"
+                line number="16"
                 p
                     "para2"
-                line number="19"
+                line number="17"
                 p
                     "para3"
-                line number="20"
-                line number="21"
+                line number="18"
+                line number="19"
                 p
-                    line number="22"
+                    line number="20"
                     p
                         "para1"
-                    line number="23"
+                    line number="21"
                     b
-                        "para2"
-                    line number="24"
+                        "bold text"
+                    line number="22"
                     p
                         "para3"
-                    line number="25"
+                    line number="23"
             """;
     }
 }

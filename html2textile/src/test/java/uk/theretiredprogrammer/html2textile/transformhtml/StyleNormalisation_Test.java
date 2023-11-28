@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +31,7 @@ public class StyleNormalisation_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("stylenormalisation");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         //
         transformer.transform(new StyleNormalisation());
         //
@@ -38,46 +39,35 @@ public class StyleNormalisation_Test extends TransformhtmlTest {
         //System.out.println(result);
         assertEquals(expected(), result);
     }
+    
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <p style="text-align:    center"><span style="  font-size:18pt;  "></span></p>
+                <p class="something" style="text-align:    center"><span style="  font-size: 18pt;  "></span></p>
+                <div><span style="font-family : arial,     helvetica,sans-serif;font-size: 12pt;"></span></div>
+                <div style="margin: 20px 20px        20px  20px;"></div>
+                """;
+    }
 
     private String expected() {
-        return """
-               html
-                   line number="1"
-                   p style="text-align:center;"
-                       span style="font-size:18pt;"
-                   line number="2"
-                   p
-                       span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                   line number="3"
-                   p
-                       span style="font-size:12pt;font-family:arial,helvetica,sans-serif;"
-                   line number="4"
-                   div
-                       span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                   line number="5"
-                   div
-                       span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                   line number="6"
-                   p
-                       span style="color:#000000;"
-                           span style="font-size:10pt;"
-                               span style="background-color:inherit;font-family:inherit;"
-                   line number="7"
-                   p
-                       span style="font-family:arial,helvetica,sans-serif;"
-                   line number="8"
-                   p
-                       span style="text-decoration:underline;"
-                           span style="font-family:arial,helvetica,sans-serif;font-size:14pt;"
-                   line number="9"
-                   p dir="autox"
-                       span style="text-decoration:underline;font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                   line number="10"
-                   p
-                       span style="font-family:arial,helvetica,sans-serif;font-size:12pt;"
-                   line number="11"
-                   p
-                       span style="text-decoration:underline;font-family:arial,helvetica,sans-serif;font-size:12pt;"
-               """;
+        return  """
+                html
+                    line number="1"
+                    p style="text-align: center; "
+                        span style="font-size: 18pt; "
+                    line number="2"
+                    p class="something" style="text-align: center; "
+                        span style="font-size: 18pt; "
+                    line number="3"
+                    div
+                        span style="font-family: arial,helvetica,sans-serif; font-size: 12pt; "
+                    line number="4"
+                    div style="margin: 20px 20px 20px 20px; "
+                """;
     }
 }

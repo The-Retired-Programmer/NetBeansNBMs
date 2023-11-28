@@ -15,6 +15,7 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import uk.theretiredprogrammer.html2textile.rules.Attribute;
 import org.w3c.dom.Element;
 
 public class Style2strong implements TransformHtmlItem {
@@ -22,7 +23,7 @@ public class Style2strong implements TransformHtmlItem {
     public ResumeAction testElementAndModify(Element element) {
         String style = element.getAttribute("style");
         if (!style.isBlank()) {
-            if (removeStyleItem(element, style, "font-weight:bold;")) {
+            if (removeStyleItem(element, style, "font-weight: bold; ")) {
                 Element string = DomHelper.createElement("strong", element);
                 DomHelper.appendChildren(string, element.getChildNodes());
                 DomHelper.appendChild(element, string);

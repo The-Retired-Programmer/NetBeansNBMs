@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +32,7 @@ public class ImageWidthConcatonation_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("imagewidthconcatonation");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         transformer.transform(new StyleNormalisation());
         transformer.transform(Rules.get_HTML_STYLE_PROCESSING());
         //
@@ -40,6 +41,27 @@ public class ImageWidthConcatonation_Test extends TransformhtmlTest {
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
+    }
+    
+    private String rules() {
+        return """
+                """;
+    }
+
+    private String input() {
+        return """
+                <p>
+                    <img src="image" alt="image"/>
+                    <img style="text-align:left;" src="image" alt="image"/>
+                    <img style="text-align:left;" src="image" alt="image" width="100"/>
+                    <img style="text-align:left;" src="image" alt="image" width="100px"/>
+                    <img style="text-align:left;" src="image" alt="image" width="100mm"/>
+                    <img style="text-align:left;" src="image" alt="image" width="400"/>
+                    <img style="text-align:left;" src="image" alt="image" width="700"/>
+                    <img  src="image" alt="image" width="700"/>
+                    <img style="width:10%;" src="image" alt="image" width="700"/>
+                </p>
+                """;
     }
 
     private String expected() {
@@ -50,21 +72,21 @@ public class ImageWidthConcatonation_Test extends TransformhtmlTest {
                     line number="2"
                     img alt="image" src="image"
                     line number="3"
-                    img alt="image" src="image" style="text-align:left;"
+                    img alt="image" src="image" style="text-align: left; "
                     line number="4"
-                    img alt="image" src="image" style="text-align:left;width:20%;"
+                    img alt="image" src="image" style="text-align: left; width: 20%; "
                     line number="5"
-                    img alt="image" src="image" style="text-align:left;width:20%;"
+                    img alt="image" src="image" style="text-align: left; width: 20%; "
                     line number="6"
-                    img alt="image" src="image" style="text-align:left;width:20%;"
+                    img alt="image" src="image" style="text-align: left; width: 20%; "
                     line number="7"
-                    img alt="image" src="image" style="text-align:left;width:50%;"
+                    img alt="image" src="image" style="text-align: left; width: 50%; "
                     line number="8"
-                    img alt="image" src="image" style="text-align:left;width:100%;"
+                    img alt="image" src="image" style="text-align: left; width: 100%; "
                     line number="9"
-                    img alt="image" src="image" style="width:100%;"
+                    img alt="image" src="image" style="width: 100%; "
                     line number="10"
-                    img alt="image" src="image" style="width:10%;width:100%;"
+                    img alt="image" src="image" style="width: 10%; width: 100%; "
                     line number="11"
             """;
     }

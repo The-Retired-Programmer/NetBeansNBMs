@@ -16,13 +16,11 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import org.w3c.dom.NodeList;
+import uk.theretiredprogrammer.html2textile.rules.Style;
 
 public class RestructureTable implements TransformHtmlItem {
 
@@ -31,7 +29,6 @@ public class RestructureTable implements TransformHtmlItem {
         if (element.getTagName().equals("table")) {
             reorganiseChildElements(element);
             insertcolgroup(element);
-
             return ResumeAction.RESUME_FROM_NEXT;
         }
         return ResumeAction.RESUME_FROM_NEXT;
@@ -87,7 +84,8 @@ public class RestructureTable implements TransformHtmlItem {
         } else {
             if (thead == null) {
                 Element firsttr = extractfirsttablerow(tbody);
-                table.insertBefore(renameasthead(firsttr), table.getFirstChild());
+                thead = renameasthead(firsttr);
+                table.insertBefore(thead, table.getFirstChild());
                 tfootpos++;
             }
         }
@@ -95,6 +93,10 @@ public class RestructureTable implements TransformHtmlItem {
         if (tfoot != null && tfootpos != 2) {
             table.insertBefore(tfoot, table.getFirstChild().getNextSibling());
         }
+        // now analyse the style and extract common style to go into the colgroup/col
+        
+        extractcommonstylerules(tbody, colcount);
+        removecommonstylerulesfromtd(tbody, colcount);
     }
 
     private Element extractfirsttablerow(Element tbody) throws IOException {
@@ -122,10 +124,10 @@ public class RestructureTable implements TransformHtmlItem {
 
     private Element renameasthead(Element firsttr) {
         Element thead = DomHelper.createElement("thead", firsttr);
-        Element theadtr = DomHelper.createElement("tr",firsttr);
-        DomHelper.appendAttributes(theadtr,firsttr.getAttributes());
+        Element theadtr = DomHelper.createElement("tr", firsttr);
+        DomHelper.appendAttributes(theadtr, firsttr.getAttributes());
         DomHelper.appendChild(thead, theadtr);
-        
+
         NodeList children = firsttr.getChildNodes();
         if (children != null) {
             if (children.getLength() != 0) {
@@ -135,7 +137,7 @@ public class RestructureTable implements TransformHtmlItem {
                     if (child.getNodeType() == ELEMENT_NODE && child.getNodeName().equals("td")) {
                         Element th = DomHelper.createElement("th", firsttr);
                         DomHelper.appendAttributes(th, child.getAttributes());
-                        DomHelper.appendChildren(th,child.getChildNodes());
+                        DomHelper.appendChildren(th, child.getChildNodes());
                         DomHelper.appendChild(theadtr, th);
                     }
                     child = nextchild;
@@ -145,22 +147,24 @@ public class RestructureTable implements TransformHtmlItem {
         return thead;
     }
 
-    private void insertcolgroup(Element table) {
+    private void insertcolgroup(Element table) throws IOException {
         Element colgroup = DomHelper.createElement("colgroup", table);
-        DomHelper.appendAttributes(colgroup, new Attribute[]{new Attribute("style", "width:" + 100 / colcount + "%;")});
-        DomHelper.insertBeforeNode(table.getFirstChild(),colgroup);
+        Style style = new Style();
+        style.insertStyleRule("width", Integer.toString(100 / colcount) + "%");
+        style.setStyle(colgroup);
+        DomHelper.insertBeforeNode(table.getFirstChild(), colgroup);
         for (int i = 0; i < colcount; i++) {
             Element col = DomHelper.createElement("col", colgroup);
-            DomHelper.appendAttributes(col,buildcommonstyleattribute(stylerules[i]));
+            styles[i].setStyle(col);
             DomHelper.appendChild(colgroup, col);
         }
     }
 
     // results of the column analysis
     private int colcount = 0;
-    private List<String>[] stylerules;
+    private Style[] styles;
 
-    private void analysecolumns(Element thead, Element tbody) {
+    private void analysecolumns(Element thead, Element tbody) throws IOException {
         // column count
         int theadcolcount = 0;
         if (thead != null) {
@@ -168,14 +172,6 @@ public class RestructureTable implements TransformHtmlItem {
         }
         int tbodycolcount = countcolumns(tbody, "td");
         colcount = theadcolcount > tbodycolcount ? theadcolcount : tbodycolcount;
-        // common style rules
-        stylerules = new List[colcount];
-        for (int i = 0; i < colcount; i++) {
-            stylerules[i] = new ArrayList<>();
-        }
-        extractcommonstylerules(tbody, stylerules, colcount);
-        removecommonstylerulesfromtd(tbody, stylerules, colcount);
-
     }
 
     private int countcolumns(Element element, String tagname) {
@@ -211,8 +207,12 @@ public class RestructureTable implements TransformHtmlItem {
         return rowspan.isEmpty() ? 1 : Integer.parseUnsignedInt(rowspan);
     }
 
-    private void extractcommonstylerules(Element element, List<String>[] stylerules, int colcount) {
+    private void extractcommonstylerules(Element element, int colcount) throws IOException {
         int[] rowspancounters = new int[colcount];
+        styles = new Style[colcount];
+        for (int j = 0; j < colcount;j++) {
+            styles[j] = new Style();
+        }
         NodeList records = element.getElementsByTagName("tr");
         for (int i = 0; i < records.getLength(); i++) {
             Element record = (Element) records.item(i);
@@ -227,9 +227,11 @@ public class RestructureTable implements TransformHtmlItem {
                     int colspan = getcolspan(column);
                     while (colspan > 0) {
                         if (i == 0) {
-                            loadstylerules(column, j, stylerules);
+                            styles[j].extract(column);
                         } else {
-                            reducestylerules(column, j, stylerules);
+                            Style newstyle = new Style();
+                            newstyle.extract(column);
+                            newstyle.removeTargetStyleRuleIfNotPresent(styles[j]);
                         }
                         rowspancounters[j] = rowspan - 1;
                         j++;
@@ -244,7 +246,7 @@ public class RestructureTable implements TransformHtmlItem {
         }
     }
 
-    private void removecommonstylerulesfromtd(Element element, List<String>[] stylerules, int colcount) {
+    private void removecommonstylerulesfromtd(Element element, int colcount) throws IOException {
         int[] rowspancounters = new int[colcount];
         NodeList records = element.getElementsByTagName("tr");
         for (int i = 0; i < records.getLength(); i++) {
@@ -258,10 +260,11 @@ public class RestructureTable implements TransformHtmlItem {
                     Element column = (Element) columns.item(tdcount);
                     int rowspan = getrowspan(column);
                     int colspan = getcolspan(column);
-                    if (colspan == 1) { // dont remove when colspans actually defined
-                        for (String rule : stylerules[j]) {
-                            removestylerule(column, rule);
-                        }
+                    if (colspan == 1) { 
+                        Style target = new Style();
+                        target.extract(column);
+                        styles[j].removeTargetStyleRuleIfPresent(target);
+                        target.setStyle(column);
                         rowspancounters[j++] = rowspan - 1;
                     } else {
                         while (colspan > 0) {
@@ -276,72 +279,5 @@ public class RestructureTable implements TransformHtmlItem {
                 }
             }
         }
-    }
-
-    private void removestylerule(Element td, String rule) {
-        String style = td.getAttribute("style");
-        if (style.isBlank()) {
-            return;
-        }
-        StringBuilder sb = new StringBuilder();
-        String[] rules = style.split(";");
-        for (int i = 0; i < rules.length; i++) {
-            if (rule.equals(rules[i])) {
-                while (++i < rules.length) {
-                    sb.append(rules[i]);
-                    sb.append(';');
-                }
-                String newvalue = sb.toString();
-                if (newvalue.isBlank()) {
-                    td.removeAttribute("style");
-                } else {
-                    td.setAttribute("style", sb.toString());
-                }
-                return;
-            }
-            sb.append(rules[i]);
-            sb.append(';');
-        }
-    }
-
-    private Attribute[] buildcommonstyleattribute(List<String> stylerules) {
-        if (stylerules.isEmpty()) {
-            return new Attribute[0];
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String rule : stylerules) {
-            if (!rule.isBlank()) {
-                sb.append(rule);
-                sb.append(';');
-            }
-        }
-        String stylevalue = sb.toString();
-        return stylevalue.isBlank() ? new Attribute[0] : new Attribute[]{new Attribute("style", stylevalue)};
-    }
-
-    private void loadstylerules(Element column, int colno, List<String>[] stylerules) {
-        stylerules[colno].addAll(Arrays.asList(column.getAttribute("style").split(";")));
-    }
-
-    private void reducestylerules(Element column, int colno, List<String>[] stylerules) {
-        String[] attributerules = column.getAttribute("style").split(";");
-        List<String> removethese = new ArrayList<>();
-        for (String storedrule : stylerules[colno]) {
-            if (!isdefined(storedrule, attributerules)) {
-                removethese.add(storedrule);
-            }
-        }
-        for (String removethis : removethese) {
-            stylerules[colno].remove(removethis);
-        }
-    }
-
-    private boolean isdefined(String value, String[] lookup) {
-        for (String lookupvalue : lookup) {
-            if (value.equals(lookupvalue)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

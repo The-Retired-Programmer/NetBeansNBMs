@@ -15,17 +15,30 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import uk.theretiredprogrammer.html2textile.rules.Style;
+import java.io.IOException;
 import org.w3c.dom.Element;
 
 public class DivRlStyleRemoval implements TransformHtmlItem {
 
-    public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("div")
-                && "margin:20px20px20px20px;font-family:arial,helvetica,sans-serif;font-size:12pt;line-height:1.5em;color:#000000;"
-                        .equals(DomHelper.getOnlyAttribute(element, "style"))) {
-            DomHelper.insertBeforeNode(element, element.getChildNodes());
-            DomHelper.removeNode(element);
-            return ResumeAction.RESUME_FROM_ROOT;
+    public static String[] comparison = new String[]{
+        "margin: 20px 20px 20px 20px;",
+        "font-family: arial,helvetica,sans-serif;",
+        "font-size: 12pt;",
+        "line-height: 1.5em;",
+        "color: #000000;"
+    };
+
+    public ResumeAction testElementAndModify(Element element) throws IOException {
+        if (element.getTagName().equals("div")) {
+            Style style = new Style();
+            if (style.extractIfOnlyAttribute(element)) {
+                if (style.isSame(comparison)) {
+                    DomHelper.insertBeforeNode(element, element.getChildNodes());
+                    DomHelper.removeNode(element);
+                    return ResumeAction.RESUME_FROM_ROOT;
+                }
+            }
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }

@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +31,7 @@ public class ReplaceWithHeadings_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("replacewithheadings");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new ReplaceWithHeadings());
@@ -38,6 +39,27 @@ public class ReplaceWithHeadings_Test extends TransformhtmlTest {
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
+    }
+    
+    
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <p><strong>just bold</strong></p>
+                <p><u><strong>just strong,u</strong></u></p>
+                <p style="font-size: 14pt; "><strong>This is H4</strong></p>
+                <p style="font-size: 18pt; "><strong>This is H3</strong></p>
+                <p><strong><span style="font-size: 14pt; ">This is H4</span></strong></p>
+                <p><strong><span style="font-size: 18pt; ">This is H3</span></strong></p>
+                <p style="font-size: 18pt; "><strong><span style="font-size: 14pt; ">This is H4</span></strong></p>
+                <p style="font-size: 14pt; "><strong><span style="font-size: 18pt; ">This is H3</span></strong></p>
+                <p style="font-size: 14pt; "><strong><span style="font-size: 18pt; "><u><span style="font-size: 12pt; "><strong>just strong,u</strong></span></u></span></strong></p>
+                <p style="text-align: center; font-size: 14pt; "><strong>This is H4</strong></p>
+                """;
     }
 
     private String expected() {
@@ -71,15 +93,15 @@ public class ReplaceWithHeadings_Test extends TransformhtmlTest {
                     h3
                         "This is H3"
                     line number="9"
-                    p style="font-size:14pt;"
+                    p style="font-size: 14pt; "
                         strong
-                            span style="font-size:18pt;"
+                            span style="font-size: 18pt; "
                                 u
-                                    span style="font-size:12pt;"
+                                    span style="font-size: 12pt; "
                                         strong
                                             "just strong,u"
                     line number="10"
-                    h4 style="text-align:center;"
+                    h4 style="text-align: center; "
                         "This is H4"
                 """;
     }

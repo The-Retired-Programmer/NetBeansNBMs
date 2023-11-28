@@ -20,12 +20,12 @@ import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
 
-public class StringProxy extends RuleSet<StringProxy> implements Proxy<String,String> {
+public class StringProxy extends RuleSet<StringProxy> implements Proxy<String, String> {
 
     private String text;
 
     public String applyRules(String proxyvalue, boolean ignoresystemrules) throws IOException {
-        text=proxyvalue;
+        text = proxyvalue;
         applyRuleActions(this, ignoresystemrules);
         return text;
     }
@@ -39,7 +39,7 @@ public class StringProxy extends RuleSet<StringProxy> implements Proxy<String,St
         text = text.replaceAll(match, replacement);
         return false;
     }
-    
+
     public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
         String match;
         String replacement;

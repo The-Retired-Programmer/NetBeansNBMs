@@ -17,6 +17,7 @@ package uk.theretiredprogrammer.html2textile.transformhtmltext;
 
 import uk.theretiredprogrammer.html2textile.transformhtml.*;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URISyntaxException;
@@ -24,6 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 
@@ -31,18 +33,21 @@ public class Transformhtmltext_Test {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        Rules.create(new StringReader(rules()));
-        TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
-        texttransformer.setReader(new StringReader(input()));
-        texttransformer.rootWrap("html");
-        TransformHtml transformer;
-        try ( Reader transformed = texttransformer.transform()) {
-            transformer = new TransformHtml(transformed);
+        try ( PrintWriter errwriter = new PrintWriter(System.err)) {
+            ErrHandler err = new ErrHandler((s) -> errwriter.println(s));
+            Rules.create(new StringReader(rules()), err);
+            TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
+            texttransformer.setReader(new StringReader(input()));
+            texttransformer.rootWrap("html");
+            TransformHtml transformer;
+            try ( Reader transformed = texttransformer.transform()) {
+                transformer = new TransformHtml(transformed);
+            }
+            //
+            String result = SerialiseDom.serialise(transformer.getRoot());
+            //System.out.println(result);
+            assertEquals(expected(), result);
         }
-        //
-        String result = SerialiseDom.serialise(transformer.getRoot());
-        //System.out.println(result);
-        assertEquals(expected(), result);
     }
     
     private String rules() {

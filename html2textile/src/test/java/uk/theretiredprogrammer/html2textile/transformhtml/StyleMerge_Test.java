@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +31,7 @@ public class StyleMerge_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("stylemerge");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new StyleMerge());
@@ -38,6 +39,35 @@ public class StyleMerge_Test extends TransformhtmlTest {
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
+    }
+    
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <p><span dir="autox"></span></p>
+                <p><span dir="autox">abc</span></p>
+                <p><span dir="autox">abc</span>def</p>
+                <p><span dir="autox">abc<strong>def</strong>ghi</span></p>
+                
+                <p><span dir="autox">abc</span></p>
+                <p dir="autox"><span>abc</span></p>
+                <p dir="autox"><span dir="autox">abc</span></p>
+                <p dir="manual"><span dir="autox">abc</span></p>
+                <p dir2="manual"><span dir="autox">abc</span></p>
+                
+                <p><span style="font-size:14pt;">abc</span></p>
+                <p style="font-size:14pt;"><span>abc</span></p>
+                <p style="font-size:14pt;"><span style="font-size:14pt;">abc</span></p>
+                <p style="font-size:14pt;"><span style="font-size:18pt;">abc</span></p>
+                <p style="font-size:14pt;"><span style="text-align:center;">abc</span></p>
+                
+                <p style="text-align:left;font-size:12pt;"><span style="text-align:center;font-size:14pt;"><span style="font-size:18pt;">abc</span></span></p>
+                
+                """;
     }
 
     private String expected() {
@@ -75,22 +105,22 @@ public class StyleMerge_Test extends TransformhtmlTest {
                    p dir="autox" dir2="manual"
                        "abc"
                    line number="12"
-                   p style="font-size:14pt;"
+                   p style="font-size: 14pt; "
                        "abc"
                    line number="13"
-                   p style="font-size:14pt;"
+                   p style="font-size: 14pt; "
                        "abc"
                    line number="14"
-                   p style="font-size:14pt;"
+                   p style="font-size: 14pt; font-size: 14pt; "
                        "abc"
                    line number="15"
-                   p style="font-size:18pt;"
+                   p style="font-size: 14pt; font-size: 18pt; "
                        "abc"
                    line number="16"
-                   p style="font-size:14pt;text-align:center;"
+                   p style="font-size: 14pt; text-align: center; "
                        "abc"
                    line number="18"
-                   p style="font-size:18pt;text-align:center;"
+                   p style="text-align: left; font-size: 12pt; text-align: center; font-size: 14pt; font-size: 18pt; "
                        "abc"
                """;
     }

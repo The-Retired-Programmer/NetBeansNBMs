@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,18 +31,33 @@ public class DomSerialisation_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("rldiv");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
+    }
+    
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <div style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000; ">
+                    <p>This is wrapped in an RL div</p>
+                    <p>and this</p>
+                    <p>and finally</p>
+                </div>
+                """;
     }
 
     private String expected() {
         return """
                html
                    line number="1"
-                   div style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000;"
+                   div style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000; "
                        line number="2"
                        p
                            "This is wrapped in an RL div"

@@ -15,11 +15,12 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.IOException;
 import org.w3c.dom.Element;
 
 public class ImageWidthConcatonation implements TransformHtmlItem {
 
-    public ResumeAction testElementAndModify(Element element) {
+    public ResumeAction testElementAndModify(Element element) throws IOException {
         if (element.getTagName().equals("img")) {
             String width = element.getAttribute("width");
             if (!width.isEmpty()) {

@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.transformhtml;
+package uk.theretiredprogrammer.html2textile.rules;
 
 import org.w3c.dom.Element;
 
-public class SpanCloakRemoval implements TransformHtmlItem {
+public class Attribute {
 
-    public ResumeAction testElementAndModify(Element element) {
-        if (element.getTagName().equals("span")) {
-            String idvalue = element.getAttribute("id");
-            if (!idvalue.isEmpty() && idvalue.startsWith("cloak")) {
-                DomHelper.removeAttribute(element,"id");
-            }
+        public final String name;
+        public final String value;
+
+        public Attribute(String name, String value) {
+            this.name = name;
+            this.value = value;
         }
-        return ResumeAction.RESUME_FROM_NEXT;
+        
+        public Attribute(StyleRule sr) {
+            this.name = sr.getName();
+            this.value = sr.getValue();
+        }
+        
+        public void set(Element element) {
+            element.setAttribute(name, value);
+        }
     }
-}

@@ -46,20 +46,20 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
                 [HTML_STYLE_PROCESSING]
                 #    MOVE text-align TO ATTRIBUTE
                     REMOVE font-family
-                    REMOVE PATTERN font-size: 10pt
-                    REMOVE PATTERN font-size: 12pt
-                    REMOVE PATTERN color: #000000
-                    REMOVE PATTERN background-color: inherit
+                    REMOVE PATTERN "font-size: 10pt; "
+                    REMOVE PATTERN "font-size: 12pt; "
+                    REMOVE PATTERN "color: #000000; "
+                    REMOVE PATTERN "background-color: inherit; "
                 """;
     }
 
     private String input() {
         return  """
-                <p style="text-align: right;">content</p>
-                <p style="font-family: serif;">content</p>
-                <p style="color: #000000; background-color: inherit;">content</p>
+                <p style="text-align: right; ">content</p>
+                <p style="font-family: serif; ">content</p>
+                <p style="color: #000000; background-color: inherit; ">content</p>
                 <p></p>
-                <p style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000;">content</p>
+                <p style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000; ">content</p>
                 """;
     }
 
@@ -67,7 +67,7 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
         return  """
                 html
                     line number="1"
-                    p style="text-align: right;"
+                    p style="text-align: right; "
                         "content"
                     line number="2"
                     p
@@ -78,7 +78,7 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
                     line number="4"
                     p
                     line number="5"
-                    p style="margin: 20px 20px 20px 20px;line-height: 1.5em;"
+                    p style="margin: 20px 20px 20px 20px; line-height: 1.5em; "
                         "content"
                 """;
     }

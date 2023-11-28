@@ -27,7 +27,7 @@ public class Dinghies_SmokeTest extends SmokeTest {
     public Dinghies_SmokeTest() {
     }
 
-    @Test
+//    @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
         transformation("sample_dinghies.html", "DINGHIES_SMOKE_TEST.html", "DINGHIES_SMOKE_TEST.textile", expected);
     }

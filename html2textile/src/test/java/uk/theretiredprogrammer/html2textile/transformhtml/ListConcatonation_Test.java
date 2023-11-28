@@ -16,6 +16,7 @@
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +31,7 @@ public class ListConcatonation_Test extends TransformhtmlTest {
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("listconcatonation");
+        TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         transformer.transform(new StyleNormalisation());
         //
         transformer.transform(new ListConcatonation());
@@ -40,6 +41,68 @@ public class ListConcatonation_Test extends TransformhtmlTest {
         assertEquals(expected(), result);
     }
 
+    private String rules() {
+        return  """
+                """;
+    }
+
+    private String input() {
+        return  """
+                <ul>
+                    <li>one-one</li>
+                </ul>
+                <br/>
+                <ul>
+                    <li>one-one</li>
+                </ul>
+                <ul>
+                    <li>two-one</li>
+                </ul>
+                <br/>
+                <ol>
+                    <li>one-one</li>
+                </ol>
+                <ol>
+                    <li>two-one</li>
+                </ol>
+                <br/>
+                <ol>
+                    <li>one-one</li>
+                </ol>
+                <ul>
+                    <li>two-one</li>
+                </ul>
+                <br/>
+                <ul style="font-size: 12pt; ">
+                    <li>one-one</li>
+                </ul>
+                <ul style="font-size: 14pt; ">
+                    <li>two-one</li>
+                </ul>
+                <br/>
+                <ul>
+                    <li>one-one</li>
+                </ul>
+                <ul style="font-size: 14pt; ">
+                    <li>two-one</li>
+                </ul>
+                <br/>
+                <ul>
+                    <li>one-one</li>
+                </ul>
+                <ul>
+                    <li>two-one</li>
+                </ul>
+                <ul>
+                    <li>three-one</li>
+                </ul>
+                <ul>
+                    <li>four-one</li>
+                    <li>four-two</li>
+                </ul>
+                """;
+    }
+    
     private String expected() {
         return """
             html
@@ -92,13 +155,13 @@ public class ListConcatonation_Test extends TransformhtmlTest {
                 line number="25"
                 br
                 line number="26"
-                ul style="font-size=12pt;" 
+                ul style="font-size: 12pt; " 
                     line number="27"
                     li
                         "one-one"
                     line number="28"
                 line number="29"
-                ul style="font-size=14pt;"
+                ul style="font-size: 14pt; "
                     line number="30"
                     li
                         "two-one"
@@ -112,7 +175,7 @@ public class ListConcatonation_Test extends TransformhtmlTest {
                         "one-one"
                     line number="35"
                 line number="36"
-                ul style="font-size=14pt;"
+                ul style="font-size: 14pt; "
                     line number="37"
                     li
                         "two-one"
