@@ -22,7 +22,7 @@ import static org.w3c.dom.Node.TEXT_NODE;
 public class BlockElementTrailingSpaceRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        if (DomHelper.isBlockElement(element)) {
+        if (DomHelper.isBlockElementOrLine(element)) {
             Node trailingNode = element.getLastChild();
             if (trailingNode != null && trailingNode.getNodeType() == TEXT_NODE) {
                 String text = trailingNode.getNodeValue();

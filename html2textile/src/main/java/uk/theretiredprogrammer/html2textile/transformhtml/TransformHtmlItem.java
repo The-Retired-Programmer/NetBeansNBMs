@@ -21,7 +21,11 @@ import org.w3c.dom.Element;
 public interface TransformHtmlItem {
 
     public enum ResumeAction {
-        RESUME_FROM_ROOT, RESUME_FROM_SELF, RESUME_FROM_PARENT, RESUME_FROM_NEXT, RESUME_FROM_PREVIOUS, RESUME_FROM_FIRST_SIBLING
+        RESUME_FROM_ROOT(5), RESUME_FROM_SELF(1), RESUME_FROM_PARENT(4), RESUME_FROM_NEXT(0), RESUME_FROM_PREVIOUS(2), RESUME_FROM_FIRST_SIBLING(3);
+        public final int priority;
+        private ResumeAction(int priority) {
+            this.priority = priority;
+        }
     };
 
     public ResumeAction testElementAndModify(Element element) throws IOException;

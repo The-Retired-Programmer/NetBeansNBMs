@@ -20,19 +20,19 @@ import org.w3c.dom.Node;
 import static org.w3c.dom.Node.TEXT_NODE;
 import org.w3c.dom.NodeList;
 
-public class BlankElementRemoval implements TransformHtmlItem {
+public class BlankInlineElementRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (DomHelper.isBracketingElement(element)) {
             if (isNoChildOrOnlyChildBlankText(element)) {
-                DomHelper.insertBeforeNode(element,element.getChildNodes());
+//                DomHelper.insertBeforeNode(element,element.getChildNodes());
                 DomHelper.removeNode(element);
                 return ResumeAction.RESUME_FROM_PARENT;
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;
     }
-
+// needs a rewrite probably
     private boolean isNoChildOrOnlyChildBlankText(Element element) {
         NodeList children = element.getChildNodes();
         if (children.getLength() == 0) {

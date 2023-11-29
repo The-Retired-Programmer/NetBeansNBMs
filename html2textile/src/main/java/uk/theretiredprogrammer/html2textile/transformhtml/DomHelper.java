@@ -39,16 +39,6 @@ public abstract class DomHelper {
         return attributes.getLength() == 1 && attribute != null ? attribute.getNodeValue() : null;
     }
 
-    public static Element getOnlyChildSpanElement(Element element) {
-        NodeList children = element.getChildNodes();
-        if (children.getLength() != 1) {
-            return null;
-        }
-        Node child = children.item(0);
-        return child.getNodeType() == ELEMENT_NODE && child.getNodeName().equals("span")
-                ? (Element) child : null;
-    }
-
     public static boolean hasChildNodesSkippingLine(Element element) {
         if (element.hasChildNodes()) {
             NodeList children = element.getChildNodes();
@@ -88,14 +78,14 @@ public abstract class DomHelper {
         NodeList children = element.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
-            if (!isBlockElement(child)) {
+            if (!isBlockElementOrLine(child)) {
                 return false;
             }
         }
         return true;
     }
 
-    public static boolean isBlockElement(Node node) {
+    public static boolean isBlockElementOrLine(Node node) {
         if (node.getNodeType() == ELEMENT_NODE) {
             String name = node.getNodeName();
             return name.equals("p") || name.equals("ul") || name.equals("ol") || name.equals("li")
@@ -103,6 +93,19 @@ public abstract class DomHelper {
                     || name.equals("h4") || name.equals("h5") || name.equals("h6")
                     || name.equals("table") || name.equals("tbody") || name.equals("tr")
                     || name.equals("html") || name.equals("div") || name.equals("line");
+        } else {
+            return false;
+        }
+    }
+    
+    public static boolean isBlockElement(Node node) {
+        if (node.getNodeType() == ELEMENT_NODE) {
+            String name = node.getNodeName();
+            return name.equals("p") || name.equals("ul") || name.equals("ol") || name.equals("li")
+                    || name.equals("h1") || name.equals("h2") || name.equals("h3")
+                    || name.equals("h4") || name.equals("h5") || name.equals("h6")
+                    || name.equals("table") || name.equals("tbody") || name.equals("tr")
+                    || name.equals("html") || name.equals("div");
         } else {
             return false;
         }

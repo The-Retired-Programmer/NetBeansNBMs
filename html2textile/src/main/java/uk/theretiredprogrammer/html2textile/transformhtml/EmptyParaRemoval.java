@@ -21,7 +21,7 @@ public class EmptyParaRemoval implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
         if (element.getTagName().equals("p") && (!element.hasChildNodes())) {
-                DomHelper.insertBeforeNode(element, element.getChildNodes());
+//                DomHelper.insertBeforeNode(element, element.getChildNodes());
                 DomHelper.removeNode(element);
             return ResumeAction.RESUME_FROM_PARENT;
         }

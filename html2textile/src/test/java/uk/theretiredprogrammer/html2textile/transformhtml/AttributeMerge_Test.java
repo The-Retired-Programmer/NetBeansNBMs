@@ -24,16 +24,16 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 
-public class StyleMerge_Test extends TransformhtmlTest {
+public class AttributeMerge_Test extends TransformhtmlTest {
 
-    public StyleMerge_Test() {
+    public AttributeMerge_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         //
-        transformer.transform(new StyleMerge());
+        transformer.transform(new AttributeMerge());
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
@@ -78,9 +78,8 @@ public class StyleMerge_Test extends TransformhtmlTest {
                    p dir="autox"
                        "abc"
                    line number="3"
-                   p
-                       span dir="autox"
-                           "abc"
+                   p dir="autox"
+                       "abc"
                        "def"
                    line number="4"
                    p dir="autox"

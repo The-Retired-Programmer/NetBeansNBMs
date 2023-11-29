@@ -24,18 +24,18 @@ import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
 
 
-public class BlankElementRemoval_Test extends TransformhtmlTest {
+public class BlankInlineElementRemoval_Test extends TransformhtmlTest {
 
-    public BlankElementRemoval_Test() {
+    public BlankInlineElementRemoval_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
-        TransformHtml transformer = super.createtransformation("blankelementremoval");
+        TransformHtml transformer = super.createtransformation("blankinlineelementremoval");
         
         transformer.transform(Rules.get_HTML_STYLE_PROCESSING());
         //
-        transformer.transform(new BlankElementRemoval());
+        transformer.transform(new BlankInlineElementRemoval());
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
@@ -49,7 +49,6 @@ public class BlankElementRemoval_Test extends TransformhtmlTest {
                    p
                    line number="2"
                    p
-                       "     "
                    line number="3"
                    p
                        strong
@@ -63,12 +62,10 @@ public class BlankElementRemoval_Test extends TransformhtmlTest {
                            "  "
                    line number="5"
                    p
-                       "         "
                    line number="6"
                    p
                    line number="7"
                    p
-                       "         "
                """;
     }
 }

@@ -22,7 +22,7 @@ import static org.w3c.dom.Node.ELEMENT_NODE;
 public class RemoveTrailingBr implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) {
-        if (DomHelper.isBlockElement(element)) {
+        if (DomHelper.isBlockElementOrLine(element)) {
             Node trailingNode = element.getLastChild();
             if (trailingNode != null && trailingNode.getNodeType() == ELEMENT_NODE && trailingNode.getNodeName().equals("br")) {
                 DomHelper.removeNode(trailingNode);

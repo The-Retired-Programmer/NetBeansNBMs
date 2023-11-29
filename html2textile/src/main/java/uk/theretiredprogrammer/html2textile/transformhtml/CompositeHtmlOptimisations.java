@@ -15,31 +15,34 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
-import uk.theretiredprogrammer.html2textile.rules.Attributes;
 import java.io.IOException;
 import org.w3c.dom.Element;
 
-public class StyleMerge implements TransformHtmlItem {
+public class CompositeHtmlOptimisations implements TransformHtmlItem {
+
+    private final TransformHtmlItem[] items = new TransformHtmlItem[]{
+        new NullSpanRemoval(),
+        new AttributeMerge(),
+        new NullAttributeRemoval(),
+        new BlankInlineElementRemoval(),
+        new EmptyLiRemoval(),
+        new EmptyListRemoval(),
+        new MergeLiAndFollowingBlockElement(),
+        new RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements(),
+        new BlockElementTrailingSpaceRemoval(),
+        new ListConcatonation(),
+        new RemoveTrailingBr(),
+        new EmptyParaRemoval(),
+        new MergeTextSegments()
+    };
 
     public ResumeAction testElementAndModify(Element element) throws IOException {
-        if (DomHelper.isBlockElement(element)) {
-            Element span = DomHelper.getOnlyChildSpanElement(element);
-            if (span != null) {
-                mergeStyleAttributes(element, span);
-                return ResumeAction.RESUME_FROM_SELF;
+        for (var item : items) {
+            ResumeAction res = item.testElementAndModify(element);
+            if (!res.equals(ResumeAction.RESUME_FROM_NEXT)) {
+                return res;
             }
         }
         return ResumeAction.RESUME_FROM_NEXT;
-    }
-
-    private void mergeStyleAttributes(Element parent, Element child) throws IOException {
-        Attributes parentattributes = new Attributes();
-        parentattributes.extract(parent);
-        Attributes childattributes = new Attributes();
-        childattributes.extract(child);
-        parentattributes.merge(childattributes);
-        parentattributes.replaceAttributes(parent);
-        DomHelper.insertBeforeNode(child,child.getChildNodes());
-        DomHelper.removeNode(child);
     }
 }
