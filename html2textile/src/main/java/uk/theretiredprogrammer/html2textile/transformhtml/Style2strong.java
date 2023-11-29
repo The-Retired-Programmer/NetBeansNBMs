@@ -15,29 +15,24 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
-import uk.theretiredprogrammer.html2textile.rules.Attribute;
+import java.io.IOException;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.rules.Style;
+import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public class Style2strong implements TransformHtmlItem {
 
-    public ResumeAction testElementAndModify(Element element) {
-        String style = element.getAttribute("style");
-        if (!style.isBlank()) {
-            if (removeStyleItem(element, style, "font-weight: bold; ")) {
-                Element string = DomHelper.createElement("strong", element);
-                DomHelper.appendChildren(string, element.getChildNodes());
-                DomHelper.appendChild(element, string);
-            }
+    public ResumeAction testElementAndModify(Element element) throws IOException {
+        Style style = new Style();
+        style.extract(element);
+        StyleRule findme = new StyleRule("font-weight", "bold");
+        if (style.contains(findme)) {
+            style.removeStyleRule(findme);
+            style.setStyle(element);
+            Element strong = DomHelper.createElement("strong", element);
+            DomHelper.appendChildren(strong, element.getChildNodes());
+            DomHelper.appendChild(element, strong);
         }
         return ResumeAction.RESUME_FROM_NEXT;
-    }
-
-    private boolean removeStyleItem(Element element, String style, String removeme) {
-        int here = style.indexOf(removeme);
-        if (here != -1) {
-            DomHelper.replaceAttribute(element,new Attribute("style", style.substring(0, here) + style.substring(here + removeme.length())));
-            return true;
-        }
-        return false;
     }
 }

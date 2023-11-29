@@ -55,6 +55,10 @@ public class Style {
         }
         return false;
     }
+    
+    public boolean contains(StyleRule find) {
+        return find.isSame(lookup(find.getName()));
+    }
 
     public boolean isEmpty() {
         return srules.isEmpty();
@@ -86,6 +90,14 @@ public class Style {
     public StyleRule removeStyleRule(String name) {
         StyleRule found = lookup(name);
         srules.remove(found);
+        return found;
+    }
+    
+    public StyleRule removeStyleRule(StyleRule remove) {
+        StyleRule found = lookup(remove.getName());
+        if (remove.isSame(found)) {
+            srules.remove(found);
+        }
         return found;
     }
 

@@ -20,23 +20,37 @@ import org.w3c.dom.Element;
 import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
+import uk.theretiredprogrammer.html2textile.rules.Style;
 
 public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Element, Boolean> {
 
     private Element element;
+    private IOException exception;
 
     public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
-        element=proxyvalue;
-        return applyRuleActions(this, ignoresystemrules);
-        // will need a complete here when the style object is used.
+        element = proxyvalue;
+        exception = null;
+        boolean res = applyRuleActions(this, ignoresystemrules);
+        if (exception != null) {
+            throw exception;
+        }
+        return res;
     }
 
     private boolean movetostyle(String attributename) {
         String value = element.getAttribute(attributename);
         if (!value.isEmpty()) {
-            element.removeAttribute(attributename);
-            element.setAttribute("style", element.getAttribute("style") + attributename + ": " + value + ";");
-            return true;
+            try {
+                element.removeAttribute(attributename);
+                Style style = new Style();
+                style.extract(element);
+                style.insertStyleRule(attributename, value);
+                style.setStyle(element);
+                return true;
+            } catch (IOException ex) {
+                exception = ex;
+                return true;
+            }
         }
         return false;
     }
@@ -77,7 +91,7 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
             if (tostylepos == -1) {
                 throw new IOException("Bad Rule definition: \" TO STYLE\" missing in \"MOVE \" rule - " + rulecommandline);
             }
-            attributename = trimquotes(rulecommandline.substring(4, tostylepos+1).trim());
+            attributename = trimquotes(rulecommandline.substring(4, tostylepos + 1).trim());
             add(new Rule<>(isSystemRule, (e) -> e.movetostyle(attributename)));
             return;
         }
