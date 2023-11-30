@@ -27,6 +27,7 @@ import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.transformhtml.AttributeRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.ElementRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.StyleRulesProcessing;
+import uk.theretiredprogrammer.html2textile.transformhtml.URLRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformTextileText;
 
@@ -118,6 +119,8 @@ public class Rules {
                 elementrulesprocessing;
             case "HTML_ATTRIBUTE_PROCESSING" ->
                 attributerulesprocessing;
+            case "HTML_URL_PROCESSING" ->
+                urlrulesprocessing;
             default ->
                 throw new IOException("Unknown rules set name: " + name);
         };
@@ -134,6 +137,8 @@ public class Rules {
         ignore_HTML_ELEMENT_PROCESSING_systemrules = false;
         attributerulesprocessing = new AttributeRulesProcessing();
         ignore_HTML_ATTRIBUTE_PROCESSING_systemrules = false;
+        urlrulesprocessing = new URLRulesProcessing();
+        ignore_HTML_URL_PROCESSING_systemrules = false;
     }
 
     private static TransformHtmlText transformhtmltext;
@@ -146,6 +151,8 @@ public class Rules {
     private static boolean ignore_HTML_ELEMENT_PROCESSING_systemrules;
     private static AttributeRulesProcessing attributerulesprocessing;
     private static boolean ignore_HTML_ATTRIBUTE_PROCESSING_systemrules;
+    private static URLRulesProcessing urlrulesprocessing;
+    private static boolean ignore_HTML_URL_PROCESSING_systemrules;
 
     public static void ignore_ALL_SystemRules() {
         ignore_HTML_PREPROCESSING_systemrules = true;
@@ -153,6 +160,7 @@ public class Rules {
         ignore_HTML_STYLE_PROCESSING_systemrules = true;
         ignore_HTML_ELEMENT_PROCESSING_systemrules = true;
         ignore_HTML_ATTRIBUTE_PROCESSING_systemrules = true;
+        ignore_HTML_URL_PROCESSING_systemrules = true;
     }
 
     public static void ignore_HTML_PREPROCESSING_SystemRules() {
@@ -192,11 +200,20 @@ public class Rules {
     }
 
     public static void ignore_HTML_ATTRIBUTE_PROCESSING_SystemRules() {
-        ignore_HTML_ELEMENT_PROCESSING_systemrules = true;
+        ignore_HTML_ATTRIBUTE_PROCESSING_systemrules = true;
     }
 
     public static AttributeRulesProcessing get_HTML_ATTRIBUTE_PROCESSING() {
         attributerulesprocessing.ignoreSystemRules(ignore_HTML_ATTRIBUTE_PROCESSING_systemrules);
         return attributerulesprocessing;
+    }
+    
+    public static void ignore_HTML_URL_PROCESSING_SystemRules() {
+        ignore_HTML_URL_PROCESSING_systemrules = true;
+    }
+
+    public static URLRulesProcessing get_HTML_URL_PROCESSING() {
+        urlrulesprocessing.ignoreSystemRules(ignore_HTML_URL_PROCESSING_systemrules);
+        return urlrulesprocessing;
     }
 }
