@@ -17,22 +17,17 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
 import org.w3c.dom.Element;
-import uk.theretiredprogrammer.html2textile.rules.Style;
-import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
-public class Style2u implements TransformHtmlItem {
+public class StyleToClassRulesProcessing extends StyleToClassProxy implements TransformHtmlItem {
+
+    private boolean ignoresystemrules;
+
+    public void ignoreSystemRules(boolean ignoresystemrules) {
+        this.ignoresystemrules = ignoresystemrules;
+    }
 
     public ResumeAction testElementAndModify(Element element) throws IOException {
-        Style style = new Style();
-        style.extract(element);
-        StyleRule findme = new StyleRule("text-decoration", "underline");
-        if (style.contains(findme)) {
-            style.removeStyleRule(findme);
-            style.setStyle(element);
-            Element strong = DomHelper.createElement("u", element);
-            DomHelper.appendChildren(strong, element.getChildNodes());
-            DomHelper.appendChild(element, strong);
-        }
+        applyRules(element, ignoresystemrules);
         return ResumeAction.RESUME_FROM_NEXT;
     }
 }

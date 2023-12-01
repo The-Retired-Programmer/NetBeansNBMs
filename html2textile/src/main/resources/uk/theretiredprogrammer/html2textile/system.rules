@@ -3,31 +3,38 @@
 # Rules for Html2Textile processing
 # =================================
 #
-# preprocessing step - handle any textual edits on the html document
-#
 [HTML_PREPROCESSING]
     REPLACE &nbsp; WITH " " 
     REPLACE &lsquo; WITH '
     REPLACE &rsquo; WITH '
-#    REMOVE dir="auto"
-#
-# filter and other actions on all rules embedded in a style attribute
-#
 [HTML_ELEMENT_PROCESSING]
     REMOVE header
     REMOVE section
+    REPLACE strong WITH span AND STYLE font-weight: bold;
+    REPLACE b WITH span AND STYLE font-weight: bold;
+    REPLACE u WITH span AND STYLE text-decoration: underline;
+    REPLACE i WITH span AND STYLE font-style: italic
+    REPLACE em WITH span AND STYLE font-style:italic
+    REMOVE div IF STYLES margin: 20px 20px 20px 20px; AND font-family: arial,helvetica,sans-serif; AND font-size: 12pt; AND line-height: 1.5em; AND color: #000000;
 [HTML_ATTRIBUTE_PROCESSING]
     REMOVE dir IF auto
     REMOVE id IF PATTERN cloak.*
     MOVE width TO STYLE
     MOVE text-align TO STYLE
 [HTML_STYLE_PROCESSING]
-#    MOVE text-align TO ATTRIBUTE
     REMOVE font-family
     REMOVE PATTERN font-size: 10pt
     REMOVE PATTERN font-size: 12pt
     REMOVE PATTERN color: #000000
     REMOVE PATTERN background-color: inherit
+[HTML_FINAL_STYLE_PROCESSING]
+    MOVE PATTERN text-align:.* TO ATTRIBUTE
+#[HTML_FINAL_ELEMENT_PROCESSING]
+#   REPLACE span AND STYLES font-weight: bold; WITH strong
+#   REPLACE span AND STYLES font-style:italic WITH em
+[HTML_STYLE_TO_CLASS_PROCESSING]
+    REPLACE STYLES margin: 0 20px 10px 0px; AND float: left; AND width: 50%; WITH CLASS float-left-50
+    REPLACE STYLES margin: 50px 0 0 100px; AND padding: 0; AND float: right; AND width: 20%; AND line-height: 12pt; WITH CLASS float-right-20
 #
 # final edits on the textile document after its translations
 #

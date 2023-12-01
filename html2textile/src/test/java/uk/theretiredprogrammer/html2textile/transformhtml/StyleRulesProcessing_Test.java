@@ -43,7 +43,7 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
     private String rules() {
         return  """
                 [HTML_STYLE_PROCESSING]
-                #    MOVE text-align TO ATTRIBUTE
+                    MOVE PATTERN text-align:.* TO ATTRIBUTE
                     REMOVE font-family
                     REMOVE PATTERN "font-size: 10pt; "
                     REMOVE PATTERN "font-size: 12pt; "
@@ -66,7 +66,7 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
         return  """
                 html
                     line number="1"
-                    p style="text-align: right; "
+                    p text-align="right"
                         "content"
                     line number="2"
                     p

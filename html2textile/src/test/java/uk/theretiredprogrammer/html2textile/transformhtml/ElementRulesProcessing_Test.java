@@ -46,6 +46,12 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
                 [HTML_ELEMENT_PROCESSING]
                     REMOVE header
                     REMOVE section
+                    REPLACE strong WITH span AND STYLE font-weight: bold;
+                    REPLACE b WITH span AND STYLE font-weight: bold;
+                    REPLACE u WITH span AND STYLE text-decoration: underline;
+                    REPLACE i WITH span AND STYLE font-style: italic
+                    REPLACE em WITH span AND STYLE font-style:italic
+                    REMOVE div IF STYLES margin: 20px 20px 20px 20px; AND font-family: arial,helvetica,sans-serif; AND font-size: 12pt; AND line-height: 1.5em; AND color: #000000;
                 """;
     }
 
@@ -53,9 +59,22 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
         return  """
                 <header></header>
                 <header>
-                content <strong> strong content </strong> final content
+                content content content
                 </header>
                 <section></section>
+                <em>em</em>
+                <i>i</i>
+                <u>u</u>
+                <b>b</b>
+                <strong>strong</strong>
+                <div style="margin: 20px 20px 20px 20px; font-family: arial,helvetica,sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000;">
+                content
+                <em>em</em>
+                </div>
+                <div style="margin: 20px 20px 20px 20px; font-family: arial,helvetica,sans-serif; font-size: 10pt; line-height: 1.5em; color: #000000;">
+                content
+                <em>em</em>
+                </div>
                 """;
     }
 
@@ -65,12 +84,39 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
                     line number="1"
                     line number="2"
                     line number="3"
-                    "content "
-                    strong
-                        " strong content "
-                    " final content"
+                    "content content content"
                     line number="4"
                     line number="5"
+                    line number="6"
+                    span style="font-style: italic; "
+                        "em"
+                    line number="7"
+                    span style="font-style: italic; "
+                        "i"
+                    line number="8"
+                    span style="text-decoration: underline; "
+                        "u"
+                    line number="9"
+                    span style="font-weight: bold; "
+                        "b"
+                    line number="10"
+                    span style="font-weight: bold; "
+                        "strong"
+                    line number="11"
+                    line number="12"
+                    "content"
+                    line number="13"
+                    span style="font-style: italic; "
+                        "em"
+                    line number="14"
+                    line number="15"
+                    div style="margin: 20px 20px 20px 20px; font-family: arial,helvetica,sans-serif; font-size: 10pt; line-height: 1.5em; color: #000000;"
+                        line number="16"
+                        "content"
+                        line number="17"
+                        span style="font-style: italic; "
+                            "em"
+                        line number="18"
                 """;
     }
 }

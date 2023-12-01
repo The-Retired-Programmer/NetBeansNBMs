@@ -42,6 +42,10 @@ public class Style {
         }
         return true;
     }
+    
+    public final List<StyleRule> getStyleRules() {
+        return srules;
+    }
 
     public boolean isSame(String[] comparisonrules) throws IOException {
         if (comparisonrules.length == srules.size()) {
@@ -99,6 +103,11 @@ public class Style {
             srules.remove(found);
         }
         return found;
+    }
+    
+    public StyleRule removeThisStyleRule(StyleRule remove) {
+            srules.remove(remove);
+        return remove;
     }
 
     public StyleRule removeStyleRuleIf(String name, String value) {

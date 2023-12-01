@@ -47,19 +47,19 @@ public class TransformHtml {
     }
 
     public void transform() throws IOException {
-        transform(Rules.get_HTML_URL_PROCESSING());
         transform(Rules.get_HTML_ELEMENT_PROCESSING());
         transform(Rules.get_HTML_ATTRIBUTE_PROCESSING());
-        transform(new DivRlStyleRemoval());
         transform(new DivReduction());
         transform(new ReplaceWithHeadings());
         transform(Rules.get_HTML_STYLE_PROCESSING());
-        //transform(new Style2u());
-        //transform(new Style2strong());
         transform(new CompositeHtmlOptimisations());
         transform(new ImageCaptionReduction());
         transform(new ImageWidthConcatonation());
+        transform(Rules.get_HTML_FINAL_STYLE_PROCESSING());
+        transform(Rules.get_HTML_FINAL_ELEMENT_PROCESSING());
         transform(new RestructureTable());
+        transform(Rules.get_HTML_URL_PROCESSING());
+        transform(Rules.get_HTML_STYLE_TO_CLASS_PROCESSING());
     }
 
     public void writeHtml(Writer output) throws TransformerException {

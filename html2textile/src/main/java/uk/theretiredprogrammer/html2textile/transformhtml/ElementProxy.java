@@ -20,15 +20,21 @@ import org.w3c.dom.Element;
 import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
+import uk.theretiredprogrammer.html2textile.rules.Style;
 
 public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element, Boolean> {
 
     private Element element;
+    private IOException error = null;
 
     public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
-        element=proxyvalue;
-        return applyRuleActions(this, ignoresystemrules);
-        // will need a complete here when a style object is used
+        element = proxyvalue;
+        error = null;
+        boolean res = applyRuleActions(this, ignoresystemrules);
+        if (error != null) {
+            throw error;
+        }
+        return res;
     }
 
     public boolean replace(String tagname, String newtagname) {
@@ -38,6 +44,23 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
             DomHelper.appendChildren(newelement, element.getChildNodes());
             DomHelper.replaceNode(element, newelement);
             return true;
+        }
+        return false;
+    }
+
+    public boolean replace(String tagname, String newtagname, String newstylerule) {
+        if (tagname.equals(element.getTagName())) {
+            try {
+                Element newelement = DomHelper.createElement(newtagname, element);
+                DomHelper.appendAttributes(newelement, element.getAttributes());
+                DomHelper.insertIntoStyleAttribute(newelement, newstylerule);
+                DomHelper.appendChildren(newelement, element.getChildNodes());
+                DomHelper.replaceNode(element, newelement);
+                return true;
+            } catch (IOException ex) {
+                error = ex;
+                return true;
+            }
         }
         return false;
     }
@@ -59,30 +82,67 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         return false;
     }
 
+    public boolean removeifstyles(String tagname, String[] stylerules) {
+        if (tagname.equals(element.getTagName())) {
+            try {
+                Style style = new Style();
+                style.extract(element);
+                if (style.isSame(stylerules)) {
+                    DomHelper.insertBeforeNode(element, element.getChildNodes());
+                    DomHelper.removeNode(element);
+                    return true;
+                }
+            } catch (IOException ex) {
+                error = ex;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
         String tagname;
         String newtagname;
+        String newstyle;
+        String[] stylerules;
         rulecommandline = rulecommandline.trim();
         if (rulecommandline.startsWith("REPLACE ")) {
             int withpos = rulecommandline.indexOf(" WITH ");
             if (withpos == -1) {
                 throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE \" rule - " + rulecommandline);
             }
-            tagname = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
-            newtagname = trimquotes(rulecommandline.substring(withpos + 5).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.replace(tagname, newtagname)));
-            return;
-        }
-        if (rulecommandline.startsWith("REMOVE ")) {
-            int includingpos = rulecommandline.indexOf(" INCLUDING CONTENT");
-            if (includingpos == -1) {
-                tagname = trimquotes(rulecommandline.substring(6).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.remove(tagname)));
+            int stylepos = rulecommandline.indexOf(" AND STYLE ");
+            if (stylepos == -1) {
+                tagname = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
+                newtagname = trimquotes(rulecommandline.substring(withpos + 5).trim());
+                add(new Rule<>(isSystemRule, (e) -> e.replace(tagname, newtagname)));
+                return;
+            } else {
+                tagname = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
+                newtagname = trimquotes(rulecommandline.substring(withpos + 5, stylepos + 1).trim());
+                newstyle = trimquotes(rulecommandline.substring(stylepos + 10).trim());
+                add(new Rule<>(isSystemRule, (e) -> e.replace(tagname, newtagname, newstyle)));
                 return;
             }
-            tagname = trimquotes(rulecommandline.substring(6, includingpos + 1).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.removeincludingcontent(tagname)));
+        }
+        if (rulecommandline.startsWith("REMOVE ")) {
+            int ifpos = rulecommandline.indexOf(" IF STYLES ");
+            if (ifpos != -1) {
+                tagname = trimquotes(rulecommandline.substring(6, ifpos + 1).trim());
+                stylerules = trimquotes(rulecommandline.substring(ifpos + 10).trim()).split(" AND ");
+                add(new Rule<>(isSystemRule, (e) -> e.removeifstyles(tagname, stylerules)));
+                return;
+            }
+            int includingpos = rulecommandline.indexOf(" INCLUDING CONTENT");
+            if (includingpos != -1) {
+                tagname = trimquotes(rulecommandline.substring(6, includingpos + 1).trim());
+                add(new Rule<>(isSystemRule, (e) -> e.removeincludingcontent(tagname)));
+                return;
+            }
+            tagname = trimquotes(rulecommandline.substring(6).trim());
+            add(new Rule<>(isSystemRule, (e) -> e.remove(tagname)));
             return;
+
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);
     }
