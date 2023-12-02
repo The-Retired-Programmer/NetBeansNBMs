@@ -41,29 +41,31 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
     }
 
     private String rules() {
-        return  """
+        return """
                 [HTML_STYLE_PROCESSING]
                     MOVE PATTERN text-align:.* TO ATTRIBUTE
-                    REMOVE font-family
-                    REMOVE PATTERN "font-size: 10pt; "
-                    REMOVE PATTERN "font-size: 12pt; "
-                    REMOVE PATTERN "color: #000000; "
-                    REMOVE PATTERN "background-color: inherit; "
+                    REMOVE ANY font-family
+                    REMOVE "font-size: 10pt; "
+                    REMOVE "font-size: 12pt; "
+                    REMOVE "color: #000000; "
+                    REMOVE "background-color: inherit; "
+                    MOVE font-weight: bold; TO ELEMENT strong
                 """;
     }
 
     private String input() {
-        return  """
+        return """
                 <p style="text-align: right; ">content</p>
                 <p style="font-family: serif; ">content</p>
                 <p style="color: #000000; background-color: inherit; ">content</p>
                 <p></p>
                 <p style="margin: 20px 20px 20px 20px; font-family: arial, helvetica, sans-serif; font-size: 12pt; line-height: 1.5em; color: #000000; ">content</p>
+                <p style="font-weight: bold; ">content</p>
                 """;
     }
 
     private String expected() {
-        return  """
+        return """
                 html
                     line number="1"
                     p text-align="right"
@@ -79,6 +81,10 @@ public class StyleRulesProcessing_Test extends TransformhtmlTest {
                     line number="5"
                     p style="margin: 20px 20px 20px 20px; line-height: 1.5em; "
                         "content"
+                    line number="6"
+                    p
+                        strong
+                            "content"
                 """;
     }
 }

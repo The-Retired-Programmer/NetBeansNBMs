@@ -66,7 +66,7 @@ public class ReplaceWithHeadings implements TransformHtmlItem {
         for (var element : elements) {
             Style style = new Style();
             if (style.extract(element)) {
-                style.removeStyleRule("font-size");
+                style.removeStyleRuleIfName("font-size");
                 style.setStyle(element);
             }
         }

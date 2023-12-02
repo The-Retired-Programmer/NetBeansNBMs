@@ -148,6 +148,20 @@ public abstract class TextileElementTranslator {
             out.write("{" + style.toString() + "}");
         }
     }
+    
+    void writeTextAlignment(Element element) {
+        out.write(getTextAlignmentSymbol(element));
+    }
+    
+    private String getTextAlignmentSymbol(Element element) {
+        return switch (element.getAttribute("text-align")) {
+                    case "left" -> "<";
+                    case "center" -> "=";
+                    case "right" -> ">";
+                    case "justify" -> "<>";
+                    default -> "";
+                };
+    }
 
     void checkAttributes(Element element, String[] allowedAttributes) {
         NamedNodeMap attributes = element.getAttributes();

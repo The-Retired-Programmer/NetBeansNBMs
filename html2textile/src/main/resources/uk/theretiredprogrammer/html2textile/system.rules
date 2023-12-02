@@ -22,16 +22,17 @@
     MOVE width TO STYLE
     MOVE text-align TO STYLE
 [HTML_STYLE_PROCESSING]
-    REMOVE font-family
-    REMOVE PATTERN font-size: 10pt
-    REMOVE PATTERN font-size: 12pt
-    REMOVE PATTERN color: #000000
-    REMOVE PATTERN background-color: inherit
+    REMOVE ANY font-family
+    REMOVE  font-size: 10pt
+    REMOVE  font-size: 12pt
+    REMOVE  color: #000000
+    REMOVE  background-color: inherit
 [HTML_FINAL_STYLE_PROCESSING]
     MOVE PATTERN text-align:.* TO ATTRIBUTE
-#[HTML_FINAL_ELEMENT_PROCESSING]
-#   REPLACE span AND STYLES font-weight: bold; WITH strong
-#   REPLACE span AND STYLES font-style:italic WITH em
+    MOVE font-style:italic TO ELEMENT em
+    MOVE font-weight: bold; TO ELEMENT strong
+[HTML_FINAL_ELEMENT_PROCESSING]
+    REMOVE span IF STYLE IS EMPTY
 [HTML_STYLE_TO_CLASS_PROCESSING]
     REPLACE STYLES margin: 0 20px 10px 0px; AND float: left; AND width: 50%; WITH CLASS float-left-50
     REPLACE STYLES margin: 50px 0 0 100px; AND padding: 0; AND float: right; AND width: 20%; AND line-height: 12pt; WITH CLASS float-right-20

@@ -27,7 +27,7 @@ public class TdTranslator extends TextileElementTranslator {
     }
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id", "rowspan", "colspan"};
+        return new String[]{"style", "class", "id", "rowspan", "colspan", "text-align"};
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
@@ -35,6 +35,7 @@ public class TdTranslator extends TextileElementTranslator {
             writeColOrRowSpan(element, "rowspan", '/');
             writeColOrRowSpan(element, "colspan", '\\');
             writeClassStyleId(element);
+            writeTextAlignment(element);
             out.write(". ");
         }
         translator.processChildren(element);

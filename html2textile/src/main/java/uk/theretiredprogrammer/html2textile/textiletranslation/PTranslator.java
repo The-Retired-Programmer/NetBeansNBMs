@@ -27,12 +27,13 @@ public class PTranslator extends TextileElementTranslator {
     }
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id"};
+        return new String[]{"style", "class", "id", "text-align"};
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         out.write("p");
         writeClassStyleId(element);
+        writeTextAlignment(element);
         out.write(". ");
         translator.processChildren(element);
         out.write("\n\n");

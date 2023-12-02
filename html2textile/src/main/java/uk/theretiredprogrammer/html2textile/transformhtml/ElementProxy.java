@@ -21,6 +21,7 @@ import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
 import uk.theretiredprogrammer.html2textile.rules.Style;
+import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element, Boolean> {
 
@@ -82,6 +83,35 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         return false;
     }
 
+    public boolean removeifnoattributes(String tagname) {
+        if (tagname.equals(element.getTagName())) {
+            if (!element.hasAttributes()) {
+                DomHelper.insertBeforeNode(element, element.getChildNodes());
+                DomHelper.removeNode(element);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean removeifstyleempty(String tagname) {
+        if (tagname.equals(element.getTagName())) {
+            try {
+                Style style = new Style();
+                style.extract(element);
+                if (style.isEmpty()) {
+                    DomHelper.insertBeforeNode(element, element.getChildNodes());
+                    DomHelper.removeNode(element);
+                    return true;
+                }
+            } catch (IOException ex) {
+                error = ex;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean removeifstyles(String tagname, String[] stylerules) {
         if (tagname.equals(element.getTagName())) {
             try {
@@ -100,6 +130,35 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         return false;
     }
 
+    public boolean replaceifstyle(String tagname, String newtagname, String stylerule) {
+        if (tagname.equals(element.getTagName())) {
+            try {
+                StyleRule find = new StyleRule(stylerule);
+                Style style = new Style();
+                style.extract(element);
+                if (style.contains(find)) {
+                    style.removeStyleRule(find);
+                    style.setStyle(element);
+                    if (style.isEmpty()) {
+                        Element newelement = DomHelper.createElement(newtagname, element);
+                        DomHelper.appendChildren(newelement, element.getChildNodes());
+                        Element parent = (Element) element.getParentNode();
+                        parent.replaceChild(newelement, element);
+                    } else {
+                        Element newelement = DomHelper.createElement(newtagname, element);
+                        DomHelper.appendChildren(newelement, element.getChildNodes());
+                        DomHelper.appendChild(element, newelement);
+                    }
+                    return true;
+                }
+            } catch (IOException ex) {
+                error = ex;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
         String tagname;
         String newtagname;
@@ -107,17 +166,27 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         String[] stylerules;
         rulecommandline = rulecommandline.trim();
         if (rulecommandline.startsWith("REPLACE ")) {
+            int stylepos = rulecommandline.indexOf(" AND STYLE ");
             int withpos = rulecommandline.indexOf(" WITH ");
             if (withpos == -1) {
                 throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE \" rule - " + rulecommandline);
             }
-            int stylepos = rulecommandline.indexOf(" AND STYLE ");
             if (stylepos == -1) {
+                // this is REPLACE a WITH b
                 tagname = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
                 newtagname = trimquotes(rulecommandline.substring(withpos + 5).trim());
                 add(new Rule<>(isSystemRule, (e) -> e.replace(tagname, newtagname)));
                 return;
+            }
+            if (stylepos < withpos) {
+                // this is REPLACE a AND STYLE xxx WITH b
+                tagname = trimquotes(rulecommandline.substring(7, stylepos + 1).trim());
+                String stylerule = trimquotes(rulecommandline.substring(stylepos + 10, withpos + 1).trim());
+                newtagname = trimquotes(rulecommandline.substring(withpos + 5).trim());
+                add(new Rule<>(isSystemRule, (e) -> e.replaceifstyle(tagname, newtagname, stylerule)));
+                return;
             } else {
+                // this is REPLACE a WITH b AND STYLE xxxx
                 tagname = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
                 newtagname = trimquotes(rulecommandline.substring(withpos + 5, stylepos + 1).trim());
                 newstyle = trimquotes(rulecommandline.substring(stylepos + 10).trim());
@@ -126,7 +195,19 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
             }
         }
         if (rulecommandline.startsWith("REMOVE ")) {
-            int ifpos = rulecommandline.indexOf(" IF STYLES ");
+            int ifpos = rulecommandline.indexOf(" IF NO ATTRIBUTES");
+            if (ifpos != -1) {
+                tagname = trimquotes(rulecommandline.substring(6, ifpos + 1).trim());
+                add(new Rule<>(isSystemRule, (e) -> e.removeifnoattributes(tagname)));
+                return;
+            }
+            ifpos = rulecommandline.indexOf(" IF STYLE IS EMPTY");
+            if (ifpos != -1) {
+                tagname = trimquotes(rulecommandline.substring(6, ifpos + 1).trim());
+                add(new Rule<>(isSystemRule, (e) -> e.removeifstyleempty(tagname)));
+                return;
+            }
+            ifpos = rulecommandline.indexOf(" IF STYLES ");
             if (ifpos != -1) {
                 tagname = trimquotes(rulecommandline.substring(6, ifpos + 1).trim());
                 stylerules = trimquotes(rulecommandline.substring(ifpos + 10).trim()).split(" AND ");

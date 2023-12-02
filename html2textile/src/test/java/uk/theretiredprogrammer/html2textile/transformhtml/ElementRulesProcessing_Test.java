@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
 
-
 public class ElementRulesProcessing_Test extends TransformhtmlTest {
 
     public ElementRulesProcessing_Test() {
@@ -40,9 +39,20 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
         //System.out.println(result);
         assertEquals(expected(), result);
     }
-    
+
+    @Test
+    public void testtransformation2() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
+        TransformHtml transformer = super.createtransformation(new StringReader(rules2()), new StringReader(input2()));
+        //
+        transformer.transform(Rules.get_HTML_FINAL_ELEMENT_PROCESSING());
+        //
+        String result = SerialiseDom.serialise(transformer.getRoot());
+        //System.out.println(result);
+        assertEquals(expected2(), result);
+    }
+
     private String rules() {
-        return  """
+        return """
                 [HTML_ELEMENT_PROCESSING]
                     REMOVE header
                     REMOVE section
@@ -56,7 +66,7 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
     }
 
     private String input() {
-        return  """
+        return """
                 <header></header>
                 <header>
                 content content content
@@ -79,7 +89,7 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
     }
 
     private String expected() {
-        return  """
+        return """
                 html
                     line number="1"
                     line number="2"
@@ -117,6 +127,52 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
                         span style="font-style: italic; "
                             "em"
                         line number="18"
+                """;
+    }
+
+    private String rules2() {
+        return """
+                [HTML_FINAL_ELEMENT_PROCESSING]
+                    REPLACE span AND STYLE font-style:italic WITH em
+                    REMOVE span IF STYLE IS EMPTY 
+                    REMOVE div IF NO ATTRIBUTES
+                """;
+    }
+
+    private String input2() {
+        return  """
+                <span style="color:red; ">content1</span>
+                <span style="">content2</span>
+                <span style="font-style:italic; ">content3</span>
+                <span >content4</span>
+                <span style="font-style:italic; color:red; ">content5</span>
+                <div>content6</div>
+                <div class="BOLD">content7</div>
+                """;
+    }
+
+    private String expected2() {
+        return """
+                html
+                    line number="1"
+                    span style="color:red; "
+                        "content1"
+                    line number="2"
+                    "content2"
+                    line number="3"
+                    em
+                        "content3"
+                    line number="4"
+                    "content4"
+                    line number="5"
+                    span style="color: red; "
+                        em
+                            "content5"
+                    line number="6"
+                    "content6"
+                    line number="7"
+                    div class="BOLD"
+                        "content7"
                 """;
     }
 }

@@ -91,7 +91,7 @@ public class Style {
         return this;
     }
 
-    public StyleRule removeStyleRule(String name) {
+    public StyleRule removeStyleRuleIfName(String name) {
         StyleRule found = lookup(name);
         srules.remove(found);
         return found;
@@ -110,14 +110,6 @@ public class Style {
         return remove;
     }
 
-    public StyleRule removeStyleRuleIf(String name, String value) {
-        StyleRule sr = new StyleRule(name, value);
-        StyleRule found = lookup(name);
-        if (sr.isSame(found)) {
-            srules.remove(found);
-        }
-        return found;
-    }
 
     public List<StyleRule> removeStyleRuleIfPattern(String pattern) {
         List<StyleRule> rulestoremove = new ArrayList<>();

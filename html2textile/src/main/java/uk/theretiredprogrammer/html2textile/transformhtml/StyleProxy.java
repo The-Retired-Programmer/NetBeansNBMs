@@ -45,14 +45,24 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
         }
         return res;
     }
-    
-    private boolean remove(String namematch) {
-        style.removeStyleRule(namematch);
+
+    private boolean remove(String stylerule) {
+        try {
+            style.removeStyleRule(new StyleRule(stylerule));
+        } catch (IOException ex) {
+            error = ex;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean removeAny(String stylerulename) {
+        style.removeStyleRuleIfName(stylerulename);
         return false;
     }
 
     private boolean removeAll(String pattern) {
-            style.removeStyleRuleIfPattern(pattern);
+        style.removeStyleRuleIfPattern(pattern);
         return false;
     }
 
@@ -89,7 +99,7 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
             return true;
         }
         Attribute attr = new Attribute(sr);
-        style.removeStyleRule(sr.getName());
+        style.removeStyleRuleIfName(sr.getName());
         setattribute(attr);
         return false;
     }
@@ -98,10 +108,32 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
         element.setAttribute(attr.name, attr.value);
     }
 
+    private boolean moveToElement(String rulematch, String tagname) {
+        try {
+            StyleRule find = new StyleRule(rulematch);
+            if (style.contains(find)) {
+                style.removeStyleRule(find);
+                Element newelement = DomHelper.createElement(tagname, element);
+                DomHelper.appendChildren(newelement, element.getChildNodes());
+                DomHelper.appendChild(element, newelement);
+                return true;
+            }
+            return false;
+        } catch (IOException ex) {
+            error = ex;
+            return true;
+        }
+    }
+
     public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
         String match;
         String replacement;
         rulecommandline = rulecommandline.trim();
+        if (rulecommandline.startsWith("REMOVE ANY ")) {
+            match = trimquotes(rulecommandline.substring(10).trim());
+            add(new Rule<>(isSystemRule, (e) -> e.removeAny(match)));
+            return;
+        }
         if (rulecommandline.startsWith("REMOVE PATTERN ")) {
             match = trimquotes(rulecommandline.substring(14).trim());
             add(new Rule<>(isSystemRule, (e) -> e.removeAll(match)));
@@ -143,11 +175,18 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
         }
         if (rulecommandline.startsWith("MOVE ")) {
             int withpos = rulecommandline.indexOf(" TO ATTRIBUTE");
+            if (withpos != -1) {
+                match = trimquotes(rulecommandline.substring(5, withpos + 1).trim());
+                add(new Rule<>(isSystemRule, (e) -> e.moveToAttribute(match)));
+                return;
+            }
+            withpos = rulecommandline.indexOf(" TO ELEMENT ");
             if (withpos == -1) {
-                throw new IOException("Bad Rule definition: \" TO ATTRIBUTE\" missing in \"MOVE \" rule - " + rulecommandline);
+                throw new IOException("Bad Rule definition: \" TO ELEMENT \" missing in \"MOVE \" rule - " + rulecommandline);
             }
             match = trimquotes(rulecommandline.substring(5, withpos + 1).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.moveToAttribute(match)));
+            replacement = trimquotes(rulecommandline.substring(withpos + 11).trim());
+            add(new Rule<>(isSystemRule, (e) -> e.moveToElement(match, replacement)));
             return;
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);
