@@ -18,9 +18,10 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import java.io.IOException;
 import org.w3c.dom.Element;
 
-public class CompositeHtmlOptimisations implements TransformHtmlItem {
+public class HtmlOptimisations implements TransformHtmlItem {
 
     private final TransformHtmlItem[] items = new TransformHtmlItem[]{
+        new DivReduction(),
         new NullSpanRemoval(),
         new AttributeMerge(),
         new NullAttributeRemoval(),
@@ -33,7 +34,9 @@ public class CompositeHtmlOptimisations implements TransformHtmlItem {
         new ListConcatonation(),
         new RemoveTrailingBr(),
         new EmptyParaRemoval(),
-        new MergeTextSegments()
+        new MergeTextSegments(),
+        new ImageCaptionReduction(),
+        new ImageWidthConcatonation()
     };
 
     public ResumeAction testElementAndModify(Element element) throws IOException {

@@ -24,16 +24,16 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 
-public class CompositeHtmlOptimisations_Test extends TransformhtmlTest {
+public class HtmlOptimisations_Test extends TransformhtmlTest {
 
-    public CompositeHtmlOptimisations_Test() {
+    public HtmlOptimisations_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         //
-        transformer.transform(new CompositeHtmlOptimisations());
+        transformer.transform(new HtmlOptimisations());
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);

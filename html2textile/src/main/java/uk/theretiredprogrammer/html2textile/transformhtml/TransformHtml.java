@@ -49,12 +49,9 @@ public class TransformHtml {
     public void transform() throws IOException {
         transform(Rules.get_HTML_ELEMENT_PROCESSING());
         transform(Rules.get_HTML_ATTRIBUTE_PROCESSING());
-        transform(new DivReduction());
         transform(new ReplaceWithHeadings());
         transform(Rules.get_HTML_STYLE_PROCESSING());
-        transform(new CompositeHtmlOptimisations());
-        transform(new ImageCaptionReduction());
-        transform(new ImageWidthConcatonation());
+        transform(new HtmlOptimisations());
         transform(Rules.get_HTML_FINAL_STYLE_PROCESSING());
         transform(Rules.get_HTML_FINAL_ELEMENT_PROCESSING());
         transform(new RestructureTable());
