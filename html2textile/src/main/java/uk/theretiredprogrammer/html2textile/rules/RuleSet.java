@@ -27,11 +27,11 @@ public abstract class RuleSet<S> {
         rules.add(rule);
     }
 
-    public abstract void parseAndInsertRule(String ruletext, boolean isSystemRule) throws IOException;
+    public abstract void parseAndInsertRule(String ruletext) throws IOException;
 
-    public boolean applyRuleActions(S proxy, boolean ignoresystemrules) throws IOException {
+    public boolean applyRuleActions(S proxy) throws IOException {
         for (var rule : rules) {
-            if (rule.applyRuleAction(proxy, ignoresystemrules)) {
+            if (rule.applyRuleAction(proxy)) {
                 return true;
             }
         }

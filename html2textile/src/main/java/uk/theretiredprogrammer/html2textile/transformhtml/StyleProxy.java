@@ -31,13 +31,13 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
     private Style style;
     private IOException error = null;
 
-    public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
+    public Boolean applyRules(Element proxyvalue) throws IOException {
         error = null;
         boolean res = false;
         element = proxyvalue;
         style = new Style();
         if (style.extract(element)) {
-            res = applyRuleActions(this, ignoresystemrules);
+            res = applyRuleActions(this);
             style.setStyle(element);
         }
         if (error != null) {
@@ -68,6 +68,16 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
 
     private boolean replace(String namematch, String valuereplacement) {
         style.replaceStyleRuleValue(namematch, valuereplacement);
+        return false;
+    }
+
+    private boolean replaceRule(String original, String replacement) {
+        try {
+            style.replaceStyleRule(original, replacement);
+        } catch (IOException ex) {
+            error = ex;
+            return true;
+        }
         return false;
     }
 
@@ -125,23 +135,23 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
         }
     }
 
-    public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
+    public void parseAndInsertRule(String rulecommandline) throws IOException {
         String match;
         String replacement;
         rulecommandline = rulecommandline.trim();
         if (rulecommandline.startsWith("REMOVE ANY ")) {
             match = trimquotes(rulecommandline.substring(10).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.removeAny(match)));
+            add(new Rule<>((e) -> e.removeAny(match)));
             return;
         }
         if (rulecommandline.startsWith("REMOVE PATTERN ")) {
             match = trimquotes(rulecommandline.substring(14).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.removeAll(match)));
+            add(new Rule<>((e) -> e.removeAll(match)));
             return;
         }
         if (rulecommandline.startsWith("REMOVE ")) {
             match = trimquotes(rulecommandline.substring(6).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.remove(match)));
+            add(new Rule<>((e) -> e.remove(match)));
             return;
         }
         if (rulecommandline.startsWith("REPLACE PATTERN ")) {
@@ -151,18 +161,30 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
             }
             match = trimquotes(rulecommandline.substring(15, withpos + 1).trim());
             replacement = trimquotes(rulecommandline.substring(withpos + 5).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.replaceAll(match, replacement)));
+            add(new Rule<>((e) -> e.replaceAll(match, replacement)));
             return;
+        }
+        if (rulecommandline.startsWith("REPLACE STYLE RULE ")) {
+            int withpos = rulecommandline.indexOf(" WITH ");
+            if (withpos != -1) {
+                match = trimquotes(rulecommandline.substring(18, withpos + 1).trim());
+                replacement = trimquotes(rulecommandline.substring(withpos + 5).trim());
+                add(new Rule<>((e) -> e.replaceRule(match, replacement)));
+                return;
+            } else {
+                throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE STYLE RULE\" rule - " + rulecommandline);
+            }
         }
         if (rulecommandline.startsWith("REPLACE ")) {
             int withpos = rulecommandline.indexOf(" WITH ");
-            if (withpos == -1) {
+            if (withpos != -1) {
+                match = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
+                replacement = trimquotes(rulecommandline.substring(withpos + 5).trim());
+                add(new Rule<>((e) -> e.replace(match, replacement)));
+                return;
+            } else {
                 throw new IOException("Bad Rule definition: \" WITH \" missing in \"REPLACE \" rule - " + rulecommandline);
             }
-            match = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
-            replacement = trimquotes(rulecommandline.substring(withpos + 5).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.replace(match, replacement)));
-            return;
         }
         if (rulecommandline.startsWith("MOVE PATTERN ")) {
             int withpos = rulecommandline.indexOf(" TO ATTRIBUTE");
@@ -170,14 +192,14 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
                 throw new IOException("Bad Rule definition: \" TO ATTRIBUTE\" missing in \"MOVE PATTERN \" rule - " + rulecommandline);
             }
             match = trimquotes(rulecommandline.substring(13, withpos + 1).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.movePatternToAttribute(match)));
+            add(new Rule<>((e) -> e.movePatternToAttribute(match)));
             return;
         }
         if (rulecommandline.startsWith("MOVE ")) {
             int withpos = rulecommandline.indexOf(" TO ATTRIBUTE");
             if (withpos != -1) {
                 match = trimquotes(rulecommandline.substring(5, withpos + 1).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.moveToAttribute(match)));
+                add(new Rule<>((e) -> e.moveToAttribute(match)));
                 return;
             }
             withpos = rulecommandline.indexOf(" TO ELEMENT ");
@@ -186,7 +208,7 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
             }
             match = trimquotes(rulecommandline.substring(5, withpos + 1).trim());
             replacement = trimquotes(rulecommandline.substring(withpos + 11).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.moveToElement(match, replacement)));
+            add(new Rule<>((e) -> e.moveToElement(match, replacement)));
             return;
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);

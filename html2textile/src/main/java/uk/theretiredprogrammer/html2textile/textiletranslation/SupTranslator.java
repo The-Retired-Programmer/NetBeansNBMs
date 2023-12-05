@@ -31,6 +31,6 @@ public class SupTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        bracket("^", element, isParentTerminatorContext, translator);
+        bracketplus("^", element, isParentTerminatorContext, translator);
     }
 }

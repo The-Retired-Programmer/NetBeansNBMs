@@ -19,5 +19,5 @@ import java.io.IOException;
 
 public interface Proxy<C,R> {
  
-    public R applyRules(C proxyvalue, boolean ignoresystemrules) throws IOException;
+    public R applyRules(C proxyvalue) throws IOException;
 }

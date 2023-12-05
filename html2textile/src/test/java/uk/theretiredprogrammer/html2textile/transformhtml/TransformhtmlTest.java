@@ -18,39 +18,28 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 
 public class TransformhtmlTest {
 
     public TransformHtml createtransformation(String inputname) throws IOException, ParserConfigurationException, SAXException {
-        try ( PrintWriter errwriter = new PrintWriter(System.err)) {
-            ErrHandler err = new ErrHandler((s) -> errwriter.println(s));
-            Rules.create(err);
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_" + inputname + ".html");
-            return commontransformation(new InputStreamReader(is));
-        }
+        Rules.create();
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_" + inputname + ".html");
+        return commontransformation(new InputStreamReader(is));
     }
-    
+
     public TransformHtml createtransformation(Reader input) throws IOException, ParserConfigurationException, SAXException {
-        try ( PrintWriter errwriter = new PrintWriter(System.err)) {
-            ErrHandler err = new ErrHandler((s) -> errwriter.println(s));
-            Rules.create(err);
-            return commontransformation(input);
-        }
+        Rules.create();
+        return commontransformation(input);
     }
 
     public TransformHtml createtransformation(Reader rules, Reader input) throws IOException, ParserConfigurationException, SAXException {
-        try ( PrintWriter errwriter = new PrintWriter(System.err)) {
-            ErrHandler err = new ErrHandler((s) -> errwriter.println(s));
-            Rules.create(rules, err);
-            return commontransformation(input);
-        }
+        Rules.create(rules);
+        return commontransformation(input);
     }
 
     public TransformHtml commontransformation(Reader input) throws IOException, ParserConfigurationException, SAXException {

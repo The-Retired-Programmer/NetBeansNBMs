@@ -34,12 +34,7 @@ public class TransformHtmlText extends StringProxy {
 //
     private BufferedReader original;
     private String rootname = "";
-    private boolean ignoresystemrules;
-    
-    public void ignoreSystemRules(boolean ignoresystemrules) {
-        this.ignoresystemrules = ignoresystemrules;
-    }
-    
+
     public void setReader(Reader original) throws IOException {
         this.original = new BufferedReader(original);
     }
@@ -57,7 +52,7 @@ public class TransformHtmlText extends StringProxy {
             copylines(original, wrapped);
             wrapped.write("</" + rootname + ">");
         }
-        return new StringReader(applyRules(wrapped.toString(),ignoresystemrules));
+        return new StringReader(applyRules(wrapped.toString()));
     }
 
     private void copylines(BufferedReader from, Writer to) throws IOException {

@@ -26,12 +26,12 @@ import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element, Boolean> {
 
     private Element element;
-    private IOException error = null;
+    private IOException error;
 
-    public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
+    public Boolean applyRules(Element proxyvalue) throws IOException {
         element = proxyvalue;
         error = null;
-        boolean res = applyRuleActions(this, ignoresystemrules);
+        boolean res = applyRuleActions(this);
         if (error != null) {
             throw error;
         }
@@ -159,7 +159,7 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         return false;
     }
 
-    public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
+    public void parseAndInsertRule(String rulecommandline) throws IOException {
         String tagname;
         String newtagname;
         String newstyle;
@@ -175,7 +175,7 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
                 // this is REPLACE a WITH b
                 tagname = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
                 newtagname = trimquotes(rulecommandline.substring(withpos + 5).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.replace(tagname, newtagname)));
+                add(new Rule<>((e) -> e.replace(tagname, newtagname)));
                 return;
             }
             if (stylepos < withpos) {
@@ -183,14 +183,14 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
                 tagname = trimquotes(rulecommandline.substring(7, stylepos + 1).trim());
                 String stylerule = trimquotes(rulecommandline.substring(stylepos + 10, withpos + 1).trim());
                 newtagname = trimquotes(rulecommandline.substring(withpos + 5).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.replaceifstyle(tagname, newtagname, stylerule)));
+                add(new Rule<>((e) -> e.replaceifstyle(tagname, newtagname, stylerule)));
                 return;
             } else {
                 // this is REPLACE a WITH b AND STYLE xxxx
                 tagname = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
                 newtagname = trimquotes(rulecommandline.substring(withpos + 5, stylepos + 1).trim());
                 newstyle = trimquotes(rulecommandline.substring(stylepos + 10).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.replace(tagname, newtagname, newstyle)));
+                add(new Rule<>((e) -> e.replace(tagname, newtagname, newstyle)));
                 return;
             }
         }
@@ -198,30 +198,30 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
             int ifpos = rulecommandline.indexOf(" IF NO ATTRIBUTES");
             if (ifpos != -1) {
                 tagname = trimquotes(rulecommandline.substring(6, ifpos + 1).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.removeifnoattributes(tagname)));
+                add(new Rule<>((e) -> e.removeifnoattributes(tagname)));
                 return;
             }
             ifpos = rulecommandline.indexOf(" IF STYLE IS EMPTY");
             if (ifpos != -1) {
                 tagname = trimquotes(rulecommandline.substring(6, ifpos + 1).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.removeifstyleempty(tagname)));
+                add(new Rule<>((e) -> e.removeifstyleempty(tagname)));
                 return;
             }
             ifpos = rulecommandline.indexOf(" IF STYLES ");
             if (ifpos != -1) {
                 tagname = trimquotes(rulecommandline.substring(6, ifpos + 1).trim());
                 stylerules = trimquotes(rulecommandline.substring(ifpos + 10).trim()).split(" AND ");
-                add(new Rule<>(isSystemRule, (e) -> e.removeifstyles(tagname, stylerules)));
+                add(new Rule<>((e) -> e.removeifstyles(tagname, stylerules)));
                 return;
             }
             int includingpos = rulecommandline.indexOf(" INCLUDING CONTENT");
             if (includingpos != -1) {
                 tagname = trimquotes(rulecommandline.substring(6, includingpos + 1).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.removeincludingcontent(tagname)));
+                add(new Rule<>((e) -> e.removeincludingcontent(tagname)));
                 return;
             }
             tagname = trimquotes(rulecommandline.substring(6).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.remove(tagname)));
+            add(new Rule<>((e) -> e.remove(tagname)));
             return;
 
         }

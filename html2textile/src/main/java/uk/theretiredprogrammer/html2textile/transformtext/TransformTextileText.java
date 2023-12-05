@@ -27,11 +27,6 @@ public class TransformTextileText extends StringProxy {
 //          
 //
     private String[] lines;
-    private boolean ignoresystemrules;
-    
-    public void ignoreSystemRules(boolean ignoresystemrules) {
-        this.ignoresystemrules = ignoresystemrules;
-    }
     
     public void setInput(StringWriter input) {
         String textin = input.toString();
@@ -48,7 +43,7 @@ public class TransformTextileText extends StringProxy {
 
     public void transform() throws IOException {
         for (int i = 0; i < lines.length; i++) {
-            lines[i] = applyRules(lines[i],ignoresystemrules);
+            lines[i] = applyRules(lines[i]);
         }
     }
 }

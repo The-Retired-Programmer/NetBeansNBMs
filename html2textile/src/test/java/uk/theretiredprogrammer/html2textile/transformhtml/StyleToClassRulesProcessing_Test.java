@@ -43,12 +43,13 @@ public class StyleToClassRulesProcessing_Test extends TransformhtmlTest {
     private String rules() {
         return  """
                 [HTML_STYLE_TO_CLASS_PROCESSING]
-                    REPLACE STYLES vertical-align:middle WITH CLASS valign_middle
-                    REPLACE STYLES vertical-align:top WITH CLASS valign_top
-                    REPLACE STYLES vertical-align:bottom WITH CLASS valign_bottom
-                    REPLACE STYLES font-weight: bold AND text-decoration: underline WITH CLASS boldunderline
-                    REPLACE STYLES text-align:right WITH CLASS alignright
-                    REPLACE STYLES font-weight: bold WITH CLASS bold
+                    REPLACE EXACT MATCH OF STYLES vertical-align:middle WITH CLASS valign_middle
+                    REPLACE EXACT MATCH OF STYLES vertical-align:top WITH CLASS valign_top
+                    REPLACE EXACT MATCH OF STYLES vertical-align:bottom WITH CLASS valign_bottom
+                    REPLACE EXACT MATCH OF STYLES font-weight: bold AND text-decoration: underline WITH CLASS boldunderline
+                    REPLACE EXACT MATCH OF STYLES text-align:right WITH CLASS alignright
+                    REPLACE EXACT MATCH OF STYLES font-weight: bold WITH CLASS bold
+                    REPLACE PARTIAL MATCH OF STYLES width:50% AND float:left WITH CLASS float-left-50
                 """;
     }
 
@@ -62,6 +63,7 @@ public class StyleToClassRulesProcessing_Test extends TransformhtmlTest {
                 <p style="vertical-align:middle; vertical-align:top;vertical-align:bottom;"/>
                 <p style="vertical-align:middle; text-align: right;"/>
                 <p style="text-align: right; text-align: right; text-align: right; "/>
+                <p style="margin: 0px 0px 0px 100px; padding: 0; float: left; width: 50%;" />
                 """;
     }
 
@@ -84,6 +86,8 @@ public class StyleToClassRulesProcessing_Test extends TransformhtmlTest {
                     p class="valign_middle alignright"
                     line number="8"
                     p class="alignright" style="text-align: right; text-align: right; "
+                    line number="9"
+                    p class="float-left-50"
                 """;
     }
 }

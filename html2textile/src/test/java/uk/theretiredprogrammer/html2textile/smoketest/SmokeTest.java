@@ -48,7 +48,7 @@ public class SmokeTest {
         try ( PrintWriter errwriter = new PrintWriter(System.err)) {
             ErrHandler err = new ErrHandler((s) -> errwriter.println(s));
             String s2;
-            Rules.create(err);
+            Rules.create();
             InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/" + inputresourcefilename);
             TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
             texttransformer.setReader(new InputStreamReader(is));

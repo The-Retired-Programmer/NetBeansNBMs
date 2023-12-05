@@ -3,7 +3,10 @@
 # Rules for Html2Textile processing
 # =================================
 #
+{FINAL_RULES}
+#
 [HTML_PREPROCESSING]
+    REPLACE &amp;quot; WITH '
     REPLACE &nbsp; WITH " " 
     REPLACE &lsquo; WITH '
     REPLACE &rsquo; WITH '
@@ -17,16 +20,47 @@
     REPLACE em WITH span AND STYLE font-style:italic
     REMOVE div IF STYLES margin: 20px 20px 20px 20px; AND font-family: arial,helvetica,sans-serif; AND font-size: 12pt; AND line-height: 1.5em; AND color: #000000;
 [HTML_ATTRIBUTE_PROCESSING]
+    REMOVE class IF ""
+    REMOVE class IF MsoListParagraphCxSpMiddle   
     REMOVE dir IF auto
     REMOVE id IF PATTERN cloak.*
     MOVE width TO STYLE
     MOVE text-align TO STYLE
 [HTML_STYLE_PROCESSING]
+    REMOVE background-attachment:scroll;
+    REMOVE background-clip:border-box;
+    REMOVE background-color:#ffffff;
+    REMOVE background-color:inherit;
+    REMOVE background-color:transparent;
+    REMOVE background-image:none;
+    REMOVE background-origin:padding-box;
+    REMOVE background-position-x:0%;
+    REMOVE background-position-y:0%;
+    REMOVE background-repeat:repeat;
+    REMOVE background-size:auto;
+    REMOVE border-bottom-color:red;
+    REMOVE border-bottom-style:solid;
+    REMOVE border-bottom-width:1px;
+    REMOVE box-sizing:border-box;
+    REMOVE ANY color
+    REMOVE display:inline!important
+    REMOVE float:none;
     REMOVE ANY font-family
-    REMOVE  font-size: 10pt
-    REMOVE  font-size: 12pt
-    REMOVE  color: #000000
-    REMOVE  background-color: inherit
+    REMOVE ANY font-size
+    REMOVE font-variant:normal;
+    REMOVE font-weight:400;
+    REMOVE font-weight:normal;
+    REMOVE letter-spacing:normal;
+    REMOVE ANY line-height
+    REMOVE margin:0px 0px 10px 0px;
+    REMOVE orphans:2;
+    REMOVE text-decoration:none;
+    REMOVE text-indent:0px;
+    REMOVE text-transform:none;
+    REMOVE -webkit-text-stroke-width:0px;
+    REMOVE white-space:normal;
+    REMOVE word-spacing:0px;
+    REPLACE STYLE RULE text-decoration: underline WITH font-style:italic 
 [HTML_FINAL_STYLE_PROCESSING]
     MOVE PATTERN text-align:.* TO ATTRIBUTE
     MOVE font-style:italic TO ELEMENT em
@@ -34,12 +68,75 @@
 [HTML_FINAL_ELEMENT_PROCESSING]
     REMOVE span IF STYLE IS EMPTY
 [HTML_STYLE_TO_CLASS_PROCESSING]
-    REPLACE STYLES margin: 0 20px 10px 0px; AND float: left; AND width: 50%; WITH CLASS float-left-50
-    REPLACE STYLES margin: 50px 0 0 100px; AND padding: 0; AND float: right; AND width: 20%; AND line-height: 12pt; WITH CLASS float-right-20
+    REPLACE EXACT MATCH OF STYLES margin: 0 20px 10px 0px; AND float: left; AND width: 50%; WITH CLASS float-left-50
+    REPLACE EXACT MATCH OF STYLES margin: 50px 0 0 100px; AND padding: 0; AND float: right; AND width: 20%; AND line-height: 12pt; WITH CLASS float-right-20
 #
 # final edits on the textile document after its translations
 #
 [TEXTILE_POSTPROCESSING]
+#
+#  originally in the shared rules
+#
+#
+REPLACE PATTERN ^p\{.*float:left;width:20%;.*\}(\. .*)$ WITH p(float-left-20)$1
+REPLACE PATTERN ^p\{.*float:left;width:100%;.*\}(\. .*)$ WITH p(image-100)$1
+REPLACE PATTERN ^p\{.*float:left;.*\}(\. .*)$ WITH p(float-left-50)$1
+REPLACE PATTERN ^p\{.*float:right;width:20%;.*\}(\. .*)$ WITH p(float-right-20)$1
+REPLACE PATTERN ^p\{.*float:right;.*\}(\. .*)$ WITH p(float-right-50)$1
+#
+REPLACE PATTERN ^p. !\{.*float:left;width:20%;.*\}(.*)$ WITH p(float-left-20). !$1
+REPLACE PATTERN ^p. !\{.*float:left;width:100%;.*\}(.*)$ WITH p(image-100). !$1
+REPLACE PATTERN ^p. !\{.*float:left;.*\}(.*)$ WITH p(float-left-50). !$1
+REPLACE PATTERN ^p. !\{.*float:right;width:20%;.*\}(.*)$ WITH p(float-right-20). !$1
+REPLACE PATTERN ^p. !\{.*float:right;.*\}(.*)$ WITH p(float-right-50). !$1
+#
+REPLACE {width:50%;} WITH (image-50)
+REPLACE (halfWidthImg){float:left;width:100%;} WITH (float-left-50)
+
+REPLACE PATTERN ^p\{margin-left:\d*px;\}\. (.*)$ WITH p(((. $1
+
+#
+#  map URL from Joomla to SCM
+#
+# in dinghies
+REPLACE https://exe-sailing-club.org/training/training-link.html WITH training
+REPLACE https://exe-sailing-club.org/juniors.html WITH junior-racing
+REPLACE https://exe-sailing-club.org/training/boat-hire.html WITH /training/boat-hire
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=294 WITH /training/members-improver-sessions
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=25 WITH girls-go-sailing
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=273 WITH dinghy-racing
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=285 WITH get-racing
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=274 WITH dinghy-cruising
+REPLACE https://exe-sailing-club.org/open-events.html WITH open-events
+# in dinghy cruising
+REPLACE https://exe-sailing-club.org/dinghies/notice-board.html/\#cruising WITH /dinghies/notice-board/#cruising
+# in dinghy racing
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=290 WITH beginners-guide-to-racing
+REPLACE https://exe-sailing-club.org/dinghies/notice-board.html/\#racing WITH /dinghies/notice-board/#racing
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=280 WITH comet-trio
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=281 WITH rs-400
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=282 WITH rs-200
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=283 WITH supernova
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=284 WITH rs-aero
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=293 WITH /dinghies/race-results
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=289 WITH first-beat-tips
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=286 WITH /dinghies/race-team-information
+# in dinghy race team information
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=287 WITH /race-team-information/race-officers-briefing
+REPLACE https://exe-sailing-club.org/index.php\?option=com_content\&view=article\&id=288 WITH /race-team-information/racing-at-sea
+# in training
+
+#in juniors
+REPLACE https://exe-sailing-club.org/juniors/official-notice-board.html WITH official-notice-board
+
+# SCM calendars - all are converted by this rule
+REPLACE https://scm.exe-sailing-club.org/events\? WITH /events?
+REPLACE https://scm.exe-sailing-club.org/roster WITH /roster
+
+# clear up reference to esc assets to use files. ... url
+REPLACE https://exe-sailing-club.org/assets/ WITH https://files.exe-sailing-club.org/
+REPLACE https://www.exe-sailing-club.org/assets/ WITH https://files.exe-sailing-club.org/
+
 #
 # process the three text-align styles associated with headings to native Textile
 #

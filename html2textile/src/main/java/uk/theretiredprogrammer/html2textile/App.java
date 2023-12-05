@@ -30,7 +30,6 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.SAXException;
-import uk.theretiredprogrammer.html2textile.rules.Rules;
 
 public class App {
 
@@ -71,15 +70,6 @@ public class App {
 
         while (i < l) {
             switch (args[i]) {
-
-                case "-x" ->
-                    Rules.ignore_ALL_SystemRules();
-                case "-xh" ->
-                    Rules.ignore_HTML_PREPROCESSING_SystemRules();
-                case "-xs" ->
-                    Rules.ignore_HTML_STYLE_PROCESSING_SystemRules();
-                case "-xt" ->
-                    Rules.ignore_TEXTILE_POSTPROCESSING_SystemRules();
                 default -> {
                     while (i < l) {
                         inputfilenames.add(args[i++]);
@@ -99,7 +89,8 @@ public class App {
         String outputfilename = getfilenoext(filename) + ".textile";
         try {
             try ( Reader rdr = getInputReader(filename);  PrintWriter wtr = getOutputWriter(outputfilename)) {
-                Html2Textile.convert(rdr, wtr, err, new File(filename).getAbsoluteFile());
+                Html2Textile h2t = new Html2Textile();
+                h2t.convertor(rdr, wtr, err, new File(filename).getAbsoluteFile());
                 return 0;
             } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
                 err.error("Exception: " + ex.getLocalizedMessage());
@@ -144,14 +135,18 @@ public class App {
                 
             options are:
                
-                -x              do not use any of the system rules files
+                -i+     output intermediate html (if running both phases)
+                -i-     don't output intermediate html (if running both phases)          
                 
-                -xh             do not use the Html system rules file
+                -h+     run html phase
+                -h-     don't run the html phase
                                 
-                -xs             do not use the Style system rules file
+                -t+     run textile phase
+                -t-     don't run the textile phase
                                 
-                -xt             do not use the Textile system rules file
+                initial state without any options is: -x+ -i- -h+ -t+
                 
-            and INPUTFILES is the source html files (html fragment) which are to be converted.
+            and INPUTFILES are the source file(s): html, html fragments or intermediate html
+                    
         """;
 }

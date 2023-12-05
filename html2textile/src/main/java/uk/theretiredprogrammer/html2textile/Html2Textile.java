@@ -32,15 +32,11 @@ import uk.theretiredprogrammer.html2textile.transformtext.TransformTextileText;
 
 public class Html2Textile {
 
-    public static void convert(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        new Html2Textile().converter(from, textilewriter, err, inputfile);
+    public Html2Textile() {
     }
 
-    private Html2Textile() {
-    }
-
-    public void converter(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
-        Rules.create(inputfile,err);
+    public void convertor(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
+        Rules.create(inputfile);
         TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
         texttransformer.setReader(from);
         texttransformer.rootWrap("html");

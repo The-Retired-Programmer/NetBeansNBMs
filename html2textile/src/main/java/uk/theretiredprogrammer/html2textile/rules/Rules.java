@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.transformhtml.AttributeRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.ElementRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.StyleRulesProcessing;
@@ -34,24 +33,33 @@ import uk.theretiredprogrammer.html2textile.transformtext.TransformTextileText;
 
 public class Rules {
 
-    public static void create(File datainput, ErrHandler err) throws FileNotFoundException, IOException {
-        initialiserules(err);
+    public static void create(File datainput) throws FileNotFoundException, IOException {
+        initialiserules();
         File parent = datainput.getParentFile();
-        loadrulesfile(getownrulesfile(parent, datainput), false);
-        loadrulesfile(getsharedrulesfile(parent), false);
-        loadrulesfile(getsharedrulesfile(parent.getParentFile()), false);
-        loadrulesfile(getsystemrulesfile(), true);
+        loadrulesfile(getownrulesfile(parent, datainput));
+        if (finalrules) {
+            return;
+        }
+        loadrulesfile(getsharedrulesfile(parent));
+        if (finalrules) {
+            return;
+        }
+        loadrulesfile(getsharedrulesfile(parent.getParentFile()));
+        if (finalrules) {
+            return;
+        }
+        loadrulesfile(getsystemrulesfile());
     }
 
-    public static void create(ErrHandler err) throws FileNotFoundException, IOException {
-        initialiserules(err);
-        loadrulesfile(getsystemrulesfile(), true);
+    public static void create() throws FileNotFoundException, IOException {
+        initialiserules();
+        loadrulesfile(getsystemrulesfile());
     }
 
     //  intended for testing purposes
-    public static void create(Reader alternative, ErrHandler err) throws FileNotFoundException, IOException {
-        initialiserules(err);
-        loadrulesfile(alternative, true);
+    public static void create(Reader alternative) throws FileNotFoundException, IOException {
+        initialiserules();
+        loadrulesfile(alternative);
     }
 
     private static InputStream getownrulesfile(File folder, File own) throws FileNotFoundException {
@@ -73,38 +81,53 @@ public class Rules {
         return rulefile.length == 1 ? new FileInputStream(rulefile[0]) : null;
     }
 
-    private static void loadrulesfile(Reader ruleset, boolean issystem) throws IOException {
+    private static void loadrulesfile(Reader ruleset) throws IOException {
         if (ruleset != null) {
             try ( BufferedReader rulesreader = new BufferedReader(ruleset)) {
-                loadrulesfile(issystem, rulesreader);
+                loadrulesfile(rulesreader);
             }
         }
     }
 
-    private static void loadrulesfile(InputStream ruleset, boolean issystem) throws IOException {
+    private static void loadrulesfile(InputStream ruleset) throws IOException {
         if (ruleset != null) {
             try ( BufferedReader rulesreader = new BufferedReader(new InputStreamReader(ruleset))) {
-                loadrulesfile(issystem, rulesreader);
+                loadrulesfile(rulesreader);
             }
         }
     }
 
-    private static void loadrulesfile(boolean issystem, BufferedReader rulesreader) throws IOException {
+    private static boolean finalrules = false;
+
+    private static void loadrulesfile(BufferedReader rulesreader) throws IOException {
         RuleSet rulesset = null;
         String line;
         while ((line = rulesreader.readLine()) != null) {
             if (!(line.startsWith("#") || line.isBlank())) {
-                if (line.startsWith("[")) {
-                    int pos = line.indexOf(']');
-                    rulesset = get(pos == -1 ? line.substring(1) : line.substring(1, pos));
+                if (line.startsWith("{")) {
+                    parserulescommands(line);
                 } else {
-                    if (rulesset == null) {
-                        throw new IOException("Missing rules set name");
+                    if (line.startsWith("[")) {
+                        int pos = line.indexOf(']');
+                        rulesset = get(pos == -1 ? line.substring(1) : line.substring(1, pos));
                     } else {
-                        rulesset.parseAndInsertRule(line, issystem);
+                        if (rulesset == null) {
+                            throw new IOException("Missing rules set name");
+                        } else {
+                            rulesset.parseAndInsertRule(line);
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private static void parserulescommands(String command) throws IOException {
+        switch (command.strip()) {
+            case "{FINAL_RULES}" ->
+                finalrules = true;
+            default ->
+                throw new IOException("Bad Rules Command: " + command);
         }
     }
 
@@ -133,136 +156,62 @@ public class Rules {
         };
     }
 
-    private static void initialiserules(ErrHandler err) {
+    private static void initialiserules() {
         transformhtmltext = new TransformHtmlText();
-        ignore_HTML_PREPROCESSING_systemrules = false;
         transformtextiletext = new TransformTextileText();
-        ignore_TEXTILE_POSTPROCESSING_systemrules = false;
         stylerulesprocessing = new StyleRulesProcessing();
-        ignore_HTML_STYLE_PROCESSING_systemrules = false;
         finalstylerulesprocessing = new StyleRulesProcessing();
-        ignore_HTML_FINAL_STYLE_PROCESSING_systemrules = false;
         elementrulesprocessing = new ElementRulesProcessing();
-        ignore_HTML_ELEMENT_PROCESSING_systemrules = false;
         finalelementrulesprocessing = new ElementRulesProcessing();
-        ignore_HTML_FINAL_ELEMENT_PROCESSING_systemrules = false;
         attributerulesprocessing = new AttributeRulesProcessing();
-        ignore_HTML_ATTRIBUTE_PROCESSING_systemrules = false;
         urlrulesprocessing = new URLRulesProcessing();
-        ignore_HTML_URL_PROCESSING_systemrules = false;
         styletoclassrulesprocessing = new StyleToClassRulesProcessing();
-        ignore_HTML_STYLE_TO_CLASS_PROCESSING_systemrules = false;
+        finalrules = false;
     }
 
     private static TransformHtmlText transformhtmltext;
-    private static boolean ignore_HTML_PREPROCESSING_systemrules;
     private static TransformTextileText transformtextiletext;
-    private static boolean ignore_TEXTILE_POSTPROCESSING_systemrules;
     private static StyleRulesProcessing stylerulesprocessing;
-    private static boolean ignore_HTML_STYLE_PROCESSING_systemrules;
     private static StyleRulesProcessing finalstylerulesprocessing;
-    private static boolean ignore_HTML_FINAL_STYLE_PROCESSING_systemrules;
     private static ElementRulesProcessing elementrulesprocessing;
-    private static boolean ignore_HTML_ELEMENT_PROCESSING_systemrules;
     private static ElementRulesProcessing finalelementrulesprocessing;
-    private static boolean ignore_HTML_FINAL_ELEMENT_PROCESSING_systemrules;
     private static AttributeRulesProcessing attributerulesprocessing;
-    private static boolean ignore_HTML_ATTRIBUTE_PROCESSING_systemrules;
     private static URLRulesProcessing urlrulesprocessing;
-    private static boolean ignore_HTML_URL_PROCESSING_systemrules;
     private static StyleToClassRulesProcessing styletoclassrulesprocessing;
-    private static boolean ignore_HTML_STYLE_TO_CLASS_PROCESSING_systemrules;
-
-    public static void ignore_ALL_SystemRules() {
-        ignore_HTML_PREPROCESSING_systemrules = true;
-        ignore_TEXTILE_POSTPROCESSING_systemrules = true;
-        ignore_HTML_STYLE_PROCESSING_systemrules = true;
-        ignore_HTML_FINAL_STYLE_PROCESSING_systemrules = true;
-        ignore_HTML_ELEMENT_PROCESSING_systemrules = true;
-        ignore_HTML_FINAL_ELEMENT_PROCESSING_systemrules = true;
-        ignore_HTML_ATTRIBUTE_PROCESSING_systemrules = true;
-        ignore_HTML_URL_PROCESSING_systemrules = true;
-        ignore_HTML_STYLE_TO_CLASS_PROCESSING_systemrules = true;
-    }
-
-    public static void ignore_HTML_PREPROCESSING_SystemRules() {
-        ignore_HTML_PREPROCESSING_systemrules = true;
-    }
 
     public static TransformHtmlText get_HTML_PREPROCESSING() {
-        transformhtmltext.ignoreSystemRules(ignore_HTML_PREPROCESSING_systemrules);
         return transformhtmltext;
     }
 
-    public static void ignore_TEXTILE_POSTPROCESSING_SystemRules() {
-        ignore_TEXTILE_POSTPROCESSING_systemrules = true;
-    }
-
     public static TransformTextileText get_TEXTILE_POSTPROCESSING() {
-        transformtextiletext.ignoreSystemRules(ignore_TEXTILE_POSTPROCESSING_systemrules);
         return transformtextiletext;
     }
 
-    public static void ignore_HTML_STYLE_PROCESSING_SystemRules() {
-        ignore_HTML_STYLE_PROCESSING_systemrules = true;
-    }
-
     public static StyleRulesProcessing get_HTML_STYLE_PROCESSING() {
-        stylerulesprocessing.ignoreSystemRules(ignore_HTML_STYLE_PROCESSING_systemrules);
         return stylerulesprocessing;
-    }
-
-    public static void ignore_HTML_FINAL_STYLE_PROCESSING_SystemRules() {
-        ignore_HTML_FINAL_STYLE_PROCESSING_systemrules = true;
     }
 
     public static StyleRulesProcessing get_HTML_FINAL_STYLE_PROCESSING() {
-        finalstylerulesprocessing.ignoreSystemRules(ignore_HTML_FINAL_STYLE_PROCESSING_systemrules);
-        return stylerulesprocessing;
-    }
-
-    public static void ignore_HTML_ELEMENT_PROCESSING_SystemRules() {
-        ignore_HTML_ELEMENT_PROCESSING_systemrules = true;
+        return finalstylerulesprocessing;
     }
 
     public static ElementRulesProcessing get_HTML_ELEMENT_PROCESSING() {
-        elementrulesprocessing.ignoreSystemRules(ignore_HTML_ELEMENT_PROCESSING_systemrules);
         return elementrulesprocessing;
     }
 
-    public static void ignore_HTML_FINAL_ELEMENT_PROCESSING_SystemRules() {
-        ignore_HTML_FINAL_ELEMENT_PROCESSING_systemrules = true;
-    }
-
     public static ElementRulesProcessing get_HTML_FINAL_ELEMENT_PROCESSING() {
-        finalelementrulesprocessing.ignoreSystemRules(ignore_HTML_FINAL_ELEMENT_PROCESSING_systemrules);
         return finalelementrulesprocessing;
     }
 
-    public static void ignore_HTML_ATTRIBUTE_PROCESSING_SystemRules() {
-        ignore_HTML_ATTRIBUTE_PROCESSING_systemrules = true;
-    }
-
     public static AttributeRulesProcessing get_HTML_ATTRIBUTE_PROCESSING() {
-        attributerulesprocessing.ignoreSystemRules(ignore_HTML_ATTRIBUTE_PROCESSING_systemrules);
         return attributerulesprocessing;
     }
 
-    public static void ignore_HTML_URL_PROCESSING_SystemRules() {
-        ignore_HTML_URL_PROCESSING_systemrules = true;
-    }
-
     public static URLRulesProcessing get_HTML_URL_PROCESSING() {
-        urlrulesprocessing.ignoreSystemRules(ignore_HTML_URL_PROCESSING_systemrules);
         return urlrulesprocessing;
     }
 
-    public static void ignore_HTML_STYLE_TO_CLASS_PROCESSING_SystemRules() {
-        ignore_HTML_STYLE_TO_CLASS_PROCESSING_systemrules = true;
-    }
-
     public static StyleToClassRulesProcessing get_HTML_STYLE_TO_CLASS_PROCESSING() {
-        styletoclassrulesprocessing.ignoreSystemRules(ignore_HTML_STYLE_TO_CLASS_PROCESSING_systemrules);
         return styletoclassrulesprocessing;
     }
 }

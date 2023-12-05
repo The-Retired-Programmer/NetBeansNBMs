@@ -42,7 +42,7 @@ public class Style {
         }
         return true;
     }
-    
+
     public final List<StyleRule> getStyleRules() {
         return srules;
     }
@@ -60,6 +60,11 @@ public class Style {
         return false;
     }
     
+    public Style clear() {
+        srules.clear();
+        return this;
+    }
+
     public boolean contains(StyleRule find) {
         return find.isSame(lookup(find.getName()));
     }
@@ -96,7 +101,7 @@ public class Style {
         srules.remove(found);
         return found;
     }
-    
+
     public StyleRule removeStyleRule(StyleRule remove) {
         StyleRule found = lookup(remove.getName());
         if (remove.isSame(found)) {
@@ -104,12 +109,11 @@ public class Style {
         }
         return found;
     }
-    
+
     public StyleRule removeThisStyleRule(StyleRule remove) {
-            srules.remove(remove);
+        srules.remove(remove);
         return remove;
     }
-
 
     public List<StyleRule> removeStyleRuleIfPattern(String pattern) {
         List<StyleRule> rulestoremove = new ArrayList<>();
@@ -132,6 +136,18 @@ public class Style {
         }
         found.setValue(valuereplacement);
         return found;
+    }
+
+    public StyleRule replaceStyleRule(String original, String replacement) throws IOException {
+            StyleRule originalsr = new StyleRule(original);
+            StyleRule replacementsr = new StyleRule(replacement);
+            StyleRule found = lookup(originalsr.getName());
+            if (found == null) {
+                return null;
+            }
+            srules.remove(found);
+            srules.add(replacementsr);
+            return replacementsr;
     }
 
     public List<StyleRule> replaceStyleRuleUsingPattern(String pattern, String replacement) throws IOException {
@@ -177,7 +193,7 @@ public class Style {
         }
         return this;
     }
-    
+
     public Style removeTargetStyleRuleIfPresent(Style target) {
         List<StyleRule> toberemoved = new ArrayList<>();
         for (var trule : target.srules) {

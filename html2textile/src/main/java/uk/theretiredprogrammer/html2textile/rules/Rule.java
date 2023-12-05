@@ -20,15 +20,13 @@ import java.util.function.Predicate;
 
 public class Rule<S> {
 
-    private final boolean isSystemRule;
     private final Predicate<S> action;
 
-    public Rule(boolean isSystemRule, Predicate<S> action) {
-        this.isSystemRule = isSystemRule;
+    public Rule(Predicate<S> action) {
         this.action = action;
     }
 
-    boolean applyRuleAction(S item, boolean ignoresystemrules) throws IOException {
-        return (ignoresystemrules ? !isSystemRule : true) ? action.test(item): false;
+    boolean applyRuleAction(S item) throws IOException {
+        return action.test(item);
     }
 }

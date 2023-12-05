@@ -27,10 +27,10 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
     private Element element;
     private IOException exception;
 
-    public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
+    public Boolean applyRules(Element proxyvalue) throws IOException {
         element = proxyvalue;
         exception = null;
-        boolean res = applyRuleActions(this, ignoresystemrules);
+        boolean res = applyRuleActions(this);
         if (exception != null) {
             throw exception;
         }
@@ -82,7 +82,7 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
         return false;
     }
 
-    public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
+    public void parseAndInsertRule(String rulecommandline) throws IOException {
         String attributename;
         String value;
         rulecommandline = rulecommandline.trim();
@@ -92,7 +92,7 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
                 throw new IOException("Bad Rule definition: \" TO STYLE\" missing in \"MOVE \" rule - " + rulecommandline);
             }
             attributename = trimquotes(rulecommandline.substring(4, tostylepos + 1).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.movetostyle(attributename)));
+            add(new Rule<>((AttributeProxy e) -> e.movetostyle(attributename)));
             return;
         }
         if (rulecommandline.startsWith("REMOVE ")) {
@@ -100,18 +100,18 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
             if (pos != -1) {
                 attributename = trimquotes(rulecommandline.substring(6, pos + 1).trim());
                 value = trimquotes(rulecommandline.substring(pos + 11).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.removeifpattern(attributename, value)));
+                add(new Rule<>((AttributeProxy e) -> e.removeifpattern(attributename, value)));
                 return;
             }
             pos = rulecommandline.indexOf(" IF ");
             if (pos != -1) {
                 attributename = trimquotes(rulecommandline.substring(6, pos + 1).trim());
                 value = trimquotes(rulecommandline.substring(pos + 3).trim());
-                add(new Rule<>(isSystemRule, (e) -> e.removeif(attributename, value)));
+                add(new Rule<>((AttributeProxy e) -> e.removeif(attributename, value)));
                 return;
             }
             attributename = trimquotes(rulecommandline.substring(6).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.remove(attributename)));
+            add(new Rule<>((AttributeProxy e) -> e.remove(attributename)));
             return;
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);

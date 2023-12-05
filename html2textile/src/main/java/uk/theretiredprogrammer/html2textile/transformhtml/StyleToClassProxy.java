@@ -18,7 +18,6 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.openide.util.Exceptions;
 import org.w3c.dom.Element;
 import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
@@ -32,13 +31,13 @@ public class StyleToClassProxy extends RuleSet<StyleToClassProxy> implements Pro
     private Style style;
     private IOException error = null;
 
-    public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
+    public Boolean applyRules(Element proxyvalue) throws IOException {
         error = null;
         boolean res = false;
         element = proxyvalue;
         style = new Style();
         if (style.extract(element)) {
-            res = applyRuleActions(this, ignoresystemrules);
+            res = applyRuleActions(this);
             style.setStyle(element);
         }
         if (error != null) {
@@ -46,13 +45,13 @@ public class StyleToClassProxy extends RuleSet<StyleToClassProxy> implements Pro
         }
         return res;
     }
-    
-    private boolean replace(String[] match, String classname ) {
-        List<StyleRule> toremove =new ArrayList<>();
+
+    private boolean replaceexactmatch(String[] match, String classname) {
+        List<StyleRule> toremove = new ArrayList<>();
         StyleRule[] srules = new StyleRule[match.length];
-        for (int i=0; i< match.length; i++) {
+        for (int i = 0; i < match.length; i++) {
             try {
-                srules[i]= new StyleRule(match[i]);
+                srules[i] = new StyleRule(match[i]);
             } catch (IOException ex) {
                 error = ex;
                 return true;
@@ -68,26 +67,61 @@ public class StyleToClassProxy extends RuleSet<StyleToClassProxy> implements Pro
         }
         if (matchcount == match.length) {
             String classnames = element.getAttribute("class");
-            element.setAttribute("class", classnames.isBlank()? classname : classnames+" "+classname);
-            for (var instyle: toremove) {
+            element.setAttribute("class", classnames.isBlank() ? classname : classnames + " " + classname);
+            for (var instyle : toremove) {
                 style.removeThisStyleRule(instyle);
             }
         }
         return false;
     }
 
-    public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
+    private boolean replacepartialmatch(String[] match, String classname) {
+        StyleRule[] srules = new StyleRule[match.length];
+        for (int i = 0; i < match.length; i++) {
+            try {
+                srules[i] = new StyleRule(match[i]);
+            } catch (IOException ex) {
+                error = ex;
+                return true;
+            }
+        }
+        int matchcount = 0;
+        for (var srule : srules) {
+            StyleRule instyle = style.lookup(srule.getName());
+            if (srule.isSame(instyle)) {
+                matchcount++;
+            }
+        }
+        if (matchcount == match.length) {
+            String classnames = element.getAttribute("class");
+            element.setAttribute("class", classnames.isBlank() ? classname : classnames + " " + classname);
+            style.clear();
+        }
+        return false;
+    }
+
+    public void parseAndInsertRule(String rulecommandline) throws IOException {
         String styles;
         String classname;
         rulecommandline = rulecommandline.trim();
-        if (rulecommandline.startsWith("REPLACE STYLES ")) {
+        if (rulecommandline.startsWith("REPLACE EXACT MATCH OF STYLES ")) {
             int withpos = rulecommandline.indexOf(" WITH CLASS ");
             if (withpos == -1) {
-                throw new IOException("Bad Rule definition: \" WITH CLASS \" missing in \"REPLACE STYLES \" rule - " + rulecommandline);
+                throw new IOException("Bad Rule definition: \" WITH CLASS \" missing in \"REPLACE EXACT MATCH OF STYLES \" rule - " + rulecommandline);
             }
-            styles = trimquotes(rulecommandline.substring(14, withpos + 1).trim());
+            styles = trimquotes(rulecommandline.substring(29, withpos + 1).trim());
             classname = trimquotes(rulecommandline.substring(withpos + 12).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.replace(styles.split(" AND "), classname)));
+            add(new Rule<>((e) -> e.replaceexactmatch(styles.split(" AND "), classname)));
+            return;
+        }
+        if (rulecommandline.startsWith("REPLACE PARTIAL MATCH OF STYLES ")) {
+            int withpos = rulecommandline.indexOf(" WITH CLASS ");
+            if (withpos == -1) {
+                throw new IOException("Bad Rule definition: \" WITH CLASS \" missing in \"REPLACE PARTIAL MATCH OF STYLES \" rule - " + rulecommandline);
+            }
+            styles = trimquotes(rulecommandline.substring(31, withpos + 1).trim());
+            classname = trimquotes(rulecommandline.substring(withpos + 12).trim());
+            add(new Rule<>((e) -> e.replacepartialmatch(styles.split(" AND "), classname)));
             return;
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);

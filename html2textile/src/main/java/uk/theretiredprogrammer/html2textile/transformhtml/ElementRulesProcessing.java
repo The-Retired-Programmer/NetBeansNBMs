@@ -20,13 +20,7 @@ import org.w3c.dom.Element;
 
 public class ElementRulesProcessing extends ElementProxy implements TransformHtmlItem {
 
-    private boolean ignoresystemrules;
-
-    public void ignoreSystemRules(boolean ignoresystemrules) {
-        this.ignoresystemrules = ignoresystemrules;
-    }
-
     public ResumeAction testElementAndModify(Element element) throws IOException {
-        return applyRules(element, ignoresystemrules) ? ResumeAction.RESUME_FROM_PARENT : ResumeAction.RESUME_FROM_NEXT;
+        return applyRules(element) ? ResumeAction.RESUME_FROM_PARENT : ResumeAction.RESUME_FROM_NEXT;
     }
 }

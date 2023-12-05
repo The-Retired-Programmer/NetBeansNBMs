@@ -121,6 +121,12 @@ public abstract class TextileElementTranslator {
         translator.processChildrenInTerminatorContext(element);
         out.write(bracket);
     }
+    
+    void bracketplus(String bracket, Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        out.write('[');
+        bracket(bracket, element, isParentTerminatorContext, translator);
+        out.write(']');
+    }
 
     void checkNoAttributes(Element element) throws IOException {
         NamedNodeMap attributes = element.getAttributes();

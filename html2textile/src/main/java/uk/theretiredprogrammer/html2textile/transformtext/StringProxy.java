@@ -24,9 +24,9 @@ public class StringProxy extends RuleSet<StringProxy> implements Proxy<String, S
 
     private String text;
 
-    public String applyRules(String proxyvalue, boolean ignoresystemrules) throws IOException {
+    public String applyRules(String proxyvalue) throws IOException {
         text = proxyvalue;
-        applyRuleActions(this, ignoresystemrules);
+        applyRuleActions(this);
         return text;
     }
 
@@ -40,20 +40,20 @@ public class StringProxy extends RuleSet<StringProxy> implements Proxy<String, S
         return false;
     }
 
-    public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
+    public void parseAndInsertRule(String rulecommandline) throws IOException {
         String match;
         String replacement;
         rulecommandline = rulecommandline.trim();
         if (rulecommandline.startsWith("REMOVE PATTERN ")) {
             match = trimquotes(rulecommandline.substring(14).trim());
             replacement = "";
-            add(new Rule<>(isSystemRule, (t) -> t.replaceAll(match, replacement)));
+            add(new Rule<>((t) -> t.replaceAll(match, replacement)));
             return;
         }
         if (rulecommandline.startsWith("REMOVE ")) {
             match = trimquotes(rulecommandline.substring(6).trim());
             replacement = "";
-            add(new Rule<>(isSystemRule, (t) -> t.replace(match, replacement)));
+            add(new Rule<>((t) -> t.replace(match, replacement)));
             return;
         }
         if (rulecommandline.startsWith("REPLACE PATTERN ")) {
@@ -63,7 +63,7 @@ public class StringProxy extends RuleSet<StringProxy> implements Proxy<String, S
             }
             match = trimquotes(rulecommandline.substring(15, withpos + 1).trim());
             replacement = trimquotes(rulecommandline.substring(withpos + 5).trim());
-            add(new Rule<>(isSystemRule, (t) -> t.replaceAll(match, replacement)));
+            add(new Rule<>((t) -> t.replaceAll(match, replacement)));
             return;
         }
         if (rulecommandline.startsWith("REPLACE ")) {
@@ -73,7 +73,7 @@ public class StringProxy extends RuleSet<StringProxy> implements Proxy<String, S
             }
             match = trimquotes(rulecommandline.substring(7, withpos + 1).trim());
             replacement = trimquotes(rulecommandline.substring(withpos + 5).trim());
-            add(new Rule<>(isSystemRule, (t) -> t.replace(match, replacement)));
+            add(new Rule<>((t) -> t.replace(match, replacement)));
             return;
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);

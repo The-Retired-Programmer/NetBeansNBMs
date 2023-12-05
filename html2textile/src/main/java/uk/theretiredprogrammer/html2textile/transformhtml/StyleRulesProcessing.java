@@ -20,14 +20,9 @@ import org.w3c.dom.Element;
 
 public class StyleRulesProcessing extends StyleProxy implements TransformHtmlItem {
 
-    private boolean ignoresystemrules;
-
-    public void ignoreSystemRules(boolean ignoresystemrules) {
-        this.ignoresystemrules = ignoresystemrules;
-    }
 
     public ResumeAction testElementAndModify(Element element) throws IOException {
-        applyRules(element, ignoresystemrules);
+        applyRules(element);
         return ResumeAction.RESUME_FROM_NEXT;
     }
 }

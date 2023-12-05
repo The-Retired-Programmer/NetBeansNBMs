@@ -26,10 +26,10 @@ public class URLProxy extends RuleSet<URLProxy> implements Proxy<Element, Boolea
     private Element element;
     private IOException exception;
 
-    public Boolean applyRules(Element proxyvalue, boolean ignoresystemrules) throws IOException {
+    public Boolean applyRules(Element proxyvalue) throws IOException {
         element = proxyvalue;
         exception = null;
-        boolean res = applyRuleActions(this, ignoresystemrules);
+        boolean res = applyRuleActions(this);
         if (exception != null) {
             throw exception;
         }
@@ -42,29 +42,29 @@ public class URLProxy extends RuleSet<URLProxy> implements Proxy<Element, Boolea
         }
         return false;
     }
-    
+
     private boolean mapapattern(String pattern, String replacement) {
-        if ("a".equals(element.getTagName()) ) {
+        if ("a".equals(element.getTagName())) {
             element.setAttribute("href", element.getAttribute("href").replaceAll(pattern, replacement));
         }
         return false;
     }
-    
+
     private boolean mapimg(String from, String to) {
         if ("img".equals(element.getTagName()) && from.equals(element.getAttribute("src"))) {
             element.setAttribute("src", to);
         }
         return false;
     }
-    
+
     private boolean mapimgpattern(String pattern, String replacement) {
-        if ("img".equals(element.getTagName()) ) {
+        if ("img".equals(element.getTagName())) {
             element.setAttribute("scr", element.getAttribute("src").replaceAll(pattern, replacement));
         }
         return false;
     }
-    
-    public void parseAndInsertRule(String rulecommandline, boolean isSystemRule) throws IOException {
+
+    public void parseAndInsertRule(String rulecommandline) throws IOException {
         String map;
         String target;
         rulecommandline = rulecommandline.trim();
@@ -75,7 +75,7 @@ public class URLProxy extends RuleSet<URLProxy> implements Proxy<Element, Boolea
             }
             map = trimquotes(rulecommandline.substring(13, topos + 1).trim());
             target = trimquotes(rulecommandline.substring(topos + 3).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.mapapattern(map, target)));
+            add(new Rule<>((e) -> e.mapapattern(map, target)));
             return;
         }
         if (rulecommandline.startsWith("MAP A ")) {
@@ -85,7 +85,7 @@ public class URLProxy extends RuleSet<URLProxy> implements Proxy<Element, Boolea
             }
             map = trimquotes(rulecommandline.substring(5, topos + 1).trim());
             target = trimquotes(rulecommandline.substring(topos + 3).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.mapa(map, target)));
+            add(new Rule<>((e) -> e.mapa(map, target)));
             return;
         }
         if (rulecommandline.startsWith("MAP IMG PATTERN ")) {
@@ -95,7 +95,7 @@ public class URLProxy extends RuleSet<URLProxy> implements Proxy<Element, Boolea
             }
             map = trimquotes(rulecommandline.substring(15, topos + 1).trim());
             target = trimquotes(rulecommandline.substring(topos + 3).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.mapimgpattern(map, target)));
+            add(new Rule<>((e) -> e.mapimgpattern(map, target)));
             return;
         }
         if (rulecommandline.startsWith("MAP IMG ")) {
@@ -105,7 +105,7 @@ public class URLProxy extends RuleSet<URLProxy> implements Proxy<Element, Boolea
             }
             map = trimquotes(rulecommandline.substring(7, topos + 1).trim());
             target = trimquotes(rulecommandline.substring(topos + 3).trim());
-            add(new Rule<>(isSystemRule, (e) -> e.mapimg(map, target)));
+            add(new Rule<>((e) -> e.mapimg(map, target)));
             return;
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);
