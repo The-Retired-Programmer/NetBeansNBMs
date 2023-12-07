@@ -37,15 +37,15 @@ public class Rules {
         initialiserules();
         File parent = datainput.getParentFile();
         loadrulesfile(getownrulesfile(parent, datainput));
-        if (finalrules) {
+        if (noinheritance) {
             return;
         }
         loadrulesfile(getsharedrulesfile(parent));
-        if (finalrules) {
+        if (noinheritance) {
             return;
         }
         loadrulesfile(getsharedrulesfile(parent.getParentFile()));
-        if (finalrules) {
+        if (noinheritance) {
             return;
         }
         loadrulesfile(getsystemrulesfile());
@@ -97,7 +97,7 @@ public class Rules {
         }
     }
 
-    private static boolean finalrules = false;
+    private static boolean noinheritance = false;
 
     private static void loadrulesfile(BufferedReader rulesreader) throws IOException {
         RuleSet rulesset = null;
@@ -124,8 +124,8 @@ public class Rules {
 
     private static void parserulescommands(String command) throws IOException {
         switch (command.strip()) {
-            case "{FINAL_RULES}" ->
-                finalrules = true;
+            case "{NO INHERITANCE}" ->
+                noinheritance = true;
             default ->
                 throw new IOException("Bad Rules Command: " + command);
         }
@@ -166,7 +166,7 @@ public class Rules {
         attributerulesprocessing = new AttributeRulesProcessing();
         urlrulesprocessing = new URLRulesProcessing();
         styletoclassrulesprocessing = new StyleToClassRulesProcessing();
-        finalrules = false;
+        noinheritance = false;
     }
 
     private static TransformHtmlText transformhtmltext;

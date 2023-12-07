@@ -54,6 +54,12 @@ public class TransformHtmlText extends StringProxy {
         }
         return new StringReader(applyRules(wrapped.toString()));
     }
+    
+    public Reader normalise() throws IOException {
+        StringWriter wrapped = new StringWriter();
+        copylines(original, wrapped);
+        return new StringReader(wrapped.toString());
+    }
 
     private void copylines(BufferedReader from, Writer to) throws IOException {
         List<LineInfo> lines = getlines(from);

@@ -15,12 +15,15 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
-import java.io.IOException;
 import org.w3c.dom.Element;
 
-public class URLRulesProcessing extends URLProxy implements TransformHtmlItem {
+public class LineElementRemoval implements TransformHtmlItem {
 
-    public ResumeAction testElementAndModify(Element element) throws IOException {
-        return applyRules(element) ? ResumeAction.RESUME_FROM_NEXT : ResumeAction.RESUME_FROM_NEXT;
+    public ResumeAction testElementAndModify(Element element) {
+        if (element.getTagName().equals("line")) {
+            DomHelper.removeNode(element);
+            return ResumeAction.RESUME_FROM_PREVIOUS;
+        }
+        return ResumeAction.RESUME_FROM_NEXT;
     }
 }

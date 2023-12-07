@@ -3,7 +3,7 @@
 # Rules for Html2Textile processing
 # =================================
 #
-{FINAL_RULES}
+{NO INHERITANCE}
 #
 [HTML_PREPROCESSING]
     REPLACE &amp;quot; WITH '

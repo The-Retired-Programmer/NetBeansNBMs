@@ -72,7 +72,7 @@ public class TransformHtml {
         return root;
     }
 
-    void transform(TransformHtmlItem transformitem) throws IOException {
+    public void transform(TransformHtmlItem transformitem) throws IOException {
         State state = new State();
         do {
             switch (transformitem.testElementAndModify(state.current)) {

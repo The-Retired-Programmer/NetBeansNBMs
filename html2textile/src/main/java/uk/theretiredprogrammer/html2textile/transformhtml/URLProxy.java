@@ -59,7 +59,7 @@ public class URLProxy extends RuleSet<URLProxy> implements Proxy<Element, Boolea
 
     private boolean mapimgpattern(String pattern, String replacement) {
         if ("img".equals(element.getTagName())) {
-            element.setAttribute("scr", element.getAttribute("src").replaceAll(pattern, replacement));
+            element.setAttribute("src", element.getAttribute("src").replaceAll(pattern, replacement));
         }
         return false;
     }

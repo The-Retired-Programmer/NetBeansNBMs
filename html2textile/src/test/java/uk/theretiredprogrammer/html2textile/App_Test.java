@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 public class App_Test {
 
     public static final String SANDBOX = "/home/richard/SANDBOX/SANDBOX/";
+    public static final String SANDBOX2 = "/home/richard/SANDBOX/SANDBOX2/";
 
     public App_Test() {
     }
@@ -28,29 +29,50 @@ public class App_Test {
     @Test
     public void testApp1() {
         App app = new App();
-        int rc = app.goInner(new String[]{SANDBOX + "dinghies.html"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghies.fragment.html"});
         assertEquals(0, rc);
     }
 
     @Test
     public void testApp2() {
         App app = new App();
-        int rc = app.goInner(new String[]{SANDBOX + "dinghies.html", SANDBOX + "dinghiesCopy.html"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghies.fragment.html", SANDBOX + "dinghiesCopy.fragment.html"});
         assertEquals(0, rc);
     }
 
     @Test
     public void testApp3() {
         App app = new App();
-        int rc = app.goInner(new String[]{SANDBOX + "dinghiesCopy.html"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghiesCopy.fragment.html"});
+        assertEquals(0, rc);
+    }
+    
+    @Test
+    public void testApp4() {
+        App app = new App();
+        int rc = app.goInner(new String[]{"-i",SANDBOX2 + "dinghiesCopy.fragment.html"});
+        assertEquals(0, rc);
+    }
+    
+    @Test
+    public void testApp5() {
+        App app = new App();
+        int rc = app.goInner(new String[]{"-h",SANDBOX2 + "dinghiesCopy2.fragment.html"});
+        assertEquals(0, rc);
+    }
+    
+//    @Test
+    public void testApp6() {
+        App app = new App();
+        int rc = app.goInner(new String[]{SANDBOX2 + "dinghiesCopy2.transformed.html"});
         assertEquals(0, rc);
     }
 
     // failure modes
     @Test
-    public void testApp4() {
+    public void testApp7() {
         App app = new App();
-        int rc = app.goInner(new String[]{SANDBOX + "dinghiesx.html"});
+        int rc = app.goInner(new String[]{SANDBOX + "dinghiesx.fragment.html"});
         assertEquals(4, rc);
     }
 }

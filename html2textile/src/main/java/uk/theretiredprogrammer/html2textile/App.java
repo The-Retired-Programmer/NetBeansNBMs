@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,10 +35,9 @@ import org.xml.sax.SAXException;
 public class App {
 
     private ErrHandler err;
+    private boolean intermediatehtml = false;
+    private boolean htmlonly = false;
     private final List<String> inputfilenames = new ArrayList<>();
-
-    public App() {
-    }
 
     public void go(String[] args) {
         System.exit(goInner(args));
@@ -70,6 +70,10 @@ public class App {
 
         while (i < l) {
             switch (args[i]) {
+                case "-i" ->
+                    intermediatehtml = true;
+                case "-h" ->
+                    htmlonly = true;
                 default -> {
                     while (i < l) {
                         inputfilenames.add(args[i++]);
@@ -86,25 +90,90 @@ public class App {
     }
 
     private int run(String filename) {
-        String outputfilename = getfilenoext(filename) + ".textile";
         try {
-            try ( Reader rdr = getInputReader(filename);  PrintWriter wtr = getOutputWriter(outputfilename)) {
-                Html2Textile h2t = new Html2Textile();
-                h2t.convertor(rdr, wtr, err, new File(filename).getAbsoluteFile());
-                return 0;
-            } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
-                err.error("Exception: " + ex.getLocalizedMessage());
+            try {
+                return filename.endsWith(".transformed.html") ? convertTextileOnly(filename)
+                        : (htmlonly ? convertHtmlOnly(filename)
+                                : (intermediatehtml ? convertHtmlAndTextileSavingIntermediateHtml(filename)
+                                        : convertHtmlAndTextile(filename)));
+            } catch (IOException ioex) {
+                err.exception("", ioex);
                 return 4;
             }
+
         } catch (Throwable ex) {
             err.exception("", ex);
             return 8;
         }
     }
 
-    private String getfilenoext(String filename) {
-        int pos = filename.lastIndexOf(".");
-        return pos == -1 ? filename : filename.substring(0, pos);
+    private int convertHtmlAndTextileSavingIntermediateHtml(String filename) throws IOException {
+        String intermediatefilename = getfilenoext(filename) + ".transformed.html";
+        String outputfilename = getfilenoext(filename) + ".textile";
+        try ( Reader rdr = getInputReader(filename);  PrintWriter wtr = getOutputWriter(outputfilename);  FileWriter ihtml = new FileWriter(intermediatefilename)) {
+            Html2Textile h2t = new Html2Textile();
+            h2t.convertor(rdr, wtr, err, new File(filename).getAbsoluteFile(), ihtml);
+            return 0;
+        } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
+            err.error("Exception: " + ex.getLocalizedMessage());
+            return 4;
+        }
+    }
+
+    private int convertHtmlAndTextile(String filename) throws IOException {
+        String outputfilename = getfilenoext(filename) + ".textile";
+        try ( Reader rdr = getInputReader(filename);  PrintWriter wtr = getOutputWriter(outputfilename)) {
+            Html2Textile h2t = new Html2Textile();
+            h2t.convertor(rdr, wtr, err, new File(filename).getAbsoluteFile(), null);
+            return 0;
+        } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
+            err.error("Exception: " + ex.getLocalizedMessage());
+            return 4;
+        }
+    }
+
+    private int convertHtmlOnly(String filename) throws IOException {
+        String intermediatefilename = getfilenoext(filename) + ".transformed.html";
+        try ( Reader rdr = getInputReader(filename);  FileWriter ihtml = new FileWriter(intermediatefilename)) {
+            Html2Textile h2t = new Html2Textile();
+            h2t.htmlonlyconvertor(rdr, ihtml, err, new File(filename).getAbsoluteFile());
+            return 0;
+        } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
+            err.error("Exception: " + ex.getLocalizedMessage());
+            return 4;
+        }
+    }
+
+    private int convertTextileOnly(String filename) throws IOException {
+        String outputfilename = getintermediatefilenoext(filename) + ".textile";
+        try ( Reader rdr = getInputReader(filename);  PrintWriter wtr = getOutputWriter(outputfilename)) {
+            Html2Textile h2t = new Html2Textile();
+            h2t.textileonlyconvertor(rdr, wtr, err, new File(filename).getAbsoluteFile());
+            return 0;
+        } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
+            err.error("Exception: " + ex.getLocalizedMessage());
+            return 4;
+        }
+    }
+
+    private String getfilenoext(String filename) throws IOException {
+        if (filename.endsWith(".fragment.html")) {
+            int pos = filename.lastIndexOf(".fragment.html");
+            if (pos != -1) {
+                return filename.substring(0, pos);
+            }
+        }
+        throw new IOException("Input to HTML phase must have an .fragment.html extension");
+    }
+
+    private String getintermediatefilenoext(String filename) throws IOException {
+        if (filename.endsWith(".transformed.html")) {
+            int pos = filename.lastIndexOf(".transformed.html");
+            if (pos != -1) {
+                return filename.substring(0, pos);
+            }
+        }
+        throw new IOException("Input to Textile phase must have an .transformed.html extension)");
     }
 
     private Reader getInputReader(String filename) throws FileNotFoundException {
@@ -135,18 +204,13 @@ public class App {
                 
             options are:
                
-                -i+     output intermediate html (if running both phases)
-                -i-     don't output intermediate html (if running both phases)          
+                -i     output intermediate html (if running both phases)
                 
-                -h+     run html phase
-                -h-     don't run the html phase
+                -h     run html phase only
                                 
-                -t+     run textile phase
-                -t-     don't run the textile phase
-                                
-                initial state without any options is: -x+ -i- -h+ -t+
+                initial state without any options is no intermediate html,dont run html phase only  
                 
-            and INPUTFILES are the source file(s): html, html fragments or intermediate html
+            and INPUTFILES are the source file(s): html OR html fragments (*_fragment.html) - html phase input only
                     
         """;
 }

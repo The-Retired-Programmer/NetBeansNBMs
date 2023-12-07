@@ -104,7 +104,7 @@ public class HtmlOptimisations_Test extends TransformhtmlTest {
                     line number="15"
                     ul
                         line number="16"
-                        li style="font-size: 12pt; font-size: 18pt; "
+                        li style="font-size: 18pt; "
                             line number="17"
                             "xyz"
                             line number="18"

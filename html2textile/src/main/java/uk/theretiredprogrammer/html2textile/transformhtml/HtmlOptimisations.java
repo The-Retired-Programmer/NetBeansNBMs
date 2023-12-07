@@ -36,7 +36,7 @@ public class HtmlOptimisations implements TransformHtmlItem {
         new EmptyParaRemoval(),
         new MergeTextSegments(),
         new ImageCaptionReduction(),
-        new ImageWidthConcatonation()
+        new ImageWidthMapping()
     };
 
     public ResumeAction testElementAndModify(Element element) throws IOException {

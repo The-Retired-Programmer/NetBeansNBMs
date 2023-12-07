@@ -81,11 +81,11 @@ public class StyleToClassRulesProcessing_Test extends TransformhtmlTest {
                     line number="5"
                     p class="boldunderline"
                     line number="6"
-                    p class="valign_middle valign_top valign_bottom"
+                    p class="valign_bottom"
                     line number="7"
                     p class="valign_middle alignright"
                     line number="8"
-                    p class="alignright" style="text-align: right; text-align: right; "
+                    p class="alignright"
                     line number="9"
                     p class="float-left-50"
                 """;

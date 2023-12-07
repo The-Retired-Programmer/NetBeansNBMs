@@ -25,9 +25,9 @@ import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
 
 
-public class ImageWidthConcatonation_Test extends TransformhtmlTest {
+public class ImageWidthMapping_Test extends TransformhtmlTest {
 
-    public ImageWidthConcatonation_Test() {
+    public ImageWidthMapping_Test() {
     }
 
     @Test
@@ -35,7 +35,7 @@ public class ImageWidthConcatonation_Test extends TransformhtmlTest {
         TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         transformer.transform(Rules.get_HTML_STYLE_PROCESSING());
         //
-        transformer.transform(new ImageWidthConcatonation());
+        transformer.transform(new ImageWidthMapping());
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
@@ -58,7 +58,7 @@ public class ImageWidthConcatonation_Test extends TransformhtmlTest {
                     <img style="text-align:left;" src="image" alt="image" width="400"/>
                     <img style="text-align:left;" src="image" alt="image" width="700"/>
                     <img  src="image" alt="image" width="700"/>
-                    <img style="width:10%;" src="image" alt="image" width="700"/>
+                    <img style="width:20%;" src="image" alt="image" width="700"/>
                 </p>
                 """;
     }
@@ -85,7 +85,7 @@ public class ImageWidthConcatonation_Test extends TransformhtmlTest {
                     line number="9"
                     img alt="image" src="image" style="width: 100%; "
                     line number="10"
-                    img alt="image" src="image" style="width: 10%; width: 100%; "
+                    img alt="image" src="image" style="width: 20%; "
                     line number="11"
             """;
     }

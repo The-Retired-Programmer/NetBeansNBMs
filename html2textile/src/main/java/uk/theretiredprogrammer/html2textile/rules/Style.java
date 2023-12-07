@@ -37,7 +37,7 @@ public class Style {
         String[] splitrules = style.split(";");
         for (String srule : splitrules) {
             if (!srule.isBlank()) {
-                srules.add(new StyleRule(srule));
+                replaceoradd(new StyleRule(srule));
             }
         }
         return true;
@@ -87,12 +87,22 @@ public class Style {
     }
 
     public Style insertStyleRule(StyleRule rule) {
-        srules.add(rule);
+        replaceoradd(rule);
         return this;
+    }
+    
+    private void replaceoradd(StyleRule rule) {
+        StyleRule found = lookup(rule.getName());
+        if (found != null) {
+           srules.remove(found);
+        }
+        srules.add(rule);
     }
 
     public Style insertStyle(Style styletoadd) {
-        srules.addAll(styletoadd.srules);
+        for (StyleRule rule : styletoadd.srules) {
+            replaceoradd(rule);
+        }
         return this;
     }
 

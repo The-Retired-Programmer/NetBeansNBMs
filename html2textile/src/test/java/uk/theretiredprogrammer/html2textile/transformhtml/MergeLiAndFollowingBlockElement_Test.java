@@ -97,7 +97,7 @@ public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
                             "ijk"
                             line number="14"
                         line number="15"
-                        li style="font-size: 12pt; font-size: 18pt; "
+                        li style="font-size: 18pt; "
                             line number="16"
                             "xyz"
                             line number="17"

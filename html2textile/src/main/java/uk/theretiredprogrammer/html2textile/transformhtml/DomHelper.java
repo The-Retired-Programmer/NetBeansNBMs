@@ -28,11 +28,6 @@ import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public abstract class DomHelper {
 
-    public static int extractValue(String value) {
-        String numeric = value.replaceAll("\\D*(\\d+).*", "$1");
-        return numeric.isEmpty() ? 0 : Integer.parseInt(numeric);
-    }
-
     public static String getOnlyAttribute(Element element, String attributename) {
         NamedNodeMap attributes = element.getAttributes();
         Node attribute = attributes.getNamedItem(attributename);

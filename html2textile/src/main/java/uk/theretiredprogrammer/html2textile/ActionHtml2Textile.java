@@ -90,7 +90,7 @@ public final class ActionHtml2Textile implements ActionListener, Runnable {
     private void convert2textile(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) {
         try (from; textilewriter) {
             Html2Textile h2t = new Html2Textile();
-            h2t.convertor(from, textilewriter, err, inputfile);
+            h2t.convertor(from, textilewriter, err, inputfile, null);
         } catch (IOException | ParserConfigurationException | TransformerException | SAXException ex) {
             err.exception(ex);
         }
