@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import org.w3c.dom.NodeList;
-import uk.theretiredprogrammer.html2textile.rules.Style;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 
 public class RestructureTable implements TransformHtmlItem {
 
@@ -149,7 +149,7 @@ public class RestructureTable implements TransformHtmlItem {
 
     private void insertcolgroup(Element table) throws IOException {
         Element colgroup = DomHelper.createElement("colgroup", table);
-        Style style = new Style();
+        StyleAttribute style = new StyleAttribute();
         style.insertStyleRule("width", Integer.toString(100 / colcount) + "%");
         style.setStyle(colgroup);
         DomHelper.insertBeforeNode(table.getFirstChild(), colgroup);
@@ -162,7 +162,7 @@ public class RestructureTable implements TransformHtmlItem {
 
     // results of the column analysis
     private int colcount = 0;
-    private Style[] styles;
+    private StyleAttribute[] styles;
 
     private void analysecolumns(Element thead, Element tbody) throws IOException {
         // column count
@@ -209,9 +209,9 @@ public class RestructureTable implements TransformHtmlItem {
 
     private void extractcommonstylerules(Element element, int colcount) throws IOException {
         int[] rowspancounters = new int[colcount];
-        styles = new Style[colcount];
+        styles = new StyleAttribute[colcount];
         for (int j = 0; j < colcount;j++) {
-            styles[j] = new Style();
+            styles[j] = new StyleAttribute();
         }
         NodeList records = element.getElementsByTagName("tr");
         for (int i = 0; i < records.getLength(); i++) {
@@ -229,7 +229,7 @@ public class RestructureTable implements TransformHtmlItem {
                         if (i == 0) {
                             styles[j].extract(column);
                         } else {
-                            Style newstyle = new Style();
+                            StyleAttribute newstyle = new StyleAttribute();
                             newstyle.extract(column);
                             newstyle.removeTargetStyleRuleIfNotPresent(styles[j]);
                         }
@@ -261,7 +261,7 @@ public class RestructureTable implements TransformHtmlItem {
                     int rowspan = getrowspan(column);
                     int colspan = getcolspan(column);
                     if (colspan == 1) { 
-                        Style target = new Style();
+                        StyleAttribute target = new StyleAttribute();
                         target.extract(column);
                         styles[j].removeTargetStyleRuleIfPresent(target);
                         target.setStyle(column);

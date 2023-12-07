@@ -25,8 +25,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import uk.theretiredprogrammer.html2textile.transformhtml.AttributeRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.ElementRulesProcessing;
-import uk.theretiredprogrammer.html2textile.transformhtml.StyleRulesProcessing;
-import uk.theretiredprogrammer.html2textile.transformhtml.StyleToClassRulesProcessing;
+import uk.theretiredprogrammer.html2textile.transformhtml.StyleAttributesRulesProcessing;
+import uk.theretiredprogrammer.html2textile.transformhtml.StylesToClassRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.URLRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformTextileText;
@@ -159,25 +159,25 @@ public class Rules {
     private static void initialiserules() {
         transformhtmltext = new TransformHtmlText();
         transformtextiletext = new TransformTextileText();
-        stylerulesprocessing = new StyleRulesProcessing();
-        finalstylerulesprocessing = new StyleRulesProcessing();
+        stylerulesprocessing = new StyleAttributesRulesProcessing();
+        finalstylerulesprocessing = new StyleAttributesRulesProcessing();
         elementrulesprocessing = new ElementRulesProcessing();
         finalelementrulesprocessing = new ElementRulesProcessing();
         attributerulesprocessing = new AttributeRulesProcessing();
         urlrulesprocessing = new URLRulesProcessing();
-        styletoclassrulesprocessing = new StyleToClassRulesProcessing();
+        styletoclassrulesprocessing = new StylesToClassRulesProcessing();
         noinheritance = false;
     }
 
     private static TransformHtmlText transformhtmltext;
     private static TransformTextileText transformtextiletext;
-    private static StyleRulesProcessing stylerulesprocessing;
-    private static StyleRulesProcessing finalstylerulesprocessing;
+    private static StyleAttributesRulesProcessing stylerulesprocessing;
+    private static StyleAttributesRulesProcessing finalstylerulesprocessing;
     private static ElementRulesProcessing elementrulesprocessing;
     private static ElementRulesProcessing finalelementrulesprocessing;
     private static AttributeRulesProcessing attributerulesprocessing;
     private static URLRulesProcessing urlrulesprocessing;
-    private static StyleToClassRulesProcessing styletoclassrulesprocessing;
+    private static StylesToClassRulesProcessing styletoclassrulesprocessing;
 
     public static TransformHtmlText get_HTML_PREPROCESSING() {
         return transformhtmltext;
@@ -187,11 +187,11 @@ public class Rules {
         return transformtextiletext;
     }
 
-    public static StyleRulesProcessing get_HTML_STYLE_PROCESSING() {
+    public static StyleAttributesRulesProcessing get_HTML_STYLE_PROCESSING() {
         return stylerulesprocessing;
     }
 
-    public static StyleRulesProcessing get_HTML_FINAL_STYLE_PROCESSING() {
+    public static StyleAttributesRulesProcessing get_HTML_FINAL_STYLE_PROCESSING() {
         return finalstylerulesprocessing;
     }
 
@@ -211,7 +211,7 @@ public class Rules {
         return urlrulesprocessing;
     }
 
-    public static StyleToClassRulesProcessing get_HTML_STYLE_TO_CLASS_PROCESSING() {
+    public static StylesToClassRulesProcessing get_HTML_STYLE_TO_CLASS_PROCESSING() {
         return styletoclassrulesprocessing;
     }
 }

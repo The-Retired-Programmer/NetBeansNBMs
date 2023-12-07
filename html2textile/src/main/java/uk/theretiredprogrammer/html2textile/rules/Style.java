@@ -16,212 +16,67 @@
 package uk.theretiredprogrammer.html2textile.rules;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import org.w3c.dom.Element;
 
 public class Style {
 
-    private final List<StyleRule> srules = new ArrayList<>();
+    private String name;
+    private String value;
 
-    public boolean extract(Element element) throws IOException {
-        String style = element.getAttribute("style");
-        return style.isBlank() ? false : extract(style);
-    }
-
-    public boolean extractIfOnlyAttribute(Element element) throws IOException {
-        return element.getAttributes().getLength() == 1 ? extract(element) : false;
-    }
-
-    public boolean extract(String style) throws IOException {
-        String[] splitrules = style.split(";");
-        for (String srule : splitrules) {
-            if (!srule.isBlank()) {
-                replaceoradd(new StyleRule(srule));
-            }
-        }
-        return true;
-    }
-
-    public final List<StyleRule> getStyleRules() {
-        return srules;
-    }
-
-    public boolean isSame(String[] comparisonrules) throws IOException {
-        if (comparisonrules.length == srules.size()) {
-            for (String comparisonrule : comparisonrules) {
-                StyleRule crule = new StyleRule(comparisonrule);
-                if (!crule.isSame(lookup(crule.getName()))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+    public Style(String rule) throws IOException {
+        normalise(rule);
     }
     
-    public Style clear() {
-        srules.clear();
-        return this;
-    }
-
-    public boolean contains(StyleRule find) {
-        return find.isSame(lookup(find.getName()));
-    }
-
-    public boolean isEmpty() {
-        return srules.isEmpty();
-    }
-
-    public StyleRule lookup(String name) {
-        for (StyleRule rule : srules) {
-            if (rule.getName().equals(name)) {
-                return rule;
-            }
+    private void normalise(String rule) throws IOException {
+        rule = rule.strip();
+        String[] parts = rule.split(":");
+        if (parts.length != 2) {
+            throw new IOException("error - bad style rule: " + rule);
         }
-        return null;
+        normalise(parts[0], parts[1]);
     }
 
-    public Style insertStyleRule(String name, String value) throws IOException {
-        return insertStyleRule(new StyleRule(name, value));
+    public Style(String name, String value) {
+        normalise(name, value);
     }
 
-    public Style insertStyleRule(StyleRule rule) {
-        replaceoradd(rule);
-        return this;
+    private void normalise(String name, String value) {
+        this.name = normalisename(name);
+        this.value = normalisevalue(value);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
     }
     
-    private void replaceoradd(StyleRule rule) {
-        StyleRule found = lookup(rule.getName());
-        if (found != null) {
-           srules.remove(found);
-        }
-        srules.add(rule);
+    public void setValue(String newvalue){
+        this.value= newvalue;
+    }
+    
+    public void replace(String updaterule) throws IOException {
+        normalise(updaterule);
     }
 
-    public Style insertStyle(Style styletoadd) {
-        for (StyleRule rule : styletoadd.srules) {
-            replaceoradd(rule);
-        }
-        return this;
-    }
-
-    public StyleRule removeStyleRuleIfName(String name) {
-        StyleRule found = lookup(name);
-        srules.remove(found);
-        return found;
-    }
-
-    public StyleRule removeStyleRule(StyleRule remove) {
-        StyleRule found = lookup(remove.getName());
-        if (remove.isSame(found)) {
-            srules.remove(found);
-        }
-        return found;
-    }
-
-    public StyleRule removeThisStyleRule(StyleRule remove) {
-        srules.remove(remove);
-        return remove;
-    }
-
-    public List<StyleRule> removeStyleRuleIfPattern(String pattern) {
-        List<StyleRule> rulestoremove = new ArrayList<>();
-        for (var srule : srules) {
-            String rule = srule.toString();
-            if (rule.matches(pattern)) {
-                rulestoremove.add(srule);
-            }
-        }
-        for (var rule : rulestoremove) {
-            srules.remove(rule);
-        }
-        return rulestoremove;
-    }
-
-    public StyleRule replaceStyleRuleValue(String namematch, String valuereplacement) {
-        StyleRule found = lookup(namematch);
-        if (found == null) {
-            return null;
-        }
-        found.setValue(valuereplacement);
-        return found;
-    }
-
-    public StyleRule replaceStyleRule(String original, String replacement) throws IOException {
-            StyleRule originalsr = new StyleRule(original);
-            StyleRule replacementsr = new StyleRule(replacement);
-            StyleRule found = lookup(originalsr.getName());
-            if (found == null) {
-                return null;
-            }
-            srules.remove(found);
-            srules.add(replacementsr);
-            return replacementsr;
-    }
-
-    public List<StyleRule> replaceStyleRuleUsingPattern(String pattern, String replacement) throws IOException {
-        List<StyleRule> rulesreplaced = new ArrayList<>();
-        List<StyleRule> rulesremoved = new ArrayList<>();
-        for (var srule : srules) {
-            String rule = srule.toString();
-            String update = rule.replaceAll(pattern, replacement);
-            if (!rule.equals(update)) {
-                if (update.isBlank()) {
-                    rulesremoved.add(srule);
-                } else {
-                    srule.replace(update);
-                }
-                rulesreplaced.add(srule);
-            }
-        }
-        for (StyleRule sr : rulesremoved) {
-            srules.remove(sr);
-        }
-        return rulesreplaced;
-    }
-
-    public Style setStyle(Element element) {
-        String stylevalue = toString();
-        if (stylevalue.isBlank()) {
-            element.removeAttribute("style");
-        } else {
-            element.setAttribute("style", toString());
-        }
-        return this;
-    }
-
-    public Style removeTargetStyleRuleIfNotPresent(Style target) {
-        List<StyleRule> toberemoved = new ArrayList<>();
-        for (var crule : target.srules) {
-            if (!crule.isSame(lookup(crule.getName()))) {
-                toberemoved.add(crule);
-            }
-        }
-        for (var sr : toberemoved) {
-            target.srules.remove(sr);
-        }
-        return this;
-    }
-
-    public Style removeTargetStyleRuleIfPresent(Style target) {
-        List<StyleRule> toberemoved = new ArrayList<>();
-        for (var trule : target.srules) {
-            if (trule.isSame(lookup(trule.getName()))) {
-                toberemoved.add(trule);
-            }
-        }
-        for (var sr : toberemoved) {
-            target.srules.remove(sr);
-        }
-        return this;
+    public boolean isSame(Style other) {
+        return other != null && this.name.equals(other.name) && this.value.equals(other.value);
     }
 
     public String toString() {
-        String res = "";
-        for (var srule : srules) {
-            res = res + srule.toString();
+        return name + ": " + value + "; ";
+    }
+
+    private String normalisename(String name) {
+        return name.strip();
+    }
+
+    private String normalisevalue(String value) {
+        String v = value.strip();
+        if (v.endsWith(";")) {
+            v = v.substring(0, v.length() - 1);
         }
-        return res;
+        return v.strip().replaceAll("\\h{2,}", " ").replaceAll(",\\h+", ",");
     }
 }

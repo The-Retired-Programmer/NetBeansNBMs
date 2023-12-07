@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import uk.theretiredprogrammer.html2textile.ErrHandler;
-import uk.theretiredprogrammer.html2textile.rules.Style;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 
 public abstract class TextileElementTranslator {
 
@@ -149,7 +149,7 @@ public abstract class TextileElementTranslator {
             }
             out.write(")");
         }
-        Style style = new Style();
+        StyleAttribute style = new StyleAttribute();
         if (style.extract(element)) {
             out.write("{" + style.toString() + "}");
         }

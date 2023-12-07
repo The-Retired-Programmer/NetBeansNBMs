@@ -22,20 +22,20 @@ import uk.theretiredprogrammer.html2textile.rules.Attribute;
 import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 import uk.theretiredprogrammer.html2textile.rules.Style;
-import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
-public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Boolean> {
+public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements Proxy<Element, Boolean> {
 
     private Element element;
-    private Style style;
+    private StyleAttribute style;
     private IOException error = null;
 
     public Boolean applyRules(Element proxyvalue) throws IOException {
         error = null;
         boolean res = false;
         element = proxyvalue;
-        style = new Style();
+        style = new StyleAttribute();
         if (style.extract(element)) {
             res = applyRuleActions(this);
             style.setStyle(element);
@@ -48,7 +48,7 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
 
     private boolean remove(String stylerule) {
         try {
-            style.removeStyleRule(new StyleRule(stylerule));
+            style.removeStyleRule(new Style(stylerule));
         } catch (IOException ex) {
             error = ex;
             return true;
@@ -92,8 +92,8 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
     }
 
     private boolean movePatternToAttribute(String pattern) {
-        List<StyleRule> srules = style.removeStyleRuleIfPattern(pattern);
-        for (StyleRule sr : srules) {
+        List<Style> srules = style.removeStyleRuleIfPattern(pattern);
+        for (Style sr : srules) {
             Attribute attr = new Attribute(sr);
             setattribute(attr);
         }
@@ -101,9 +101,9 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
     }
 
     private boolean moveToAttribute(String rulematch) {
-        StyleRule sr;
+        Style sr;
         try {
-            sr = new StyleRule(rulematch);
+            sr = new Style(rulematch);
         } catch (IOException ex) {
             error = ex;
             return true;
@@ -120,7 +120,7 @@ public class StyleProxy extends RuleSet<StyleProxy> implements Proxy<Element, Bo
 
     private boolean moveToElement(String rulematch, String tagname) {
         try {
-            StyleRule find = new StyleRule(rulematch);
+            Style find = new Style(rulematch);
             if (style.contains(find)) {
                 style.removeStyleRule(find);
                 Element newelement = DomHelper.createElement(tagname, element);

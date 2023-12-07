@@ -18,7 +18,7 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import java.io.IOException;
 import org.w3c.dom.Element;
 
-public class StyleRulesProcessing extends StyleProxy implements TransformHtmlItem {
+public class StyleAttributesRulesProcessing extends StyleAttributeProxy implements TransformHtmlItem {
 
 
     public ResumeAction testElementAndModify(Element element) throws IOException {

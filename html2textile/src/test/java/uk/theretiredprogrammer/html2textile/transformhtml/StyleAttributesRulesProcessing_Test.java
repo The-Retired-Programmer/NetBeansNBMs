@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
 
-public class StyleRulesProcessing_Test extends TransformhtmlTest {
+public class StyleAttributesRulesProcessing_Test extends TransformhtmlTest {
 
-    public StyleRulesProcessing_Test() {
+    public StyleAttributesRulesProcessing_Test() {
     }
 
     @Test

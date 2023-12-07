@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 public class Attributes {
     
     private final List<Attribute> attributes = new ArrayList<>();
-    private final Style style= new Style();
+    private final StyleAttribute style= new StyleAttribute();
     private String classstring = "";
     
     public Attributes extract(Element element) throws IOException {

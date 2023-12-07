@@ -23,8 +23,8 @@ import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import static org.w3c.dom.Node.TEXT_NODE;
 import org.w3c.dom.NodeList;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 import uk.theretiredprogrammer.html2textile.rules.Style;
-import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public abstract class DomHelper {
 
@@ -231,9 +231,9 @@ public abstract class DomHelper {
     }
 
     public static void insertIntoStyleAttribute(Element element, String rule) throws IOException {
-        Style style = new Style();
+        StyleAttribute style = new StyleAttribute();
         style.extract(element);
-        style.insertStyleRule(new StyleRule(rule));
+        style.insertStyleRule(new Style(rule));
         style.setStyle(element);
     }
 
@@ -267,9 +267,9 @@ public abstract class DomHelper {
                         }
                     }
                     case "style" -> {
-                        Style targetstyle = new Style();
+                        StyleAttribute targetstyle = new StyleAttribute();
                         targetstyle.extract(target);
-                        Style thisstyle = new Style();
+                        StyleAttribute thisstyle = new StyleAttribute();
                         thisstyle.extract(attr.getNodeValue());
                         targetstyle.insertStyle(thisstyle);
                         targetstyle.setStyle(target);

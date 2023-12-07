@@ -20,8 +20,8 @@ import org.w3c.dom.Element;
 import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 import uk.theretiredprogrammer.html2textile.rules.Style;
-import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element, Boolean> {
 
@@ -97,7 +97,7 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
     public boolean removeifstyleempty(String tagname) {
         if (tagname.equals(element.getTagName())) {
             try {
-                Style style = new Style();
+                StyleAttribute style = new StyleAttribute();
                 style.extract(element);
                 if (style.isEmpty()) {
                     DomHelper.insertBeforeNode(element, element.getChildNodes());
@@ -115,7 +115,7 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
     public boolean removeifstyles(String tagname, String[] stylerules) {
         if (tagname.equals(element.getTagName())) {
             try {
-                Style style = new Style();
+                StyleAttribute style = new StyleAttribute();
                 style.extract(element);
                 if (style.isSame(stylerules)) {
                     DomHelper.insertBeforeNode(element, element.getChildNodes());
@@ -133,8 +133,8 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
     public boolean replaceifstyle(String tagname, String newtagname, String stylerule) {
         if (tagname.equals(element.getTagName())) {
             try {
-                StyleRule find = new StyleRule(stylerule);
-                Style style = new Style();
+                Style find = new Style(stylerule);
+                StyleAttribute style = new StyleAttribute();
                 style.extract(element);
                 if (style.contains(find)) {
                     style.removeStyleRule(find);

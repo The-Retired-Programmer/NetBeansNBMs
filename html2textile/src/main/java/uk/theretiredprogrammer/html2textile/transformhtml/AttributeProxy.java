@@ -20,7 +20,7 @@ import org.w3c.dom.Element;
 import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
-import uk.theretiredprogrammer.html2textile.rules.Style;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 
 public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Element, Boolean> {
 
@@ -42,7 +42,7 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
         if (!value.isEmpty()) {
             try {
                 element.removeAttribute(attributename);
-                Style style = new Style();
+                StyleAttribute style = new StyleAttribute();
                 style.extract(element);
                 style.insertStyleRule(attributename, value);
                 style.setStyle(element);

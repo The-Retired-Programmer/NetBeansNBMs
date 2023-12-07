@@ -17,16 +17,16 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 
 import java.io.IOException;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 import uk.theretiredprogrammer.html2textile.rules.Style;
-import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public class ImageWidthMapping implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) throws IOException {
         if (element.getTagName().equals("img")) {
-            Style style = new Style();
+            StyleAttribute style = new StyleAttribute();
             style.extract(element);
-            StyleRule rule = style.lookup("width");
+            Style rule = style.lookup("width");
             if (rule != null) {
                 int widthvalue = extractValue(rule.getValue());
                 if (widthvalue < 0) {

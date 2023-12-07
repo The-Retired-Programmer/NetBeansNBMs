@@ -27,7 +27,7 @@ public class Attribute {
             this.value = value;
         }
         
-        public Attribute(StyleRule sr) {
+        public Attribute(Style sr) {
             this.name = sr.getName();
             this.value = sr.getValue();
         }

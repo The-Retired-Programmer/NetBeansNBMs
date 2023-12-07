@@ -22,20 +22,20 @@ import org.w3c.dom.Element;
 import uk.theretiredprogrammer.html2textile.rules.Proxy;
 import uk.theretiredprogrammer.html2textile.rules.Rule;
 import uk.theretiredprogrammer.html2textile.rules.RuleSet;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 import uk.theretiredprogrammer.html2textile.rules.Style;
-import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
-public class StyleToClassProxy extends RuleSet<StyleToClassProxy> implements Proxy<Element, Boolean> {
+public class StylesToClassProxy extends RuleSet<StylesToClassProxy> implements Proxy<Element, Boolean> {
 
     private Element element;
-    private Style style;
+    private StyleAttribute style;
     private IOException error = null;
 
     public Boolean applyRules(Element proxyvalue) throws IOException {
         error = null;
         boolean res = false;
         element = proxyvalue;
-        style = new Style();
+        style = new StyleAttribute();
         if (style.extract(element)) {
             res = applyRuleActions(this);
             style.setStyle(element);
@@ -47,11 +47,11 @@ public class StyleToClassProxy extends RuleSet<StyleToClassProxy> implements Pro
     }
 
     private boolean replaceexactmatch(String[] match, String classname) {
-        List<StyleRule> toremove = new ArrayList<>();
-        StyleRule[] srules = new StyleRule[match.length];
+        List<Style> toremove = new ArrayList<>();
+        Style[] srules = new Style[match.length];
         for (int i = 0; i < match.length; i++) {
             try {
-                srules[i] = new StyleRule(match[i]);
+                srules[i] = new Style(match[i]);
             } catch (IOException ex) {
                 error = ex;
                 return true;
@@ -59,7 +59,7 @@ public class StyleToClassProxy extends RuleSet<StyleToClassProxy> implements Pro
         }
         int matchcount = 0;
         for (var srule : srules) {
-            StyleRule instyle = style.lookup(srule.getName());
+            Style instyle = style.lookup(srule.getName());
             if (srule.isSame(instyle)) {
                 toremove.add(instyle);
                 matchcount++;
@@ -76,10 +76,10 @@ public class StyleToClassProxy extends RuleSet<StyleToClassProxy> implements Pro
     }
 
     private boolean replacepartialmatch(String[] match, String classname) {
-        StyleRule[] srules = new StyleRule[match.length];
+        Style[] srules = new Style[match.length];
         for (int i = 0; i < match.length; i++) {
             try {
-                srules[i] = new StyleRule(match[i]);
+                srules[i] = new Style(match[i]);
             } catch (IOException ex) {
                 error = ex;
                 return true;
@@ -87,7 +87,7 @@ public class StyleToClassProxy extends RuleSet<StyleToClassProxy> implements Pro
         }
         int matchcount = 0;
         for (var srule : srules) {
-            StyleRule instyle = style.lookup(srule.getName());
+            Style instyle = style.lookup(srule.getName());
             if (srule.isSame(instyle)) {
                 matchcount++;
             }

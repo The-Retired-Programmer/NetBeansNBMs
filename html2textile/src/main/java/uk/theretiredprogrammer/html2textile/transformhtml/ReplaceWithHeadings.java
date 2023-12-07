@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Element;
+import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 import uk.theretiredprogrammer.html2textile.rules.Style;
-import uk.theretiredprogrammer.html2textile.rules.StyleRule;
 
 public class ReplaceWithHeadings implements TransformHtmlItem {
 
@@ -64,7 +64,7 @@ public class ReplaceWithHeadings implements TransformHtmlItem {
 
     private void removefontsizestylerules(List<Element> elements) throws IOException {
         for (var element : elements) {
-            Style style = new Style();
+            StyleAttribute style = new StyleAttribute();
             if (style.extract(element)) {
                 style.removeStyleRuleIfName("font-size");
                 style.setStyle(element);
@@ -97,9 +97,9 @@ public class ReplaceWithHeadings implements TransformHtmlItem {
     }
 
     private int getFontSizeGroup(Element element) throws IOException {
-        Style style = new Style();
+        StyleAttribute style = new StyleAttribute();
         if (style.extract(element)) {
-            StyleRule sr = style.lookup("font-size");
+            Style sr = style.lookup("font-size");
             return sr == null ? -1 : switch (sr.getValue()) {
                 case "13pt" ->
                     1;
