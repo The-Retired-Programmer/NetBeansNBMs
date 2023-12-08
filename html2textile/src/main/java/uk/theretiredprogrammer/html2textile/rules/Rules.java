@@ -103,6 +103,7 @@ public class Rules {
         RuleSet rulesset = null;
         String line;
         while ((line = rulesreader.readLine()) != null) {
+            line = line.strip();
             if (!(line.startsWith("#") || line.isBlank())) {
                 if (line.startsWith("{")) {
                     parserulescommands(line);
@@ -123,7 +124,7 @@ public class Rules {
     }
 
     private static void parserulescommands(String command) throws IOException {
-        switch (command.strip()) {
+        switch (command) {
             case "{NO INHERITANCE}" ->
                 noinheritance = true;
             default ->
