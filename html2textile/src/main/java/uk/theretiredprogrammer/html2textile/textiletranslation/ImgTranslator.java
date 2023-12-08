@@ -26,8 +26,6 @@ public class ImgTranslator extends TextileElementTranslator {
         super(out, err);
     }
 
-    private final static String ASSET_PREFIX = "https://files.exe-sailing-club.org/";
-
     public String[] allowedAttributes() {
         return new String[]{"style", "class", "id", "src", "alt", "height"};
     }
@@ -46,13 +44,6 @@ public class ImgTranslator extends TextileElementTranslator {
         if (srcvalue.isEmpty()) {
             throw new IOException("Missing src attribute in img element");
         }
-        if (srcvalue.startsWith("assets")) {
-            return ASSET_PREFIX + srcvalue.substring(7);
-        }
-        if (srcvalue.startsWith("https://") || srcvalue.startsWith("http://")) {
-            return srcvalue;
-        }
-        err.warning("Warning: unexpected src URL - will be used but needs to be checked", element);
         return srcvalue;
     }
 

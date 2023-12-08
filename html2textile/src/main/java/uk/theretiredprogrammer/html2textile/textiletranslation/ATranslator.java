@@ -22,8 +22,6 @@ import uk.theretiredprogrammer.html2textile.ErrHandler;
 
 public class ATranslator extends TextileElementTranslator {
 
-    private final static String RELATIVE_PREFIX = "https://files.exe-sailing-club.org/";
-
     public ATranslator(PrintWriter out, ErrHandler err) {
         super(out, err);
     }
@@ -47,13 +45,6 @@ public class ATranslator extends TextileElementTranslator {
         String hrefvalue = element.getAttribute("href");
         if (hrefvalue.isEmpty()) {
             throw new IOException("Missing href attribute in A element");
-        }
-        if (hrefvalue.startsWith("https://") || hrefvalue.startsWith("http://")
-                || hrefvalue.startsWith("mailto:") || hrefvalue.startsWith("tel:") ){
-            return hrefvalue;
-        }
-        if (hrefvalue.startsWith("assets")) {
-            return RELATIVE_PREFIX + hrefvalue.substring(7);
         }
         return hrefvalue;
     }

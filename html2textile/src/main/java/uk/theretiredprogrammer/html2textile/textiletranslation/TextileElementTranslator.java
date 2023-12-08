@@ -122,6 +122,13 @@ public abstract class TextileElementTranslator {
         out.write(bracket);
     }
     
+    void bracketwithattributes(String bracket, Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
+        out.write(bracket);
+        writeClassStyleId(element);
+        translator.processChildrenInTerminatorContext(element);
+        out.write(bracket);
+    }
+    
     void bracketplus(String bracket, Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         out.write('[');
         bracket(bracket, element, isParentTerminatorContext, translator);

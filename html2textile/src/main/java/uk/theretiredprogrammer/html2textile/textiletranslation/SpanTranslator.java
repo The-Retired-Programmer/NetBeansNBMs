@@ -31,6 +31,6 @@ public class SpanTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        bracket("%", element, isParentTerminatorContext, translator);
+        bracketwithattributes("%", element, isParentTerminatorContext, translator);
     }
 }

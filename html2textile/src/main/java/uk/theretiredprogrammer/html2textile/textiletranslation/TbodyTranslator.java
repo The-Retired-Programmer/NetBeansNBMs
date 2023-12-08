@@ -32,7 +32,6 @@ public class TbodyTranslator extends TextileElementTranslator {
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         if (element.hasAttributes()) {
-            
             writeClassStyleId(element);
             out.write(". \n");
         }
