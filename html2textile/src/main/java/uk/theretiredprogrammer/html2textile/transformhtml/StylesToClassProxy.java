@@ -33,13 +33,10 @@ public class StylesToClassProxy extends RuleSet<StylesToClassProxy> implements P
 
     public Boolean applyRules(Element proxyvalue) throws IOException {
         error = null;
-        boolean res = false;
         element = proxyvalue;
-        style = new StyleAttribute();
-        if (style.extract(element)) {
-            res = applyRuleActions(this);
-            style.setStyle(element);
-        }
+        style = new StyleAttribute(element);
+        boolean res = applyRuleActions(this);
+        style.setStyleAttribute(element);
         if (error != null) {
             throw error;
         }
@@ -69,7 +66,7 @@ public class StylesToClassProxy extends RuleSet<StylesToClassProxy> implements P
             String classnames = element.getAttribute("class");
             element.setAttribute("class", classnames.isBlank() ? classname : classnames + " " + classname);
             for (var instyle : toremove) {
-                style.removeThisStyleRule(instyle);
+                style.removeThisStyle(instyle);
             }
         }
         return false;

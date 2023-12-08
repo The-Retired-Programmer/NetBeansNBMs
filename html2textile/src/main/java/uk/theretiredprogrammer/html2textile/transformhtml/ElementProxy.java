@@ -97,8 +97,7 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
     public boolean removeifstyleempty(String tagname) {
         if (tagname.equals(element.getTagName())) {
             try {
-                StyleAttribute style = new StyleAttribute();
-                style.extract(element);
+                StyleAttribute style = new StyleAttribute(element);
                 if (style.isEmpty()) {
                     DomHelper.insertBeforeNode(element, element.getChildNodes());
                     DomHelper.removeNode(element);
@@ -112,12 +111,11 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         return false;
     }
 
-    public boolean removeifstyles(String tagname, String[] stylerules) {
+    public boolean removeifstyles(String tagname, String[] styles) {
         if (tagname.equals(element.getTagName())) {
             try {
-                StyleAttribute style = new StyleAttribute();
-                style.extract(element);
-                if (style.isSame(stylerules)) {
+                StyleAttribute style = new StyleAttribute(element);
+                if (style.isSame(styles)) {
                     DomHelper.insertBeforeNode(element, element.getChildNodes());
                     DomHelper.removeNode(element);
                     return true;
@@ -130,16 +128,15 @@ public class ElementProxy extends RuleSet<ElementProxy> implements Proxy<Element
         return false;
     }
 
-    public boolean replaceifstyle(String tagname, String newtagname, String stylerule) {
+    public boolean replaceifstyle(String tagname, String newtagname, String style) {
         if (tagname.equals(element.getTagName())) {
             try {
-                Style find = new Style(stylerule);
-                StyleAttribute style = new StyleAttribute();
-                style.extract(element);
-                if (style.contains(find)) {
-                    style.removeStyleRule(find);
-                    style.setStyle(element);
-                    if (style.isEmpty()) {
+                Style find = new Style(style);
+                StyleAttribute styles = new StyleAttribute(element);
+                if (styles.contains(find)) {
+                    styles.removeStyle(find);
+                    styles.setStyleAttribute(element);
+                    if (styles.isEmpty()) {
                         Element newelement = DomHelper.createElement(newtagname, element);
                         DomHelper.appendChildren(newelement, element.getChildNodes());
                         Element parent = (Element) element.getParentNode();

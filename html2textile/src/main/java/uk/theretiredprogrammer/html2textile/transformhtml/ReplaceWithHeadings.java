@@ -64,11 +64,9 @@ public class ReplaceWithHeadings implements TransformHtmlItem {
 
     private void removefontsizestylerules(List<Element> elements) throws IOException {
         for (var element : elements) {
-            StyleAttribute style = new StyleAttribute();
-            if (style.extract(element)) {
-                style.removeStyleRuleIfName("font-size");
-                style.setStyle(element);
-            }
+            StyleAttribute styles = new StyleAttribute(element);
+            styles.removeStyleIfName("font-size");
+            styles.setStyleAttribute(element);
         }
     }
 
@@ -97,28 +95,25 @@ public class ReplaceWithHeadings implements TransformHtmlItem {
     }
 
     private int getFontSizeGroup(Element element) throws IOException {
-        StyleAttribute style = new StyleAttribute();
-        if (style.extract(element)) {
-            Style sr = style.lookup("font-size");
-            return sr == null ? -1 : switch (sr.getValue()) {
-                case "13pt" ->
-                    1;
-                case "14pt" ->
-                    1;
-                case "15pt" ->
-                    1;
-                case "16pt" ->
-                    2;
-                case "17pt" ->
-                    2;
-                case "18pt" ->
-                    2;
-                case "12pt" ->
-                    0;
-                default ->
-                    -1;
-            };
-        }
-        return -1;
+        StyleAttribute styles = new StyleAttribute(element);
+        Style style = styles.lookup("font-size");
+        return style == null ? -1 : switch (style.getValue()) {
+            case "13pt" ->
+                1;
+            case "14pt" ->
+                1;
+            case "15pt" ->
+                1;
+            case "16pt" ->
+                2;
+            case "17pt" ->
+                2;
+            case "18pt" ->
+                2;
+            case "12pt" ->
+                0;
+            default ->
+                -1;
+        };
     }
 }

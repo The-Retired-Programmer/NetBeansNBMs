@@ -42,10 +42,9 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
         if (!value.isEmpty()) {
             try {
                 element.removeAttribute(attributename);
-                StyleAttribute style = new StyleAttribute();
-                style.extract(element);
-                style.insertStyleRule(attributename, value);
-                style.setStyle(element);
+                StyleAttribute style = new StyleAttribute(element);
+                style.insertStyle(attributename, value);
+                style.setStyleAttribute(element);
                 return true;
             } catch (IOException ex) {
                 exception = ex;

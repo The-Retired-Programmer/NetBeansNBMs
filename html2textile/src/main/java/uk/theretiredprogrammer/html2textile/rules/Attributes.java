@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 public class Attributes {
     
     private final List<Attribute> attributes = new ArrayList<>();
-    private final StyleAttribute style= new StyleAttribute();
+    private StyleAttribute styles = new StyleAttribute();
     private String classstring = "";
     
     public Attributes extract(Element element) throws IOException {
@@ -36,7 +36,7 @@ public class Attributes {
             String name = attribute.getNodeName();
             String value = attribute.getNodeValue();
             if (name.equals("style")) {
-                style.extract(attribute.getNodeValue());
+                styles = new StyleAttribute(attribute.getNodeValue());
             } else {
                 if (name.equals("class")) {
                     classstring = value;
@@ -53,13 +53,13 @@ public class Attributes {
         if (!child.classstring.isBlank()) {
             classstring = classstring+" "+child.classstring;
         }
-        style.insertStyle(child.style);
+        styles.insertStyleAttribute(child.styles);
         return this;
     }
     
     public Attributes replaceAttributes(Element element) {
         clearAttributes(element);
-        style.setStyle(element);
+        styles.setStyleAttribute(element);
         if (!classstring.isBlank()) {
             element.setAttribute("class", classstring);
         }

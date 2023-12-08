@@ -24,11 +24,10 @@ public class ImageWidthMapping implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) throws IOException {
         if (element.getTagName().equals("img")) {
-            StyleAttribute style = new StyleAttribute();
-            style.extract(element);
-            Style rule = style.lookup("width");
-            if (rule != null) {
-                int widthvalue = extractValue(rule.getValue());
+            StyleAttribute styles = new StyleAttribute(element);
+            Style style = styles.lookup("width");
+            if (style != null) {
+                int widthvalue = extractValue(style.getValue());
                 if (widthvalue < 0) {
                     DomHelper.removeAttribute(element,"width");
                     return ResumeAction.RESUME_FROM_NEXT;

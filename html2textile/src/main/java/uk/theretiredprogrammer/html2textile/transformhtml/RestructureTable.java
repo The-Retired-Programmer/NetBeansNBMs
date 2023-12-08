@@ -149,20 +149,20 @@ public class RestructureTable implements TransformHtmlItem {
 
     private void insertcolgroup(Element table) throws IOException {
         Element colgroup = DomHelper.createElement("colgroup", table);
-        StyleAttribute style = new StyleAttribute();
-        style.insertStyleRule("width", Integer.toString(100 / colcount) + "%");
-        style.setStyle(colgroup);
+        StyleAttribute styles = new StyleAttribute();
+        styles.insertStyle("width", Integer.toString(100 / colcount) + "%");
+        styles.setStyleAttribute(colgroup);
         DomHelper.insertBeforeNode(table.getFirstChild(), colgroup);
         for (int i = 0; i < colcount; i++) {
             Element col = DomHelper.createElement("col", colgroup);
-            styles[i].setStyle(col);
+            colstyles[i].setStyleAttribute(col);
             DomHelper.appendChild(colgroup, col);
         }
     }
 
     // results of the column analysis
     private int colcount = 0;
-    private StyleAttribute[] styles;
+    private StyleAttribute[] colstyles;
 
     private void analysecolumns(Element thead, Element tbody) throws IOException {
         // column count
@@ -209,9 +209,9 @@ public class RestructureTable implements TransformHtmlItem {
 
     private void extractcommonstylerules(Element element, int colcount) throws IOException {
         int[] rowspancounters = new int[colcount];
-        styles = new StyleAttribute[colcount];
+        colstyles = new StyleAttribute[colcount];
         for (int j = 0; j < colcount;j++) {
-            styles[j] = new StyleAttribute();
+            colstyles[j] = new StyleAttribute();
         }
         NodeList records = element.getElementsByTagName("tr");
         for (int i = 0; i < records.getLength(); i++) {
@@ -227,11 +227,10 @@ public class RestructureTable implements TransformHtmlItem {
                     int colspan = getcolspan(column);
                     while (colspan > 0) {
                         if (i == 0) {
-                            styles[j].extract(column);
+                            colstyles[j]= new StyleAttribute(column);
                         } else {
-                            StyleAttribute newstyle = new StyleAttribute();
-                            newstyle.extract(column);
-                            newstyle.removeTargetStyleRuleIfNotPresent(styles[j]);
+                            StyleAttribute newstyle = new StyleAttribute(column);
+                            newstyle.removeTargetStyleIfNotPresent(colstyles[j]);
                         }
                         rowspancounters[j] = rowspan - 1;
                         j++;
@@ -261,10 +260,9 @@ public class RestructureTable implements TransformHtmlItem {
                     int rowspan = getrowspan(column);
                     int colspan = getcolspan(column);
                     if (colspan == 1) { 
-                        StyleAttribute target = new StyleAttribute();
-                        target.extract(column);
-                        styles[j].removeTargetStyleRuleIfPresent(target);
-                        target.setStyle(column);
+                        StyleAttribute target = new StyleAttribute(column);
+                        colstyles[j].removeTargetStyleIfPresent(target);
+                        target.setStyleAttribute(column);
                         rowspancounters[j++] = rowspan - 1;
                     } else {
                         while (colspan > 0) {

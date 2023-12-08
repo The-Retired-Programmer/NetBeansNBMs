@@ -149,9 +149,9 @@ public abstract class TextileElementTranslator {
             }
             out.write(")");
         }
-        StyleAttribute style = new StyleAttribute();
-        if (style.extract(element)) {
-            out.write("{" + style.toString() + "}");
+        StyleAttribute styles = new StyleAttribute(element);
+        if (!styles.isEmpty()) {
+            out.write("{" + styles.toString() + "}");
         }
     }
     

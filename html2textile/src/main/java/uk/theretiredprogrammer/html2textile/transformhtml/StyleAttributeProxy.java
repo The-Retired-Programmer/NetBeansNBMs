@@ -33,13 +33,10 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
 
     public Boolean applyRules(Element proxyvalue) throws IOException {
         error = null;
-        boolean res = false;
         element = proxyvalue;
-        style = new StyleAttribute();
-        if (style.extract(element)) {
-            res = applyRuleActions(this);
-            style.setStyle(element);
-        }
+        style = new StyleAttribute(element);
+        boolean res = applyRuleActions(this);
+        style.setStyleAttribute(element);
         if (error != null) {
             throw error;
         }
@@ -48,7 +45,7 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
 
     private boolean remove(String stylerule) {
         try {
-            style.removeStyleRule(new Style(stylerule));
+            style.removeStyle(new Style(stylerule));
         } catch (IOException ex) {
             error = ex;
             return true;
@@ -57,23 +54,23 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
     }
 
     private boolean removeAny(String stylerulename) {
-        style.removeStyleRuleIfName(stylerulename);
+        style.removeStyleIfName(stylerulename);
         return false;
     }
 
     private boolean removeAll(String pattern) {
-        style.removeStyleRuleIfPattern(pattern);
+        style.removeStyleIfPattern(pattern);
         return false;
     }
 
     private boolean replace(String namematch, String valuereplacement) {
-        style.replaceStyleRuleValue(namematch, valuereplacement);
+        style.replaceStyleValue(namematch, valuereplacement);
         return false;
     }
 
     private boolean replaceRule(String original, String replacement) {
         try {
-            style.replaceStyleRule(original, replacement);
+            style.replaceStyle(original, replacement);
         } catch (IOException ex) {
             error = ex;
             return true;
@@ -83,7 +80,7 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
 
     private boolean replaceAll(String pattern, String replacement) {
         try {
-            style.replaceStyleRuleUsingPattern(pattern, replacement);
+            style.replaceStyleUsingPattern(pattern, replacement);
         } catch (IOException ex) {
             error = ex;
             return true;
@@ -92,7 +89,7 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
     }
 
     private boolean movePatternToAttribute(String pattern) {
-        List<Style> srules = style.removeStyleRuleIfPattern(pattern);
+        List<Style> srules = style.removeStyleIfPattern(pattern);
         for (Style sr : srules) {
             Attribute attr = new Attribute(sr);
             setattribute(attr);
@@ -109,7 +106,7 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
             return true;
         }
         Attribute attr = new Attribute(sr);
-        style.removeStyleRuleIfName(sr.getName());
+        style.removeStyleIfName(sr.getName());
         setattribute(attr);
         return false;
     }
@@ -122,7 +119,7 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
         try {
             Style find = new Style(rulematch);
             if (style.contains(find)) {
-                style.removeStyleRule(find);
+                style.removeStyle(find);
                 Element newelement = DomHelper.createElement(tagname, element);
                 DomHelper.appendChildren(newelement, element.getChildNodes());
                 DomHelper.appendChild(element, newelement);

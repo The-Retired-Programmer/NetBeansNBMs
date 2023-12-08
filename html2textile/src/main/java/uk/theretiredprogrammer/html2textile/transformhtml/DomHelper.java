@@ -230,11 +230,10 @@ public abstract class DomHelper {
         }
     }
 
-    public static void insertIntoStyleAttribute(Element element, String rule) throws IOException {
-        StyleAttribute style = new StyleAttribute();
-        style.extract(element);
-        style.insertStyleRule(new Style(rule));
-        style.setStyle(element);
+    public static void insertIntoStyleAttribute(Element element, String style) throws IOException {
+        StyleAttribute styles = new StyleAttribute(element);
+        styles.insertStyle(new Style(style));
+        styles.setStyleAttribute(element);
     }
 
     public static void removeAttribute(Element element, String attributename) {
@@ -267,12 +266,10 @@ public abstract class DomHelper {
                         }
                     }
                     case "style" -> {
-                        StyleAttribute targetstyle = new StyleAttribute();
-                        targetstyle.extract(target);
-                        StyleAttribute thisstyle = new StyleAttribute();
-                        thisstyle.extract(attr.getNodeValue());
-                        targetstyle.insertStyle(thisstyle);
-                        targetstyle.setStyle(target);
+                        StyleAttribute targetstyles = new StyleAttribute(target);
+                        StyleAttribute thisstyles = new StyleAttribute(attr.getNodeValue());
+                        targetstyles.insertStyleAttribute(thisstyles);
+                        targetstyles.setStyleAttribute(target);
                     }
                     default ->
                         target.setAttribute(attrname, attr.getNodeValue());
