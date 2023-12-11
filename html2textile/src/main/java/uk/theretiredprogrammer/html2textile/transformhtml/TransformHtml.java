@@ -59,11 +59,11 @@ public class TransformHtml {
         transform(new ReplaceWithHeadings());
         transform(Rules.get_HTML_STYLE_PROCESSING());
         transform(new HtmlOptimisations());
+        transform(Rules.get_HTML_STYLE_TO_CLASS_PROCESSING());
         transform(Rules.get_HTML_FINAL_STYLE_PROCESSING());
         transform(Rules.get_HTML_FINAL_ELEMENT_PROCESSING());
         transform(new RestructureTable());
         transform(Rules.get_HTML_URL_PROCESSING());
-        transform(Rules.get_HTML_STYLE_TO_CLASS_PROCESSING());
         reportAllClassesUsed();
         //debug_dump_html("1");
     }
