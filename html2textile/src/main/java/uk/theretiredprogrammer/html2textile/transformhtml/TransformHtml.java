@@ -15,9 +15,12 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.XMLConstants;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,7 +34,9 @@ import org.w3c.dom.Node;
 import static org.w3c.dom.Node.ELEMENT_NODE;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
+import static uk.theretiredprogrammer.html2textile.rules.Rules.Directive.LIST_CLASSES_USED;
 
 public class TransformHtml {
 
@@ -41,12 +46,14 @@ public class TransformHtml {
 //              remove usage patterns whish are redundent or poorly inserted by cut & paste of other formats
 //
     private final Element root;
+    private final ErrHandler err;
 
-    public TransformHtml(Reader input) throws IOException, ParserConfigurationException, SAXException {
+    public TransformHtml(Reader input, ErrHandler err) throws IOException, ParserConfigurationException, SAXException {
+        this.err = err;
         root = newInstance().newDocumentBuilder().parse(new InputSource(input)).getDocumentElement();
     }
 
-    public void transform() throws IOException {
+    public void transform() throws IOException, TransformerException {
         transform(Rules.get_HTML_ELEMENT_PROCESSING());
         transform(Rules.get_HTML_ATTRIBUTE_PROCESSING());
         transform(new ReplaceWithHeadings());
@@ -57,6 +64,25 @@ public class TransformHtml {
         transform(new RestructureTable());
         transform(Rules.get_HTML_URL_PROCESSING());
         transform(Rules.get_HTML_STYLE_TO_CLASS_PROCESSING());
+        reportAllClassesUsed();
+        //debug_dump_html("1");
+    }
+
+    private void reportAllClassesUsed() throws IOException {
+        if (Rules.getDirective(LIST_CLASSES_USED)) {
+            List<String> classnames = new ArrayList<>();
+            ClassNameCollector collector = new ClassNameCollector(classnames);
+            transform(collector);
+            if (!classnames.isEmpty()) {
+                err.info("Classes used: " + String.join(", ", classnames.stream().distinct().sorted().toList()));
+            }
+        }
+    }
+
+    private void debug_dump_html(String postfix) throws IOException, TransformerException {
+        try ( FileWriter debugdump = new FileWriter("/home/richard/DEBUG_DUMP" + postfix + ".html")) {
+            writeHtml(debugdump);
+        }
     }
 
     public void writeHtml(Writer output) throws TransformerException {

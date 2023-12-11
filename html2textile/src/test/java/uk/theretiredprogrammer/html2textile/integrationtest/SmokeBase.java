@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.smoketest;
+package uk.theretiredprogrammer.html2textile.integrationtest;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,9 +34,9 @@ import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformTextileText;
 import uk.theretiredprogrammer.html2textile.textiletranslation.TextileTranslator;
 
-public class SmokeTest {
+public class SmokeBase {
 
-    public SmokeTest() {
+    public SmokeBase() {
     }
 
     public void transformation(
@@ -54,7 +54,7 @@ public class SmokeTest {
             texttransformer.setReader(new InputStreamReader(is));
             texttransformer.rootWrap("html");
             try ( Reader wrapped = texttransformer.transform()) {
-                TransformHtml transformer = new TransformHtml(wrapped);
+                TransformHtml transformer = new TransformHtml(wrapped, err);
                 transformer.transform();
                 transformer.writeHtml(new FileWriter("/home/richard/" + outputhtmlfilename));
                 //

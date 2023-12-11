@@ -21,6 +21,7 @@ import org.w3c.dom.Element;
 public class HtmlOptimisations implements TransformHtmlItem {
 
     private final TransformHtmlItem[] items = new TransformHtmlItem[]{
+        new MergeSpansIfSame(),
         new DivReduction(),
         new NullSpanRemoval(),
         new AttributeMerge(),

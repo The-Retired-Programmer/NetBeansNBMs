@@ -41,7 +41,7 @@ public class Html2Textile {
         texttransformer.rootWrap("html");
         StringWriter swriter = new StringWriter();
         try ( Reader wrapped = texttransformer.transform();  PrintWriter textileout = new PrintWriter(swriter)) {
-            TransformHtml htmltransformer = new TransformHtml(wrapped);
+            TransformHtml htmltransformer = new TransformHtml(wrapped, err);
             htmltransformer.transform();
             TextileTranslator translator = new TextileTranslator(htmltransformer.getRoot(), textileout, err);
             translator.translate();
@@ -56,27 +56,27 @@ public class Html2Textile {
         textiletransformer.transform();
         textiletransformer.save(textilewriter);
     }
-    
+
     public void htmlonlyconvertor(Reader from, FileWriter intermediate, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
         Rules.create(inputfile);
         TransformHtmlText texttransformer = Rules.get_HTML_PREPROCESSING();
         texttransformer.setReader(from);
         texttransformer.rootWrap("html");
         try ( Reader wrapped = texttransformer.transform();) {
-            TransformHtml htmltransformer = new TransformHtml(wrapped);
+            TransformHtml htmltransformer = new TransformHtml(wrapped, err);
             htmltransformer.transform();
             htmltransformer.transform(new LineElementRemoval());
             htmltransformer.writeHtml(intermediate);
         }
     }
-    
+
     public void textileonlyconvertor(Reader from, PrintWriter textilewriter, ErrHandler err, File inputfile) throws IOException, ParserConfigurationException, FileNotFoundException, SAXException, TransformerException {
         Rules.create(inputfile);
         TransformHtmlText texttransformer = new TransformHtmlText();
         texttransformer.setReader(from);
         StringWriter swriter = new StringWriter();
-        try ( Reader normalisedfrom = texttransformer.normalise(); PrintWriter textileout = new PrintWriter(swriter)) {
-            TransformHtml htmltransformer = new TransformHtml(normalisedfrom);
+        try ( Reader normalisedfrom = texttransformer.normalise();  PrintWriter textileout = new PrintWriter(swriter)) {
+            TransformHtml htmltransformer = new TransformHtml(normalisedfrom, err);
             TextileTranslator translator = new TextileTranslator(htmltransformer.getRoot(), textileout, err);
             translator.translate();
         }

@@ -59,6 +59,18 @@ public class StyleAttribute {
         }
         return false;
     }
+    
+    public boolean isSame(StyleAttribute other) throws IOException {
+        if (other.styleslist.size() == this.styleslist.size()) {
+            for (Style otherstyle : other.styleslist) {
+                if (!otherstyle.isSame(lookup(otherstyle.getName()))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 
     public StyleAttribute clear() {
         styleslist.clear();

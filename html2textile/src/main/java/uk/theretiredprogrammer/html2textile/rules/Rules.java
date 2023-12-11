@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 import uk.theretiredprogrammer.html2textile.transformhtml.AttributeRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.ElementRulesProcessing;
 import uk.theretiredprogrammer.html2textile.transformhtml.StyleAttributesRulesProcessing;
@@ -37,15 +39,15 @@ public class Rules {
         initialiserules();
         File parent = datainput.getParentFile();
         loadrulesfile(getownrulesfile(parent, datainput));
-        if (noinheritance) {
+        if (getDirective(Directive.NO_INHERITANCE)) {
             return;
         }
         loadrulesfile(getsharedrulesfile(parent));
-        if (noinheritance) {
+        if (getDirective(Directive.NO_INHERITANCE)) {
             return;
         }
         loadrulesfile(getsharedrulesfile(parent.getParentFile()));
-        if (noinheritance) {
+        if (getDirective(Directive.NO_INHERITANCE)) {
             return;
         }
         loadrulesfile(getsystemrulesfile());
@@ -97,8 +99,6 @@ public class Rules {
         }
     }
 
-    private static boolean noinheritance = false;
-
     private static void loadrulesfile(BufferedReader rulesreader) throws IOException {
         RuleSet rulesset = null;
         String line;
@@ -106,7 +106,7 @@ public class Rules {
             line = line.strip();
             if (!(line.startsWith("#") || line.isBlank())) {
                 if (line.startsWith("{")) {
-                    parserulescommands(line);
+                    parsedirective(line);
                 } else {
                     if (line.startsWith("[")) {
                         int pos = line.indexOf(']');
@@ -123,13 +123,34 @@ public class Rules {
         }
     }
 
-    private static void parserulescommands(String command) throws IOException {
-        switch (command) {
+    private static void parsedirective(String directive) throws IOException {
+        switch (directive) {
             case "{NO INHERITANCE}" ->
-                noinheritance = true;
+                directives.put(Directive.NO_INHERITANCE, true);
+            case "{LIST CLASSES USED}" ->
+                directives.put(Directive.LIST_CLASSES_USED, true);
+            case "{REPORT STYLES IN TEXTILE CONTENT}" ->
+                directives.put(Directive.REPORT_STYLES_IN_TEXTILE_CONTENT, true);
             default ->
-                throw new IOException("Bad Rules Command: " + command);
+                throw new IOException("Bad Rules Directive: " + directive);
         }
+    }
+
+    public static enum Directive {
+        NO_INHERITANCE, REPORT_STYLES_IN_TEXTILE_CONTENT, LIST_CLASSES_USED
+    };
+
+    public static Map<Directive, Boolean> directives = new HashMap<>();
+
+    private static void initialisedirectives() {
+        directives.clear();
+        directives.put(Directive.NO_INHERITANCE, false);
+        directives.put(Directive.REPORT_STYLES_IN_TEXTILE_CONTENT, false);
+        directives.put(Directive.LIST_CLASSES_USED, false);
+    }
+
+    public static boolean getDirective(Directive directive) {
+        return directives.get(directive);
     }
 
     private static RuleSet get(String name) throws IOException {
@@ -141,7 +162,7 @@ public class Rules {
             case "HTML_STYLE_PROCESSING" ->
                 stylerulesprocessing;
             case "HTML_FINAL_STYLE_PROCESSING" ->
-                stylerulesprocessing;
+                finalstylerulesprocessing;
             case "HTML_ELEMENT_PROCESSING" ->
                 elementrulesprocessing;
             case "HTML_FINAL_ELEMENT_PROCESSING" ->
@@ -158,6 +179,7 @@ public class Rules {
     }
 
     private static void initialiserules() {
+        initialisedirectives();
         transformhtmltext = new TransformHtmlText();
         transformtextiletext = new TransformTextileText();
         stylerulesprocessing = new StyleAttributesRulesProcessing();
@@ -167,7 +189,6 @@ public class Rules {
         attributerulesprocessing = new AttributeRulesProcessing();
         urlrulesprocessing = new URLRulesProcessing();
         styletoclassrulesprocessing = new StylesToClassRulesProcessing();
-        noinheritance = false;
     }
 
     private static TransformHtmlText transformhtmltext;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.smoketest;
+package uk.theretiredprogrammer.html2textile.integrationtest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -29,9 +29,9 @@ public class ForDebugging_App_Test {
     public ForDebugging_App_Test() {
     }
 
-    @Test
+//    @Test
     public void testApp() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
-        String[] args = new String[]{"-i", "/home/richard/PRODUCTS/ESC_WEBSITE/Joomla2SCM/Juniors/juniorracing.fragment.html"};
+        String[] args = new String[]{"-i", "/home/richard/PRODUCTS/ESC_WEBSITE/Joomla2SCM/Dinghies/raceofficersbriefing.fragment.html"};
         int rc = new App().goInner(args);
         assertEquals(0,rc);
     }

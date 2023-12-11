@@ -1,0 +1,34 @@
+html
+    line number="1"
+    p
+        span
+            "abc"
+            "xyz"
+    line number="2"
+    p
+        span style="font-weight: bold;"
+            "abc"
+            "xyz"
+    line number="3"
+    p
+        span style="font-style: italic; font-weight: bold;"
+            "abc"
+            "xyx"
+    line number="4"
+    p
+        span style="font-weight: bold;"
+            "abc"
+            "xyz"
+            "123"
+    line number="5"
+    p
+        span style="font-weight: bold; color: red; "
+            "abc"
+        span style="font-weight: bold;"
+            "xyz"
+    line number="6"
+    p
+        span style="font-weight: bold; "
+            "abc"
+        span style=" color: red; font-weight: bold;"
+            "xyz"

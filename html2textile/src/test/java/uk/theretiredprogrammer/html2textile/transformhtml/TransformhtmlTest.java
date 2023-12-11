@@ -18,14 +18,16 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Reader;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 
 public class TransformhtmlTest {
-
+ 
     public TransformHtml createtransformation(String inputname) throws IOException, ParserConfigurationException, SAXException {
         Rules.create();
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/html2textile/transformhtml/example_" + inputname + ".html");
@@ -47,7 +49,12 @@ public class TransformhtmlTest {
         texttransformer.setReader(input);
         texttransformer.rootWrap("html");
         try ( Reader transformed = texttransformer.transform()) {
-            return new TransformHtml(transformed);
+            return new TransformHtml(transformed, getErr());
         }
+    }
+    
+    private ErrHandler getErr() {
+        PrintWriter errwriter = new PrintWriter(System.err);
+        return new ErrHandler((s) -> errwriter.println(s));
     }
 }

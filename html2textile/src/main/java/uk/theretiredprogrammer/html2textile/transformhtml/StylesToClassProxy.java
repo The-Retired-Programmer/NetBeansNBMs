@@ -42,6 +42,10 @@ public class StylesToClassProxy extends RuleSet<StylesToClassProxy> implements P
         }
         return res;
     }
+    
+    private boolean replaceexactmatch(String[] match, String classname, String elementname) {
+        return element.getTagName().equals(elementname) ? replaceexactmatch(match, classname) : false;
+    }
 
     private boolean replaceexactmatch(String[] match, String classname) {
         List<Style> toremove = new ArrayList<>();
@@ -70,6 +74,10 @@ public class StylesToClassProxy extends RuleSet<StylesToClassProxy> implements P
             }
         }
         return false;
+    }
+    
+    private boolean replacepartialmatch(String[] match, String classname, String elementname) {
+        return element.getTagName().equals(elementname) ? replacepartialmatch(match, classname) : false;
     }
 
     private boolean replacepartialmatch(String[] match, String classname) {
@@ -100,26 +108,45 @@ public class StylesToClassProxy extends RuleSet<StylesToClassProxy> implements P
     public void parseAndInsertRule(String rulecommandline) throws IOException {
         String styles;
         String classname;
+        String elementname;
         rulecommandline = rulecommandline.trim();
         if (rulecommandline.startsWith("REPLACE EXACT MATCH OF STYLES ")) {
             int withpos = rulecommandline.indexOf(" WITH CLASS ");
             if (withpos == -1) {
                 throw new IOException("Bad Rule definition: \" WITH CLASS \" missing in \"REPLACE EXACT MATCH OF STYLES \" rule - " + rulecommandline);
             }
-            styles = trimquotes(rulecommandline.substring(29, withpos + 1).trim());
-            classname = trimquotes(rulecommandline.substring(withpos + 12).trim());
-            add(new Rule<>((e) -> e.replaceexactmatch(styles.split(" AND "), classname)));
-            return;
+            int ifpos = rulecommandline.indexOf(" IF ELEMENT ");
+            if (ifpos == -1) {
+                styles = trimquotes(rulecommandline.substring(29, withpos + 1).trim());
+                classname = trimquotes(rulecommandline.substring(withpos + 12).trim());
+                add(new Rule<>((e) -> e.replaceexactmatch(styles.split(" AND "), classname)));
+                return;
+            } else {
+                styles = trimquotes(rulecommandline.substring(29, withpos + 1).trim());
+                classname = trimquotes(rulecommandline.substring(withpos + 12, ifpos + 1).trim());
+                elementname = trimquotes(rulecommandline.substring(ifpos + 12).trim());
+                add(new Rule<>((e) -> e.replaceexactmatch(styles.split(" AND "), classname, elementname)));
+                return;
+            }
         }
         if (rulecommandline.startsWith("REPLACE PARTIAL MATCH OF STYLES ")) {
             int withpos = rulecommandline.indexOf(" WITH CLASS ");
             if (withpos == -1) {
                 throw new IOException("Bad Rule definition: \" WITH CLASS \" missing in \"REPLACE PARTIAL MATCH OF STYLES \" rule - " + rulecommandline);
             }
-            styles = trimquotes(rulecommandline.substring(31, withpos + 1).trim());
-            classname = trimquotes(rulecommandline.substring(withpos + 12).trim());
-            add(new Rule<>((e) -> e.replacepartialmatch(styles.split(" AND "), classname)));
-            return;
+            int ifpos = rulecommandline.indexOf(" IF ELEMENT ");
+            if (ifpos == -1) {
+                styles = trimquotes(rulecommandline.substring(31, withpos + 1).trim());
+                classname = trimquotes(rulecommandline.substring(withpos + 12).trim());
+                add(new Rule<>((e) -> e.replacepartialmatch(styles.split(" AND "), classname)));
+                return;
+            } else {
+                styles = trimquotes(rulecommandline.substring(31, withpos + 1).trim());
+                classname = trimquotes(rulecommandline.substring(withpos + 12, ifpos + 1).trim());
+                elementname = trimquotes(rulecommandline.substring(ifpos + 12).trim());
+                add(new Rule<>((e) -> e.replacepartialmatch(styles.split(" AND "), classname, elementname)));
+                return;
+            }
         }
         throw new IOException("Bad Rule definition: unknown command - " + rulecommandline);
     }

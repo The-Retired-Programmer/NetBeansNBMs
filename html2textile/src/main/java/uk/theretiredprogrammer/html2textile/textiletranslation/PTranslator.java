@@ -27,15 +27,27 @@ public class PTranslator extends TextileElementTranslator {
     }
 
     public String[] allowedAttributes() {
-        return new String[]{"style", "class", "id", "text-align"};
+        return new String[]{"style", "class", "id", "text-align", "padding-left", "padding-right", "margin-left", "margin-right"};
     }
-
+    
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        out.write("p");
-        writeClassStyleId(element);
-        writeTextAlignment(element);
-        out.write(". ");
+        if (hasallowedattribute(element) ) {
+            out.write("p");
+            writeClassStyleId(element);
+            writeIndented(element);
+            writeTextAlignment(element);
+            out.write(". ");
+        }
         translator.processChildren(element);
         out.write("\n\n");
+    }
+    
+    private boolean hasallowedattribute(Element element) {
+        for (String attributename : allowedAttributes()) {
+            if (element.hasAttribute(attributename)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

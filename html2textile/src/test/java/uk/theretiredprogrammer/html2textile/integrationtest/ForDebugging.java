@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.theretiredprogrammer.html2textile.smoketest;
+package uk.theretiredprogrammer.html2textile.integrationtest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,12 +22,12 @@ import javax.xml.transform.TransformerException;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
-public class ForDebugging_Test extends SmokeTest {
+public class ForDebugging extends SmokeBase {
 
-    public ForDebugging_Test() {
+    public ForDebugging() {
     }
 
-//    @Test
+    @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
         transformation("sample - fordebugging.html","FORDEBUGGING_TEST.html","FORDEBUGGING_TEST.textile", expected);
     }

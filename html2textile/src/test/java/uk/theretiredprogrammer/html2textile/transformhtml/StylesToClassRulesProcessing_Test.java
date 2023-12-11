@@ -43,6 +43,8 @@ public class StylesToClassRulesProcessing_Test extends TransformhtmlTest {
     private String rules() {
         return  """
                 [HTML_STYLE_TO_CLASS_PROCESSING]
+                    REPLACE PARTIAL MATCH OF STYLES width:50% AND float:right WITH CLASS float-right-50 IF ELEMENT img
+                    REPLACE EXACT MATCH OF STYLES text-align:justify AND font-weight: bold  WITH CLASS justify-bold IF ELEMENT p
                     REPLACE EXACT MATCH OF STYLES vertical-align:middle WITH CLASS valign_middle
                     REPLACE EXACT MATCH OF STYLES vertical-align:top WITH CLASS valign_top
                     REPLACE EXACT MATCH OF STYLES vertical-align:bottom WITH CLASS valign_bottom
@@ -64,6 +66,11 @@ public class StylesToClassRulesProcessing_Test extends TransformhtmlTest {
                 <p style="vertical-align:middle; text-align: right;"/>
                 <p style="text-align: right; text-align: right; text-align: right; "/>
                 <p style="margin: 0px 0px 0px 100px; padding: 0; float: left; width: 50%;" />
+                <p style="margin: 0px 0px 0px 100px; padding: 0; float: right; width: 50%; " />
+                <img style="margin: 0px 0px 0px 100px; padding: 0; float: right; width: 50%; " />
+                <p style="text-align:justify; font-weight: bold; " />
+                <h2 style="text-align:justify; font-weight: bold; " />
+                <p style="text-align:justify; font-weight: normal; " />
                 """;
     }
 
@@ -88,6 +95,16 @@ public class StylesToClassRulesProcessing_Test extends TransformhtmlTest {
                     p class="alignright"
                     line number="9"
                     p class="float-left-50"
+                    line number="10"
+                    p style="margin: 0px 0px 0px 100px; padding: 0; float: right; width: 50%; "
+                    line number="11"
+                    img class="float-right-50"
+                    line number="12"
+                    p class="justify-bold"
+                    line number="13"
+                    h2 class="bold" style="text-align: justify; "
+                    line number="14"
+                    p style="text-align: justify; font-weight: normal; "
                 """;
     }
 }

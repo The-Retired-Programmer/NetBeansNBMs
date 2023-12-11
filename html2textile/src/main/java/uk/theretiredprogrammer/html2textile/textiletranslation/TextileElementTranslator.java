@@ -20,6 +20,8 @@ import java.io.IOException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import uk.theretiredprogrammer.html2textile.ErrHandler;
+import uk.theretiredprogrammer.html2textile.rules.Rules;
+import static uk.theretiredprogrammer.html2textile.rules.Rules.Directive.REPORT_STYLES_IN_TEXTILE_CONTENT;
 import uk.theretiredprogrammer.html2textile.rules.StyleAttribute;
 
 public abstract class TextileElementTranslator {
@@ -121,14 +123,14 @@ public abstract class TextileElementTranslator {
         translator.processChildrenInTerminatorContext(element);
         out.write(bracket);
     }
-    
+
     void bracketwithattributes(String bracket, Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         out.write(bracket);
         writeClassStyleId(element);
         translator.processChildrenInTerminatorContext(element);
         out.write(bracket);
     }
-    
+
     void bracketplus(String bracket, Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
         out.write('[');
         bracket(bracket, element, isParentTerminatorContext, translator);
@@ -158,22 +160,60 @@ public abstract class TextileElementTranslator {
         }
         StyleAttribute styles = new StyleAttribute(element);
         if (!styles.isEmpty()) {
-            out.write("{" + styles.toString() + "}");
+            String stylesstring = styles.toString();
+            out.write("{" + stylesstring + "}");
+            if (Rules.getDirective(REPORT_STYLES_IN_TEXTILE_CONTENT)) {
+                err.warning("Unexpected style observed (style=\"" + stylesstring
+                        + "\") - does it need replacing with class [HTML_STYLE_TO_CLASS_PROCESSING] or omitting [HTML_FINAL_STYLE_PROCESSING]");
+            }
         }
     }
-    
+
+    void writeIndented(Element element) throws IOException {
+        int leftindentem = Math.round((getindentpx(element, "margin-left") + getindentpx(element, "padding-left")) * PX2EM);
+        int rightindentem = Math.round((getindentpx(element, "margin-right") + getindentpx(element, "padding-right")) * PX2EM);
+        out.write("(".repeat(leftindentem));
+        out.write(")".repeat(rightindentem));
+    }
+
+    private final static float PT2PX = 96.0f / 72.0f;
+    private final static float EM2PX = PT2PX * 14.0f; // assuming 14 PT text
+    private final static float PX2EM = 1.0f / EM2PX;
+
+    private float getindentpx(Element element, String attributename) throws IOException {
+        String attribute = element.getAttribute(attributename).strip();
+        if (attribute.isBlank()) {
+            return 0.0f;
+        }
+        if (attribute.endsWith("px")) {
+            return Float.parseFloat(attribute.substring(0, attribute.length() - 2));
+        }
+        if (attribute.endsWith("em")) {
+            return Float.parseFloat(attribute.substring(0, attribute.length() - 2)) * EM2PX;
+        }
+        if (attribute.endsWith("pt")) {
+            return Float.parseFloat(attribute.substring(0, attribute.length() - 2)) * PT2PX;
+        }
+        return Float.parseFloat(attribute.substring(0, attribute.length() - 2));
+    }
+
     void writeTextAlignment(Element element) {
         out.write(getTextAlignmentSymbol(element));
     }
-    
+
     private String getTextAlignmentSymbol(Element element) {
         return switch (element.getAttribute("text-align")) {
-                    case "left" -> "<";
-                    case "center" -> "=";
-                    case "right" -> ">";
-                    case "justify" -> "<>";
-                    default -> "";
-                };
+            case "left" ->
+                "<";
+            case "center" ->
+                "=";
+            case "right" ->
+                ">";
+            case "justify" ->
+                "<>";
+            default ->
+                "";
+        };
     }
 
     void checkAttributes(Element element, String[] allowedAttributes) {

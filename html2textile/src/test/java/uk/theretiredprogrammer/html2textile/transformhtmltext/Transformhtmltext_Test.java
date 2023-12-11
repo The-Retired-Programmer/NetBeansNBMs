@@ -15,8 +15,8 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtmltext;
 
-import uk.theretiredprogrammer.html2textile.transformhtml.*;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URISyntaxException;
@@ -24,7 +24,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
+import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
+import uk.theretiredprogrammer.html2textile.transformhtml.SerialiseDom;
+import uk.theretiredprogrammer.html2textile.transformhtml.TransformHtml;
 import uk.theretiredprogrammer.html2textile.transformtext.TransformHtmlText;
 
 public class Transformhtmltext_Test {
@@ -37,12 +40,17 @@ public class Transformhtmltext_Test {
         texttransformer.rootWrap("html");
         TransformHtml transformer;
         try ( Reader transformed = texttransformer.transform()) {
-            transformer = new TransformHtml(transformed);
+            transformer = new TransformHtml(transformed, getErr());
         }
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
         assertEquals(expected(), result);
+    }
+
+    private ErrHandler getErr() {
+        PrintWriter errwriter = new PrintWriter(System.err);
+        return new ErrHandler((s) -> errwriter.println(s));
     }
 
     private String rules() {
