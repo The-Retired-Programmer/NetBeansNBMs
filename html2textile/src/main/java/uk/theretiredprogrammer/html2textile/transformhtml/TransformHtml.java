@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
 import uk.theretiredprogrammer.html2textile.ErrHandler;
 import uk.theretiredprogrammer.html2textile.rules.Rules;
 import static uk.theretiredprogrammer.html2textile.rules.Rules.Directive.LIST_CLASSES_USED;
+import static uk.theretiredprogrammer.html2textile.rules.Rules.Directive.LIST_URLS_USED;
 
 public class TransformHtml {
 
@@ -65,6 +66,7 @@ public class TransformHtml {
         transform(new RestructureTable());
         transform(Rules.get_HTML_URL_PROCESSING());
         reportAllClassesUsed();
+        reportAllUrlsUsed();
         //debug_dump_html("1");
     }
 
@@ -74,16 +76,31 @@ public class TransformHtml {
             ClassNameCollector collector = new ClassNameCollector(classnames);
             transform(collector);
             if (!classnames.isEmpty()) {
-                err.info("Classes used: " + String.join(", ", classnames.stream().distinct().sorted().toList()));
+                err.info("Classes used: " + String.join(", ", classnames.stream().distinct().sorted().toList())+"\n");
             }
         }
     }
 
-    private void debug_dump_html(String postfix) throws IOException, TransformerException {
-        try ( FileWriter debugdump = new FileWriter("/home/richard/DEBUG_DUMP" + postfix + ".html")) {
-            writeHtml(debugdump);
+    private void reportAllUrlsUsed() throws IOException {
+        if (Rules.getDirective(LIST_URLS_USED)) {
+            List<String> imgurls = new ArrayList<>();
+            List<String> aurls = new ArrayList<>();
+            UrlCollector collector = new UrlCollector(imgurls, aurls);
+            transform(collector);
+            if (!aurls.isEmpty()) {
+                err.info("URLs used in links:\n    " + String.join("\n    ", aurls.stream().distinct().sorted().toList())+"\n");
+            }
+            if (!imgurls.isEmpty()) {
+                err.info("image URLs used:\n    " + String.join("\n    ", imgurls.stream().distinct().sorted().toList())+"\n");
+            }
         }
     }
+
+//    private void debug_dump_html(String postfix) throws IOException, TransformerException {
+//        try ( FileWriter debugdump = new FileWriter("/home/richard/DEBUG_DUMP" + postfix + ".html")) {
+//            writeHtml(debugdump);
+//        }
+//    }
 
     public void writeHtml(Writer output) throws TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();

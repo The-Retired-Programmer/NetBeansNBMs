@@ -131,13 +131,15 @@ public class Rules {
                 directives.put(Directive.LIST_CLASSES_USED, true);
             case "{REPORT STYLES IN TEXTILE CONTENT}" ->
                 directives.put(Directive.REPORT_STYLES_IN_TEXTILE_CONTENT, true);
+            case "{LIST URLS USED}" -> 
+                directives.put(Directive.LIST_URLS_USED, true);
             default ->
                 throw new IOException("Bad Rules Directive: " + directive);
         }
     }
 
     public static enum Directive {
-        NO_INHERITANCE, REPORT_STYLES_IN_TEXTILE_CONTENT, LIST_CLASSES_USED
+        NO_INHERITANCE, REPORT_STYLES_IN_TEXTILE_CONTENT, LIST_CLASSES_USED, LIST_URLS_USED
     };
 
     public static Map<Directive, Boolean> directives = new HashMap<>();
@@ -147,6 +149,7 @@ public class Rules {
         directives.put(Directive.NO_INHERITANCE, false);
         directives.put(Directive.REPORT_STYLES_IN_TEXTILE_CONTENT, false);
         directives.put(Directive.LIST_CLASSES_USED, false);
+        directives.put(Directive.LIST_URLS_USED, false);
     }
 
     public static boolean getDirective(Directive directive) {
