@@ -23,7 +23,7 @@ public class AttributeMerge implements TransformHtmlItem {
 
     public ResumeAction testElementAndModify(Element element) throws IOException {
         if (DomHelper.isBlockElement(element)) {
-            Element el = DomHelper.getOnlyChildElementSkippingLine(element);
+            Element el = DomHelper.getOnlyChildElementSkippingLineWithoutText(element);
             if (el != null && el.getTagName().equals("span")) {
                 mergeStyleAttributes(element, el);
                 return ResumeAction.RESUME_FROM_SELF;

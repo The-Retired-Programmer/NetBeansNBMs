@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 richard linsdale.
+ * Copyright 2023 - 2024 richard linsdale.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,10 @@ public class AttributeMerge_Test extends TransformhtmlTest {
                 <p style="font-size:14pt;"><span style="text-align:center;">abc</span></p>
                 
                 <p style="text-align:left;font-size:12pt;"><span style="text-align:center;font-size:14pt;"><span style="font-size:18pt;">abc</span></span></p>
-                
+                <p><span style="font-size: 14pt; ">mno</span></p>
+                <p>abc<span style="font-size: 14pt; ">mno</span></p>
+                <p><span style="font-size: 14pt; ">mno</span>xyz</p>
+                <p>abc<span style="font-size: 14pt; ">mno</span>xyz</p>
                 """;
     }
 
@@ -78,8 +81,9 @@ public class AttributeMerge_Test extends TransformhtmlTest {
                    p dir="autox"
                        "abc"
                    line number="3"
-                   p dir="autox"
-                       "abc"
+                   p
+                       span dir="autox"
+                           "abc"
                        "def"
                    line number="4"
                    p dir="autox"
@@ -120,6 +124,25 @@ public class AttributeMerge_Test extends TransformhtmlTest {
                    line number="18"
                    p style="text-align: center; font-size: 18pt; "
                        "abc"
+                   line number="19"
+                   p style="font-size: 14pt; "
+                       "mno"
+                   line number="20"
+                   p
+                       "abc"
+                       span style="font-size: 14pt; "
+                           "mno"
+                   line number="21"
+                   p
+                       span style="font-size: 14pt; "
+                           "mno"
+                       "xyz"
+                   line number="22"
+                   p
+                       "abc"
+                       span style="font-size: 14pt; "
+                           "mno"
+                       "xyz"
                """;
     }
 }

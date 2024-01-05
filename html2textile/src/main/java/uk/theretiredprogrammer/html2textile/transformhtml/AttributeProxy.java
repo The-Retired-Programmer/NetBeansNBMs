@@ -81,6 +81,14 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
         return false;
     }
 
+    private boolean removeifelement(String attributename, String elementname) {
+        if (element.getTagName().equals(elementname) && (!element.getAttribute(attributename).isEmpty())) {
+            element.removeAttribute(attributename);
+            return true;
+        }
+        return false;
+    }
+
     public void parseAndInsertRule(String rulecommandline) throws IOException {
         String attributename;
         String value;
@@ -100,6 +108,13 @@ public class AttributeProxy extends RuleSet<AttributeProxy> implements Proxy<Ele
                 attributename = trimquotes(rulecommandline.substring(6, pos + 1).trim());
                 value = trimquotes(rulecommandline.substring(pos + 11).trim());
                 add(new Rule<>((AttributeProxy e) -> e.removeifpattern(attributename, value)));
+                return;
+            }
+            pos = rulecommandline.indexOf(" IF ELEMENT ");
+            if (pos != -1) {
+                attributename = trimquotes(rulecommandline.substring(6, pos + 1).trim());
+                value = trimquotes(rulecommandline.substring(pos + 11).trim());
+                add(new Rule<>((AttributeProxy e) -> e.removeifelement(attributename, value)));
                 return;
             }
             pos = rulecommandline.indexOf(" IF ");

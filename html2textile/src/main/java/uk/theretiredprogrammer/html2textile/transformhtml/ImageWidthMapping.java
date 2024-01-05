@@ -32,12 +32,12 @@ public class ImageWidthMapping implements TransformHtmlItem {
                     DomHelper.removeAttribute(element,"width");
                     return ResumeAction.RESUME_FROM_NEXT;
                 }
-                if (widthvalue <= 180) {
+                if (widthvalue <= 200) {
                     DomHelper.insertIntoStyleAttribute(element, "width:20%;");
                     DomHelper.removeAttribute(element,"width");
                     return ResumeAction.RESUME_FROM_NEXT;
                 }
-                if (widthvalue <= 450) {
+                if (widthvalue <= 510) {
                     DomHelper.insertIntoStyleAttribute(element, "width:50%;");
                     DomHelper.removeAttribute(element,"width");
                     return ResumeAction.RESUME_FROM_NEXT;

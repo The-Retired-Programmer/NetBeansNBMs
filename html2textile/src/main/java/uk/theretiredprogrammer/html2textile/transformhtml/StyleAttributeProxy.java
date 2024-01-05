@@ -53,6 +53,13 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
         return false;
     }
 
+    private boolean removeifelement(String stylerule, String elementname) {
+        if (element.getTagName().equals(elementname)) {
+            return remove(stylerule);
+        }
+        return false;
+    }
+
     private boolean removeAny(String stylerulename) {
         style.removeStyleIfName(stylerulename);
         return false;
@@ -135,6 +142,7 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
     public void parseAndInsertRule(String rulecommandline) throws IOException {
         String match;
         String replacement;
+        String ifelement;
         rulecommandline = rulecommandline.trim();
         if (rulecommandline.startsWith("REMOVE ANY ")) {
             match = trimquotes(rulecommandline.substring(10).trim());
@@ -147,6 +155,13 @@ public class StyleAttributeProxy extends RuleSet<StyleAttributeProxy> implements
             return;
         }
         if (rulecommandline.startsWith("REMOVE ")) {
+            int ifpos = rulecommandline.indexOf(" IF ELEMENT ");
+            if (ifpos != -1) {
+                match = trimquotes(rulecommandline.substring(6, ifpos + 1).trim());
+                ifelement = trimquotes(rulecommandline.substring(ifpos + 11).trim());
+                add(new Rule<>((e) -> e.removeifelement(match, ifelement)));
+                return;
+            }
             match = trimquotes(rulecommandline.substring(6).trim());
             add(new Rule<>((e) -> e.remove(match)));
             return;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 richard.
+ * Copyright 2023 - 2024 richard.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,29 @@ public abstract class DomHelper {
             }
         }
         return elementcount == 1 ? el : null;
+    }
+    
+    public static Element getOnlyChildElementSkippingLineWithoutText(Element element) {
+        if (!element.hasChildNodes()) {
+            return null;
+        }
+        NodeList children = element.getChildNodes();
+        int elementcount = 0;
+        int textcount = 0;
+        Element el = null;
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            switch (child.getNodeType()) {
+                case ELEMENT_NODE -> {
+                    if (!child.getNodeName().equals("line")) {
+                        elementcount++;
+                        el = (Element) child;
+                    }
+                }
+                case TEXT_NODE -> textcount++;
+            }
+        }
+        return elementcount == 1 && textcount == 0 ? el : null;
     }
 
     public static boolean areAllChildrenBlockElements(Element element) {

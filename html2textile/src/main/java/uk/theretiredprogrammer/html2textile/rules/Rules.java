@@ -131,7 +131,7 @@ public class Rules {
                 directives.put(Directive.LIST_CLASSES_USED, true);
             case "{REPORT STYLES IN TEXTILE CONTENT}" ->
                 directives.put(Directive.REPORT_STYLES_IN_TEXTILE_CONTENT, true);
-            case "{LIST URLS USED}" -> 
+            case "{LIST URLS USED}" ->
                 directives.put(Directive.LIST_URLS_USED, true);
             default ->
                 throw new IOException("Bad Rules Directive: " + directive);
@@ -172,6 +172,8 @@ public class Rules {
                 finalelementrulesprocessing;
             case "HTML_ATTRIBUTE_PROCESSING" ->
                 attributerulesprocessing;
+            case "HTML_FINAL_ATTRIBUTE_PROCESSING" ->
+                finalattributerulesprocessing;
             case "HTML_URL_PROCESSING" ->
                 urlrulesprocessing;
             case "HTML_STYLE_TO_CLASS_PROCESSING" ->
@@ -190,6 +192,7 @@ public class Rules {
         elementrulesprocessing = new ElementRulesProcessing();
         finalelementrulesprocessing = new ElementRulesProcessing();
         attributerulesprocessing = new AttributeRulesProcessing();
+        finalattributerulesprocessing = new AttributeRulesProcessing();
         urlrulesprocessing = new URLRulesProcessing();
         styletoclassrulesprocessing = new StylesToClassRulesProcessing();
     }
@@ -201,6 +204,7 @@ public class Rules {
     private static ElementRulesProcessing elementrulesprocessing;
     private static ElementRulesProcessing finalelementrulesprocessing;
     private static AttributeRulesProcessing attributerulesprocessing;
+    private static AttributeRulesProcessing finalattributerulesprocessing;
     private static URLRulesProcessing urlrulesprocessing;
     private static StylesToClassRulesProcessing styletoclassrulesprocessing;
 
@@ -230,6 +234,10 @@ public class Rules {
 
     public static AttributeRulesProcessing get_HTML_ATTRIBUTE_PROCESSING() {
         return attributerulesprocessing;
+    }
+
+    public static AttributeRulesProcessing get_HTML_FINAL_ATTRIBUTE_PROCESSING() {
+        return finalattributerulesprocessing;
     }
 
     public static URLRulesProcessing get_HTML_URL_PROCESSING() {

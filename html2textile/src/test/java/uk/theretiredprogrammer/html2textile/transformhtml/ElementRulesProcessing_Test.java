@@ -62,6 +62,7 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
                     REPLACE i WITH span AND STYLE font-style: italic
                     REPLACE em WITH span AND STYLE font-style:italic
                     REMOVE div IF STYLES margin: 20px 20px 20px 20px; AND font-family: arial,helvetica,sans-serif; AND font-size: 12pt; AND line-height: 1.5em; AND color: #000000;
+                    REMOVE p IF STYLES margin: 20px 20px 20px 20px;
                 """;
     }
 
@@ -85,6 +86,7 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
                 content
                 <em>em</em>
                 </div>
+                <p style="margin: 20px 20px 20px 20px; ">abc</p>
                 """;
     }
 
@@ -127,6 +129,8 @@ public class ElementRulesProcessing_Test extends TransformhtmlTest {
                         span style="font-style: italic; "
                             "em"
                         line number="18"
+                    line number="19"
+                    "abc"
                 """;
     }
 

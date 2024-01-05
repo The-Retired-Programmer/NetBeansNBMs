@@ -47,6 +47,7 @@ public class AttributeRulesProcessing_Test extends TransformhtmlTest {
                     REMOVE id IF PATTERN cloak.*
                     MOVE width TO STYLE
                     MOVE text-align TO STYLE
+                    REMOVE title IF ELEMENT a
                 """;
     }
 
@@ -60,6 +61,8 @@ public class AttributeRulesProcessing_Test extends TransformhtmlTest {
                 <p border="0" style="font-size: 10pt;">content</p>
                 <p dir="auto">content</p>
                 <p dir="right">content</p>
+                <a title="remove_me" />
+                <img title="keep me" />
                 """;
     }
 
@@ -90,6 +93,10 @@ public class AttributeRulesProcessing_Test extends TransformhtmlTest {
                     line number="8"
                     p dir="right"
                         "content"
+                    line number="9"
+                    a
+                    line number="10"
+                    img title="keep me"
                 """;
     }
 }

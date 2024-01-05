@@ -7,7 +7,9 @@
 # ==============================================
 #
 [HTML_PREPROCESSING]
-    
+
+[HTML_STYLE_PROCESSING]
+
 [HTML_ELEMENT_PROCESSING]
     REPLACE strong WITH span AND STYLE font-weight: bold;
     REPLACE b WITH span AND STYLE font-weight: bold;
@@ -18,8 +20,6 @@
 [HTML_ATTRIBUTE_PROCESSING]
     MOVE width TO STYLE
     MOVE text-align TO STYLE
-
-[HTML_STYLE_PROCESSING]
 
 [HTML_STYLE_TO_CLASS_PROCESSING]
     

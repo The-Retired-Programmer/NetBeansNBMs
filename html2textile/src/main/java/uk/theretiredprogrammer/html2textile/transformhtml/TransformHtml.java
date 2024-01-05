@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 richard.
+ * Copyright 2023 -2024 richard.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package uk.theretiredprogrammer.html2textile.transformhtml;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -55,13 +54,14 @@ public class TransformHtml {
     }
 
     public void transform() throws IOException, TransformerException {
-        transform(Rules.get_HTML_ELEMENT_PROCESSING());
-        transform(Rules.get_HTML_ATTRIBUTE_PROCESSING());
         transform(new ReplaceWithHeadings());
         transform(Rules.get_HTML_STYLE_PROCESSING());
+        transform(Rules.get_HTML_ELEMENT_PROCESSING());
+        transform(Rules.get_HTML_ATTRIBUTE_PROCESSING());
         transform(new HtmlOptimisations());
         transform(Rules.get_HTML_STYLE_TO_CLASS_PROCESSING());
         transform(Rules.get_HTML_FINAL_STYLE_PROCESSING());
+        transform(Rules.get_HTML_FINAL_ATTRIBUTE_PROCESSING());
         transform(Rules.get_HTML_FINAL_ELEMENT_PROCESSING());
         transform(new RestructureTable());
         transform(Rules.get_HTML_URL_PROCESSING());
@@ -76,7 +76,7 @@ public class TransformHtml {
             ClassNameCollector collector = new ClassNameCollector(classnames);
             transform(collector);
             if (!classnames.isEmpty()) {
-                err.info("Classes used: " + String.join(", ", classnames.stream().distinct().sorted().toList())+"\n");
+                err.info("Classes used: " + String.join(", ", classnames.stream().distinct().sorted().toList()) + "\n");
             }
         }
     }
@@ -88,10 +88,10 @@ public class TransformHtml {
             UrlCollector collector = new UrlCollector(imgurls, aurls);
             transform(collector);
             if (!aurls.isEmpty()) {
-                err.info("URLs used in links:\n    " + String.join("\n    ", aurls.stream().distinct().sorted().toList())+"\n");
+                err.info("URLs used in links:\n    " + String.join("\n    ", aurls.stream().distinct().sorted().toList()) + "\n");
             }
             if (!imgurls.isEmpty()) {
-                err.info("image URLs used:\n    " + String.join("\n    ", imgurls.stream().distinct().sorted().toList())+"\n");
+                err.info("Image URLs used:\n    " + String.join("\n    ", imgurls.stream().distinct().sorted().toList()) + "\n");
             }
         }
     }
@@ -101,7 +101,6 @@ public class TransformHtml {
 //            writeHtml(debugdump);
 //        }
 //    }
-
     public void writeHtml(Writer output) throws TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
