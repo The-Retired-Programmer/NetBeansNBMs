@@ -93,7 +93,7 @@ public abstract class TextileElementTranslator {
             case "thead" ->
                 new TheadTranslator(out, err);
             case "th" ->
-                new ThTranslator(out, err);
+                new TdTranslator(out, err);
             case "tfoot" ->
                 new TfootTranslator(out, err);
             case "tbody" ->

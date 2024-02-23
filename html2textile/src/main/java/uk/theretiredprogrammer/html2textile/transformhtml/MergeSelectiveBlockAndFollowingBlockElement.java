@@ -18,11 +18,11 @@ package uk.theretiredprogrammer.html2textile.transformhtml;
 import java.io.IOException;
 import org.w3c.dom.Element;
 
-public class MergeLiAndFollowingBlockElement implements TransformHtmlItem {
+public class MergeSelectiveBlockAndFollowingBlockElement implements TransformHtmlItem {
 
     @Override
     public ResumeAction testElementAndModify(Element element) throws IOException {
-        if (element.getTagName().equals("li")) {
+        if (element.getTagName().equals("li") || element.getTagName().equals("th") || element.getTagName().equals("td")) {
             Element child = DomHelper.getOnlyChildElementSkippingLine(element);
             if (child != null && DomHelper.isMergableBlockElement(child)) {
                 DomHelper.mergeAttributes(child, element);

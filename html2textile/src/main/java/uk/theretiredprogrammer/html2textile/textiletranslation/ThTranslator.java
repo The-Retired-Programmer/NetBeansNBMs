@@ -35,7 +35,7 @@ public class ThTranslator extends TextileElementTranslator {
             writeColOrRowSpan(element, "rowspan", '/');
             writeColOrRowSpan(element, "colspan", '\\');
             writeClassStyleId(element);
-            writeTextAlignment(element);
+//            writeTextAlignment(element);
         }
         out.write("_. ");
         translator.processChildren(element);

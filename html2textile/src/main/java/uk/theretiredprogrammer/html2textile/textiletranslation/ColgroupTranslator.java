@@ -31,10 +31,10 @@ public class ColgroupTranslator extends TextileElementTranslator {
     }
 
     public void write(Element element, boolean isParentTerminatorContext, TextileTranslator translator) throws IOException {
-        out.write("|:");
-        writeClassStyleId(element);
-        out.write(". |");
-        translator.processChildren(element);
-        out.write("\n");
+//        out.write("|:");
+//        writeClassStyleId(element);
+//        out.write(". |");
+//        translator.processChildren(element);
+//        out.write("\n");
     }
 }

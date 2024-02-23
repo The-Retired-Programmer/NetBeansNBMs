@@ -29,9 +29,9 @@ public class ForDebugging_App_Test {
     public ForDebugging_App_Test() {
     }
 
-//    @Test
+    @Test
     public void testApp() throws IOException, ParserConfigurationException, SAXException, URISyntaxException, TransformerException {
-        String[] args = new String[]{"-i", "/home/richard/PRODUCTS/ESC_WEBSITE/Joomla2SCM/About Us/aboutus.fragment.html"};
+        String[] args = new String[]{"-i", "/home/richard/PRODUCTS/ESC_WEBSITE/PROD-J2S/Cruisers/programmeandevents.fragment.html"};
         int rc = new App().goInner(args);
         assertEquals(0,rc);
     }

@@ -29,7 +29,7 @@ public class HtmlOptimisations implements TransformHtmlItem {
         new BlankInlineElementRemoval(),
         new EmptyLiRemoval(),
         new EmptyListRemoval(),
-        new MergeLiAndFollowingBlockElement(),
+        new MergeSelectiveBlockAndFollowingBlockElement(),
         new RestuctureLeadingAndTrailingWhiteSpaceFromBracketingElements(),
         new BlockElementTrailingSpaceRemoval(),
         new ListConcatonation(),

@@ -24,16 +24,16 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 
-public class MergeLiAndFollowingBlockElement_Test extends TransformhtmlTest {
+public class MergeSelectiveBlockAndFollowingBlockElement_Test extends TransformhtmlTest {
 
-    public MergeLiAndFollowingBlockElement_Test() {
+    public MergeSelectiveBlockAndFollowingBlockElement_Test() {
     }
 
     @Test
     public void testtransformation() throws IOException, ParserConfigurationException, SAXException, URISyntaxException {
         TransformHtml transformer = super.createtransformation(new StringReader(rules()), new StringReader(input()));
         //
-        transformer.transform(new MergeLiAndFollowingBlockElement());
+        transformer.transform(new MergeSelectiveBlockAndFollowingBlockElement());
         //
         String result = SerialiseDom.serialise(transformer.getRoot());
         //System.out.println(result);
