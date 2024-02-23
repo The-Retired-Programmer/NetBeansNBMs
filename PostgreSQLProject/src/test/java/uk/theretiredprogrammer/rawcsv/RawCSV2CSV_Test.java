@@ -33,8 +33,8 @@ public class RawCSV2CSV_Test {
     public void testexecute() throws IOException {
         RawCSV2CSV convertor = new RawCSV2CSV();
         PrintWriter err = new PrintWriter(System.err);
-        BufferedReader rawcsv = new BufferedReader(new FileReader("/home/richard/PRODUCTSTESTDATA/RawCSV/MandS20231010.rawcsv"));
-        PrintWriter csv = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/RawCSV/MandS20231010.csv"));
+        BufferedReader rawcsv = new BufferedReader(new FileReader("/home/richard/PRODUCTSTESTDATA/RawCSV/MandS20240110.rawcsv"));
+        PrintWriter csv = new PrintWriter(new FileWriter("/home/richard/PRODUCTSTESTDATA/RawCSV/MandS20240110.csv"));
         InputStream ris = this.getClass().getClassLoader().getResourceAsStream("uk/theretiredprogrammer/rawcsv/rules");
         BufferedReader rules = new BufferedReader(new InputStreamReader(ris));
         try(rawcsv;csv;rules;err) {

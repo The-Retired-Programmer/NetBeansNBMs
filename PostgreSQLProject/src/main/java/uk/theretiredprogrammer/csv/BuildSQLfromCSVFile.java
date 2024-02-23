@@ -99,7 +99,13 @@ public final class BuildSQLfromCSVFile implements ActionListener, Runnable {
         String line = csvrdr.readLine();
         out.println("drop table if exists " + tablename + ";\n");
         out.println("create table " + tablename + " (");
-        out.println(line.replace(",", " VARCHAR(1000) default null,\n"));
+        line = line.replace(" ", "_");
+        line = line.replace("-", "_");
+        line = line.replace("/", "");
+        line = line.replace("(", "");
+        line = line.replace(")", "");
+        line = line.replace(",", " VARCHAR(1000) default null,\n");
+        out.println(line);
         out.println(" VARCHAR(1000) default null\n);");
     }
 }
